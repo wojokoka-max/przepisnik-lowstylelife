@@ -1,0 +1,217 @@
+You are improving an existing mobile/web application called “Przepiśnik” (LowStyleLife brand).  
+The application already contains:
+- recipe management,
+- AI recipe generation,
+- “Z lodówki” feature,
+- meal planner,
+- categories,
+- macros,
+- notes,
+- favorites.
+
+Your task is NOT to redesign the entire application.  
+Your task is to improve UX, monetization structure, onboarding clarity and premium perception while preserving the existing visual identity.
+
+==================================================
+GENERAL PRODUCT DIRECTION
+==================================================
+
+The application should feel:
+- premium,
+- calm,
+- elegant,
+- simple,
+- modern,
+- practical.
+
+Avoid:
+- childish UI,
+- crowded layouts,
+- overly colorful elements,
+- generic “AI app” appearance.
+
+Keep:
+- dark + gold + soft light palette,
+- minimalist aesthetic,
+- clean cards,
+- rounded UI,
+- elegant typography.
+
+==================================================
+UX IMPROVEMENTS
+==================================================
+
+1. HEADER CLEANUP
+The current top section feels visually heavy.
+
+Reduce visual density:
+- simplify header hierarchy,
+- reduce competing elements,
+- add more whitespace,
+- make navigation lighter.
+
+Keep:
+- branding,
+- navigation clarity,
+- elegant feel.
+
+Avoid:
+- too many elements competing for attention.
+
+==================================================
+2. SPACING
+Increase spacing between:
+- cards,
+- sections,
+- buttons,
+- content blocks.
+
+Goal:
+- improve readability,
+- create premium feel,
+- reduce visual fatigue.
+
+==================================================
+3. ICON SYSTEM
+Current emoji-style icons should gradually be replaced with:
+- consistent custom icons,
+- minimal outlined style,
+- visually cohesive set.
+
+Keep the interface warm and friendly, but more premium.
+
+==================================================
+ONBOARDING
+==================================================
+
+Add lightweight onboarding hints for major features.
+
+For “Z lodówki”:
+“Podaj składnik — stworzymy z niego posiłek”
+
+For “Planer”:
+“Wybierz dietę i zaplanuj dzień jedzenia”
+
+Goal:
+- instant understanding,
+- higher feature usage,
+- lower abandonment.
+
+Use:
+- subtle onboarding cards,
+- dismissible hints,
+- non-intrusive UI.
+
+==================================================
+MONETIZATION STRUCTURE
+==================================================
+
+AI features must become premium.
+
+FREE:
+- recipe storage,
+- browsing,
+- favorites,
+- manual recipe creation.
+
+PREMIUM:
+- AI recipe generation,
+- “Z lodówki”,
+- meal planning AI,
+- advanced planner features.
+
+==================================================
+AI LIMIT SYSTEM
+==================================================
+
+Implement:
+- 2–3 free AI uses,
+- then paywall.
+
+Requirements:
+- track usage count,
+- display remaining uses,
+- elegant premium modal after limit.
+
+Example:
+“Pozostały Ci 2 darmowe analizy AI”
+
+Avoid:
+- aggressive paywalls,
+- annoying interruptions.
+
+==================================================
+PREMIUM POSITIONING
+==================================================
+
+Do NOT market the app as:
+“recipe app”
+
+Instead communicate:
+- “what to cook from ingredients you already have”
+- “meal planning without stress”
+- “AI-assisted low carb planning”
+- “smart cooking assistant”
+
+The value proposition is:
+- saving time,
+- reducing decision fatigue,
+- simplifying meal planning.
+
+==================================================
+MEAL PLANNER
+==================================================
+
+Treat planner as the core premium product.
+
+Improve:
+- readability,
+- nutrition summaries,
+- day/week organization,
+- visual hierarchy.
+
+Potential future features:
+- shopping list generation,
+- export,
+- synchronization,
+- shareable plans.
+
+==================================================
+TECHNICAL / PRODUCT PRIORITIES
+==================================================
+
+Prioritize:
+1. retention,
+2. usability,
+3. repeat usage,
+4. premium conversion.
+
+Do NOT prioritize:
+- flashy animations,
+- unnecessary features,
+- feature overload.
+
+==================================================
+BUSINESS GOAL
+==================================================
+
+The application should evolve from:
+“recipe storage app”
+
+into:
+“premium AI-powered food and meal planning ecosystem”.
+
+Maintain scalability for:
+- subscriptions,
+- future diet systems,
+- advanced planning,
+- user accounts,
+- cloud sync.
+
+==================================================
+IMPORTANT
+==================================================
+
+Preserve existing brand identity and visual atmosphere.
+Do not replace the current style with generic SaaS UI.
+Improve what already exists.

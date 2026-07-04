@@ -1,0 +1,151 @@
+NEXT DEVELOPMENT PRIORITIES FOR “PRZEPIŚNIK”
+
+You are continuing development of the existing application.
+Do NOT redesign the product.
+Do NOT add unnecessary features.
+Focus on polish, usability, retention and preparation for launch.
+
+==================================================
+CURRENT PRIORITY
+==================================================
+
+Goal:
+Prepare the app for soft launch on Google Play.
+
+Main focus:
+- usability,
+- premium perception,
+- AI usage control,
+- retention,
+- onboarding clarity.
+
+==================================================
+TASK 1 — AI LIMIT SYSTEM
+==================================================
+
+Implement:
+- 3 free AI uses per day,
+- automatic reset every 24h,
+- shared counter across:
+  - “Z lodówki”,
+  - recipe generation,
+  - AI meal generation.
+
+Requirements:
+- persistent storage,
+- remaining usage indicator,
+- elegant messaging.
+
+Example:
+“Pozostały Ci 2 darmowe użycia AI dziś”
+
+After limit:
+show elegant modal:
+“Premium wkrótce”
+
+Do NOT implement payments yet.
+
+==================================================
+TASK 2 — PREMIUM MODAL
+==================================================
+
+Create elegant premium modal.
+
+Style:
+- premium,
+- soft,
+- minimal,
+- consistent with existing branding.
+
+The modal should communicate value:
+- unlimited AI,
+- advanced meal planning,
+- smart recipe generation.
+
+Avoid:
+- aggressive sales language,
+- cheap SaaS look.
+
+==================================================
+TASK 3 — ONBOARDING HINTS
+==================================================
+
+Add subtle onboarding hints.
+
+For:
+- “Z lodówki”
+- “Planer”
+
+Hints must:
+- appear only initially,
+- be dismissible,
+- not interrupt usage.
+
+Text:
+“Podaj składnik — stworzymy z niego posiłek”
+“Wybierz dietę i zaplanuj dzień jedzenia”
+
+==================================================
+TASK 4 — UX POLISH
+==================================================
+
+Improve:
+- spacing,
+- readability,
+- hierarchy,
+- breathing room.
+
+Especially:
+- top navigation,
+- cards,
+- planner layout.
+
+Reduce visual heaviness.
+
+==================================================
+TASK 5 — PLANNER IMPROVEMENTS
+==================================================
+
+Improve planner readability:
+- clearer sections,
+- better macro summaries,
+- stronger visual hierarchy,
+- easier scanning.
+
+Do NOT redesign completely.
+
+==================================================
+TASK 6 — PREPARE FOR GOOGLE PLAY
+==================================================
+
+Prepare technical requirements:
+- app icon export,
+- screenshots support,
+- adaptive layouts,
+- loading states,
+- error handling.
+
+Ensure:
+- mobile responsiveness,
+- stable navigation,
+- smooth transitions.
+
+==================================================
+IMPORTANT
+==================================================
+
+Do NOT:
+- add Stripe,
+- add RevenueCat,
+- add complex accounts,
+- add cloud sync,
+- add feature overload.
+
+This phase is:
+SOFT LAUNCH PREPARATION.
+
+Focus on:
+- retention,
+- usability,
+- polish,
+- perceived quality.

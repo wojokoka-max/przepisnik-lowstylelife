@@ -1,0 +1,110 @@
+Instrukcja dla Replit: dodanie planera do Przepiśnika LowStyleLife
+Dodaj do aplikacji prosty planer tygodniowy jako rozszerzenie Przepiśnika LowStyleLife. Ma być bardzo prosty, szybki i intuicyjny. Nie twórz rozbudowanego systemu diet, kalorii ani automatycznych propozycji. To ma być wersja minimum, która działa.
+Cel
+Użytkownik ma móc:
+przypisać zapisane przepisy do dni tygodnia,
+zobaczyć cały tydzień w jednym widoku,
+wygenerować prostą listę zakupów z zaplanowanych przepisów.
+Zakres wersji pierwszej
+Zrób tylko to:
+1. Nowy ekran: „Planer”
+Dodaj nową zakładkę lub sekcję o nazwie:
+Planer
+Widok ma pokazywać 7 dni tygodnia:
+Poniedziałek
+Wtorek
+Środa
+Czwartek
+Piątek
+Sobota
+Niedziela
+Pod każdym dniem dodaj jedno pole na:
+obiad
+Na tym etapie tylko obiad. Nie dodawaj śniadania, kolacji ani przekąsek.
+2. Dodawanie przepisu do dnia
+Pod każdym dniem ma być przycisk:
++ Dodaj przepis
+Po kliknięciu:
+otwiera się lista zapisanych przepisów,
+użytkownik wybiera jeden,
+wybrany przepis przypisuje się do tego dnia.
+Nie rób drag and drop. Nie rób wielu kroków. Ma być: kliknij → wybierz → gotowe.
+3. Wyświetlanie przypisanego przepisu
+Po dodaniu przepisu do dnia pokaż:
+nazwę przepisu,
+mały przycisk do usunięcia,
+mały przycisk do zmiany przepisu.
+Nazwy mają być czytelne i krótkie. Jeśli przepis jest długi, przytnij nazwę wizualnie.
+4. Lista zakupów
+Dodaj przycisk:
+Generuj listę zakupów
+Po kliknięciu:
+zbierz składniki ze wszystkich przepisów przypisanych do tygodnia,
+pokaż je na jednej liście,
+jeśli składniki się powtarzają, połącz je możliwie prosto.
+Na start nie musisz idealnie łączyć jednostek typu:
+200 g + 100 g
+1 łyżka + 2 łyżki
+Wystarczy wersja podstawowa:
+zbierz składniki,
+usuń oczywiste duplikaty tekstowe,
+pokaż prostą listę.
+5. Prostota UI
+Planer ma być:
+lekki,
+przejrzysty,
+mobilny,
+bez przewijania poziomego.
+Na telefonie:
+dni tygodnia mają układać się pionowo jeden pod drugim,
+każdy dzień jako osobna karta.
+Każda karta dnia ma zawierać:
+nazwę dnia,
+nazwę przepisu albo pusty stan,
+przycisk dodania lub zmiany.
+6. Pusty stan
+Jeśli nic nie jest zaplanowane, pokaż komunikat:
+Nie masz jeszcze zaplanowanych obiadów na ten tydzień.
+Jeśli dzień jest pusty, pokaż:
+Brak przepisu
+7. Dane
+Planer ma korzystać z już zapisanych przepisów w aplikacji. Nie twórz osobnej bazy przepisów dla planera.
+Każdy dzień ma przechowywać:
+nazwę dnia,
+id przypisanego przepisu albo null.
+8. Czego NIE robić teraz
+Nie dodawaj:
+diet,
+kalorii,
+makroskładników,
+AI planowania,
+wielu posiłków dziennie,
+automatycznych sugestii,
+eksportu PDF,
+inteligentnych list zakupów,
+trybu premium.
+To ma być tylko pierwsza, działająca wersja planera.
+Priorytet
+Najważniejsze są trzy rzeczy:
+szybkie przypisanie przepisu do dnia,
+czytelny widok tygodnia,
+działająca lista zakupów.
+UX
+To ma działać tak prosto, jak kartka papieru, tylko wygodniej.
+Użytkownik ma wejść do planera i od razu zrozumieć:
+gdzie kliknąć,
+jak dodać przepis,
+jak zrobić listę zakupów.
+Nazwy przycisków
+Użyj dokładnie takich nazw:
+Planer
++ Dodaj przepis
+Zmień
+Usuń
+Generuj listę zakupów
+Efekt końcowy
+Po wdrożeniu użytkownik ma móc:
+wejść w Planer,
+przypisać przepisy do dni tygodnia,
+kliknąć „Generuj listę zakupów”,
+zobaczyć prostą listę zakupów z tygodnia.

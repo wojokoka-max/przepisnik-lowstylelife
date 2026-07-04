@@ -1,0 +1,187 @@
+Implement a home screen widget for the existing “Przepiśnik” app.
+
+This is NOT a new app.
+This is an extension of the existing application.
+
+Goal:
+Create a widget that acts as a daily shortcut and reminder for the app’s two core use cases:
+1. Plan dnia
+2. Podaj pomysł na…
+
+==================================================
+WIDGET PURPOSE
+==================================================
+
+The widget should:
+- show the user today’s meal plan,
+- remind them what they planned to eat,
+- provide a quick shortcut into the app,
+- offer a fast AI entry point for meal ideas.
+
+The widget should feel like:
+“mini centrum dowodzenia jedzeniem na dziś”
+
+Do NOT make it decorative only.
+It must be useful.
+
+==================================================
+WIDGET STRUCTURE
+==================================================
+
+Widget title:
+“Plan dnia”
+
+Show:
+- current day/date,
+- daily kcal target,
+- macro summary if available:
+  - protein,
+  - fat,
+  - carbs,
+- 2–3 nearest planned meals.
+
+Example layout:
+
+Plan dnia
+Wtorek · 1800 kcal
+B: 95g · T: 110g · W: 60g
+
+Śniadanie: Jajka z awokado
+Obiad: Kurczak z warzywami
+Kolacja: Sałatka z łososiem
+
+==================================================
+PRIMARY ACTIONS
+==================================================
+
+Add two clear widget actions:
+
+1. “Otwórz planer”
+- opens the planner screen inside the existing app.
+
+2. “Podaj pomysł na…”
+- opens the AI meal idea flow inside the existing app.
+
+Do NOT duplicate “Z lodówki” and “Stwórz przepis”.
+These are mentally the same user intent.
+Use only “Podaj pomysł na…” as the creative AI entry point.
+
+==================================================
+“PODAJ POMYSŁ NA…” FLOW
+==================================================
+
+After user taps “Podaj pomysł na…”, open the app and show quick options:
+
+- Śniadanie
+- Obiad
+- Kolację
+- Szybką przekąskę
+- Deser
+
+These should be presented as simple tappable cards/buttons.
+
+After selecting one option:
+- open the existing AI recipe/meal generation flow,
+- prefill meal type,
+- allow user to add ingredients or preferences.
+
+Example:
+User taps “Podaj pomysł na…”
+→ selects “Obiad”
+→ app opens AI generator with meal type = obiad.
+
+==================================================
+UX PRINCIPLES
+==================================================
+
+The widget should be:
+- simple,
+- readable,
+- elegant,
+- fast,
+- consistent with the existing LowStyleLife / Przepiśnik branding.
+
+Use:
+- dark/premium background,
+- gold or light accents,
+- rounded elements,
+- calm visual hierarchy.
+
+Avoid:
+- clutter,
+- too many buttons,
+- emoji-heavy design,
+- generic Android widget look.
+
+==================================================
+DATA HANDLING
+==================================================
+
+If today’s plan exists:
+- display today’s meals and macros.
+
+If no plan exists:
+show empty state:
+
+“Brak planu na dziś”
+“Utwórz plan w aplikacji”
+
+Button:
+“Otwórz planer”
+
+If macro data is missing:
+- display only meals and kcal if available.
+- do not show broken or empty macro fields.
+
+==================================================
+AI LIMIT INTEGRATION
+==================================================
+
+“Podaj pomysł na…” must respect the existing AI usage limit.
+
+If user has remaining AI uses:
+- open AI flow normally.
+
+If daily limit is reached:
+- open the existing premium modal:
+“Premium wkrótce”
+
+Do not implement payments yet.
+
+==================================================
+TECHNICAL REQUIREMENTS
+==================================================
+
+- Widget must be connected to the existing app.
+- Use deep links or internal navigation routes.
+- Do not create a separate standalone app.
+- Keep state consistent with the main app.
+- Widget should update when meal plan changes.
+- Handle no-data states gracefully.
+- Support different widget sizes if possible:
+  - small: Plan dnia + one action
+  - medium: meals + two actions
+  - large: meals + macros + actions
+
+==================================================
+PRIORITY
+==================================================
+
+Build first version as MVP:
+
+Version 1:
+- Plan dnia preview
+- Otwórz planer button
+- Podaj pomysł na… button
+- empty state
+- connection to existing planner and AI flow
+
+Do NOT add:
+- shopping list,
+- notifications,
+- subscriptions,
+- advanced customization,
+- multiple widget themes.
+
+This is a soft launch feature.
+Focus on usefulness and stability.

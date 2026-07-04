@@ -1,0 +1,2114 @@
+// ---------------------------------------------------------------------------
+// Kreator posiłków — port HTML "Kreator posiłków – LowStyleLife" do TypeScripta
+// Każdy przepis dopasowuje się do jednego "głównego" składnika z lodówki
+// i dolicza resztę z bazy DB.
+// ---------------------------------------------------------------------------
+
+export type Category =
+  | "warzywa" | "owoce" | "nabial" | "sery" | "mieso" | "ryby"
+  | "roslinne" | "orzechy" | "tluszcze" | "czekolada" | "dodatki";
+
+export interface Product {
+  id: string;
+  name: string;
+  cat: Category;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+  ig: number;
+}
+
+export interface AddIngredientRef { ref: string; g: number; }
+export interface AddIngredientCustom { custom: string; g: number; cat: Category; }
+export type AddIngredient = AddIngredientRef | AddIngredientCustom;
+
+export interface KreatorRecipe {
+  id: string;
+  match: (p: Product) => boolean;
+  name: (p: Product) => string;
+  type: string;
+  time: number;
+  addIngredients: AddIngredient[] | ((p: Product) => AddIngredient[]);
+  steps: (p: Product) => string[];
+  tip?: string;
+}
+
+export const CAT_ICONS: Record<Category, string> = {
+  warzywa: "🥦", owoce: "🍓", nabial: "🥛", sery: "🧀", mieso: "🥩",
+  ryby: "🐟", roslinne: "🌿", orzechy: "🥜", tluszcze: "🧈",
+  czekolada: "🍫", dodatki: "🫙",
+};
+
+export const CAT_LABELS: Record<Category, string> = {
+  warzywa: "🥦 Warzywa", owoce: "🍓 Owoce", nabial: "🥛 Nabiał",
+  sery: "🧀 Sery", mieso: "🥩 Mięso", ryby: "🐟 Ryby",
+  roslinne: "🌿 Roślinne", orzechy: "🥜 Orzechy",
+  tluszcze: "🧈 Tłuszcze", czekolada: "🍫 Czekolada", dodatki: "🫙 Dodatki",
+};
+
+export const QUICK_CATS: Category[] = [
+  "mieso", "ryby", "warzywa", "nabial", "sery", "owoce", "orzechy", "tluszcze",
+];
+
+// ---------------------------------------------------------------------------
+// BAZA PRODUKTÓW
+// ---------------------------------------------------------------------------
+
+export const DB: Product[] = [
+  {id:"szpinak",name:"Szpinak",cat:"warzywa",kcal:23,protein:2.9,fat:0.4,carbs:3.6,fiber:2.2,ig:15},
+  {id:"rukola",name:"Rukola",cat:"warzywa",kcal:25,protein:2.6,fat:0.7,carbs:3.7,fiber:1.6,ig:15},
+  {id:"salata",name:"Sałata (mix)",cat:"warzywa",kcal:15,protein:1.4,fat:0.2,carbs:2.9,fiber:1.3,ig:10},
+  {id:"jarmuz",name:"Jarmuż",cat:"warzywa",kcal:49,protein:4.3,fat:0.9,carbs:8.8,fiber:3.6,ig:15},
+  {id:"ogorek",name:"Ogórek",cat:"warzywa",kcal:15,protein:0.7,fat:0.1,carbs:3.6,fiber:0.5,ig:15},
+  {id:"cukinia",name:"Cukinia",cat:"warzywa",kcal:17,protein:1.2,fat:0.3,carbs:3.1,fiber:1.0,ig:15},
+  {id:"baklakan",name:"Bakłażan",cat:"warzywa",kcal:25,protein:1.0,fat:0.2,carbs:5.7,fiber:3.0,ig:15},
+  {id:"seler_naciowy",name:"Seler naciowy",cat:"warzywa",kcal:16,protein:0.7,fat:0.2,carbs:3.0,fiber:1.6,ig:15},
+  {id:"kapusta_pek",name:"Kapusta pekińska",cat:"warzywa",kcal:13,protein:1.0,fat:0.2,carbs:2.2,fiber:1.0,ig:15},
+  {id:"brokul",name:"Brokuł",cat:"warzywa",kcal:34,protein:2.8,fat:0.4,carbs:6.6,fiber:2.6,ig:15},
+  {id:"kalafior",name:"Kalafior",cat:"warzywa",kcal:25,protein:1.9,fat:0.3,carbs:5.0,fiber:2.0,ig:15},
+  {id:"papryka_cz",name:"Papryka czerwona",cat:"warzywa",kcal:31,protein:1.0,fat:0.3,carbs:7.2,fiber:2.1,ig:15},
+  {id:"pomidor",name:"Pomidor",cat:"warzywa",kcal:18,protein:0.9,fat:0.2,carbs:3.9,fiber:1.2,ig:30},
+  {id:"cebula",name:"Cebula",cat:"warzywa",kcal:40,protein:1.1,fat:0.1,carbs:9.3,fiber:1.7,ig:15},
+  {id:"awokado",name:"Awokado",cat:"warzywa",kcal:160,protein:2.0,fat:14.7,carbs:8.5,fiber:6.7,ig:15},
+  {id:"pieczarki",name:"Pieczarki",cat:"warzywa",kcal:22,protein:3.1,fat:0.3,carbs:3.3,fiber:1.0,ig:10},
+  {id:"rzodkiewka",name:"Rzodkiewka",cat:"warzywa",kcal:16,protein:0.7,fat:0.1,carbs:3.4,fiber:1.6,ig:15},
+  {id:"natka",name:"Natka pietruszki",cat:"warzywa",kcal:36,protein:3.0,fat:0.8,carbs:6.3,fiber:3.3,ig:10},
+  {id:"szczypiorek",name:"Szczypiorek",cat:"warzywa",kcal:30,protein:2.1,fat:0.5,carbs:4.4,fiber:2.5,ig:15},
+  {id:"truskawki",name:"Truskawki",cat:"owoce",kcal:32,protein:0.7,fat:0.3,carbs:7.7,fiber:2.0,ig:40},
+  {id:"maliny",name:"Maliny",cat:"owoce",kcal:52,protein:1.2,fat:0.7,carbs:11.9,fiber:6.5,ig:25},
+  {id:"borowki",name:"Borówki",cat:"owoce",kcal:57,protein:0.7,fat:0.3,carbs:14.5,fiber:2.4,ig:53},
+  {id:"wisnia",name:"Wiśnie",cat:"owoce",kcal:50,protein:1.0,fat:0.3,carbs:12.2,fiber:1.6,ig:22},
+  {id:"jogurt_grecki",name:"Jogurt grecki 10%",cat:"nabial",kcal:97,protein:9.0,fat:5.0,carbs:3.6,fiber:0,ig:11},
+  {id:"jogurt_grecki_0",name:"Jogurt grecki 0%",cat:"nabial",kcal:57,protein:10.0,fat:0.2,carbs:3.6,fiber:0,ig:11},
+  {id:"twarog",name:"Twaróg chudy",cat:"nabial",kcal:83,protein:14.0,fat:0.5,carbs:3.5,fiber:0,ig:30},
+  {id:"serek_wiej",name:"Serek wiejski",cat:"nabial",kcal:103,protein:11.1,fat:4.3,carbs:3.4,fiber:0,ig:30},
+  {id:"mascarpone",name:"Mascarpone",cat:"nabial",kcal:430,protein:4.0,fat:42.0,carbs:4.0,fiber:0,ig:0},
+  {id:"ricotta",name:"Ricotta",cat:"nabial",kcal:174,protein:11.3,fat:13.0,carbs:3.0,fiber:0,ig:27},
+  {id:"smietana_18",name:"Śmietana 18%",cat:"nabial",kcal:185,protein:2.7,fat:18.0,carbs:3.4,fiber:0,ig:0},
+  {id:"smietanka_30",name:"Śmietanka 30%",cat:"nabial",kcal:292,protein:2.2,fat:30.0,carbs:3.0,fiber:0,ig:0},
+  {id:"jajko",name:"Jajko kurze",cat:"nabial",kcal:155,protein:12.6,fat:10.6,carbs:1.1,fiber:0,ig:0},
+  {id:"mozzarella",name:"Mozzarella",cat:"sery",kcal:280,protein:18.0,fat:22.0,carbs:2.2,fiber:0,ig:0},
+  {id:"cheddar",name:"Cheddar",cat:"sery",kcal:402,protein:25.0,fat:33.0,carbs:1.3,fiber:0,ig:0},
+  {id:"feta",name:"Feta",cat:"sery",kcal:264,protein:14.2,fat:21.3,carbs:4.1,fiber:0,ig:0},
+  {id:"parmezan",name:"Parmezan",cat:"sery",kcal:431,protein:38.0,fat:29.0,carbs:3.2,fiber:0,ig:0},
+  {id:"halloumi",name:"Halloumi",cat:"sery",kcal:321,protein:21.4,fat:25.0,carbs:2.0,fiber:0,ig:0},
+  {id:"piers_kur",name:"Filet z kurczaka",cat:"mieso",kcal:165,protein:31.0,fat:3.6,carbs:0,fiber:0,ig:0},
+  {id:"udko_kur",name:"Udko kurczaka",cat:"mieso",kcal:209,protein:25.1,fat:11.7,carbs:0,fiber:0,ig:0},
+  {id:"indyk",name:"Filet z indyka",cat:"mieso",kcal:157,protein:29.9,fat:3.2,carbs:0,fiber:0,ig:0},
+  {id:"wolowina",name:"Wołowina mielona",cat:"mieso",kcal:218,protein:20.7,fat:14.7,carbs:0,fiber:0,ig:0},
+  {id:"boczek",name:"Boczek",cat:"mieso",kcal:417,protein:12.6,fat:41.0,carbs:0.7,fiber:0,ig:0},
+  {id:"schab",name:"Schab wieprzowy",cat:"mieso",kcal:166,protein:21.7,fat:8.7,carbs:0,fiber:0,ig:0},
+  {id:"losos",name:"Łosoś świeży",cat:"ryby",kcal:208,protein:20.0,fat:13.0,carbs:0,fiber:0,ig:0},
+  {id:"tunczyk",name:"Tuńczyk w wodzie",cat:"ryby",kcal:86,protein:19.0,fat:0.5,carbs:0,fiber:0,ig:0},
+  {id:"makrela",name:"Makrela wędzona",cat:"ryby",kcal:305,protein:18.5,fat:25.1,carbs:0,fiber:0,ig:0},
+  {id:"sardynki",name:"Sardynki w oleju",cat:"ryby",kcal:208,protein:24.6,fat:11.5,carbs:0,fiber:0,ig:0},
+  {id:"dorsz",name:"Dorsz",cat:"ryby",kcal:82,protein:18.0,fat:0.7,carbs:0,fiber:0,ig:0},
+  {id:"losos_wedzony",name:"Łosoś wędzony",cat:"ryby",kcal:117,protein:18.3,fat:4.3,carbs:0,fiber:0,ig:0},
+  {id:"krewetki",name:"Krewetki",cat:"ryby",kcal:99,protein:20.3,fat:1.7,carbs:0.9,fiber:0,ig:0},
+  {id:"tofu_nat",name:"Tofu naturalne",cat:"roslinne",kcal:76,protein:8.1,fat:4.2,carbs:1.9,fiber:0.3,ig:15},
+  {id:"tempeh",name:"Tempeh",cat:"roslinne",kcal:193,protein:18.5,fat:10.8,carbs:9.4,fiber:4.1,ig:15},
+  {id:"edamame",name:"Edamame",cat:"roslinne",kcal:121,protein:11.9,fat:5.2,carbs:8.9,fiber:5.2,ig:18},
+  {id:"migdaly",name:"Migdały",cat:"orzechy",kcal:579,protein:21.2,fat:49.9,carbs:21.7,fiber:12.5,ig:15},
+  {id:"orzechy_wl",name:"Orzechy włoskie",cat:"orzechy",kcal:654,protein:15.2,fat:65.2,carbs:13.7,fiber:6.7,ig:15},
+  {id:"nasiona_chia",name:"Nasiona chia",cat:"orzechy",kcal:486,protein:16.5,fat:30.7,carbs:42.1,fiber:34.4,ig:1},
+  {id:"pestki_dyni",name:"Pestki dyni",cat:"orzechy",kcal:559,protein:30.2,fat:49.1,carbs:10.7,fiber:6.0,ig:25},
+  {id:"siemie",name:"Siemię lniane",cat:"orzechy",kcal:534,protein:18.3,fat:42.2,carbs:28.9,fiber:27.3,ig:35},
+  {id:"oliwa",name:"Oliwa z oliwek",cat:"tluszcze",kcal:884,protein:0,fat:100,carbs:0,fiber:0,ig:0},
+  {id:"maslo",name:"Masło",cat:"tluszcze",kcal:717,protein:0.9,fat:81.1,carbs:0.1,fiber:0,ig:0},
+  {id:"ghee",name:"Masło klarowane",cat:"tluszcze",kcal:900,protein:0,fat:99.8,carbs:0,fiber:0,ig:0},
+  {id:"olej_koko",name:"Olej kokosowy",cat:"tluszcze",kcal:862,protein:0,fat:100,carbs:0,fiber:0,ig:0},
+  {id:"kakao_nat",name:"Kakao naturalne",cat:"czekolada",kcal:228,protein:19.6,fat:13.7,carbs:57.9,fiber:37.0,ig:20},
+  {id:"czek_gorzka",name:"Czekolada gorzka 70%",cat:"czekolada",kcal:598,protein:7.8,fat:42.6,carbs:45.8,fiber:10.9,ig:25},
+  {id:"majonez",name:"Majonez",cat:"dodatki",kcal:680,protein:1.0,fat:75.0,carbs:3.0,fiber:0,ig:0},
+  {id:"musztarda",name:"Musztarda",cat:"dodatki",kcal:60,protein:4.4,fat:4.0,carbs:5.3,fiber:1.6,ig:0},
+  {id:"sos_sojowy",name:"Sos sojowy",cat:"dodatki",kcal:53,protein:8.1,fat:0.1,carbs:4.9,fiber:0.8,ig:0},
+  {id:"ocet_balsamiczny",name:"Ocet balsamiczny",cat:"dodatki",kcal:88,protein:0.5,fat:0,carbs:17.0,fiber:0,ig:0},
+];
+
+// ---------------------------------------------------------------------------
+// PRZEPISY
+// ---------------------------------------------------------------------------
+
+export const RECIPES: KreatorRecipe[] = [
+  // ═══ RYBY ═══
+  {
+    id: "losos_salatka",
+    match: (p) => p.cat === "ryby" && ["losos", "losos_wedzony"].includes(p.id),
+    name: (p) => `Sałatka z <em>${p.name}</em> i awokado`,
+    type: "Sałatka bez gotowania",
+    time: 10,
+    addIngredients: [
+      {ref:"salata", g:80},
+      {ref:"awokado", g:80},
+      {ref:"pomidor", g:100},
+      {ref:"oliwa", g:15},
+      {custom:"Sok z cytryny", g:10, cat:"dodatki"},
+    ],
+    steps: (p) => [
+      `Umyj i osusz <strong>sałatę</strong>. Ułóż na talerzu jako bazę.`,
+      `Pokrój <strong>${p.name}</strong> na cienkie plastry lub kawałki.`,
+      `Obierz i pokrój <strong>awokado</strong> w kostkę lub plastry. Pokrój <strong>pomidory</strong> w ćwiartki.`,
+      `Ułóż ${p.name}, awokado i pomidory na sałacie.`,
+      `Skrop <strong>oliwą z oliwek</strong> i sokiem z cytryny, dopraw solą i świeżo mielonym pieprzem.`,
+      `Podawaj od razu.`,
+    ],
+    tip: "Awokado kroi się najłatwiej tuż po wyjęciu z lodówki — jest wtedy twardsze i nie rozmazuje się pod nożem.",
+  },
+  {
+    id: "tunczyk_salatka",
+    match: (p) => p.id === "tunczyk",
+    name: () => `Sałatka z <em>tuńczykiem</em> i jajkiem`,
+    type: "Sałatka klasyczna",
+    time: 10,
+    addIngredients: [
+      {ref:"salata", g:80},
+      {ref:"jajko", g:110},
+      {ref:"pomidor", g:100},
+      {ref:"ogorek", g:80},
+      {ref:"oliwa", g:15},
+    ],
+    steps: () => [
+      `Ugotuj <strong>jajko</strong> na twardo (8–10 min), ostudź, obierz i pokrój w ćwiartki.`,
+      `Umyj i osusz <strong>sałatę</strong>. Pokrój <strong>pomidora</strong> i <strong>ogórka</strong> w plasterki.`,
+      `Odsącz <strong>tuńczyka</strong> z zalewy.`,
+      `Ułóż wszystko na talerzu: sałatę jako bazę, następnie warzywa, tuńczyka i jajko.`,
+      `Skrop <strong>oliwą</strong>, dopraw solą i pieprzem. Opcjonalnie dodaj kilka kropel soku z cytryny.`,
+    ],
+    tip: "Tuńczyk w wodzie jest chudszy i ma neutralny smak — idealny do sałatek, gdzie ważne są inne składniki.",
+  },
+  {
+    id: "losos_patelnia",
+    match: (p) => p.id === "losos",
+    name: (p) => `<em>${p.name}</em> z brokułem na parze`,
+    type: "Danie na patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"brokul", g:200},
+      {ref:"oliwa", g:15},
+      {ref:"maslo", g:10},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:15, cat:"dodatki"},
+    ],
+    steps: (p) => [
+      `Podziel <strong>brokuł</strong> na różyczki. Gotuj na parze lub blanszuj w osolonej wodzie przez 5–6 minut — powinien być lekko chrupiący.`,
+      `Osusz <strong>${p.name}</strong> papierowym ręcznikiem. Dopraw solą, pieprzem i skrop oliwą.`,
+      `Rozgrzej <strong>oliwę z oliwek</strong> z łyżką masła na patelni na średnio-mocnym ogniu.`,
+      `Smaż łososia skórą do dołu przez 4 minuty. Obróć i smaż kolejne 3–4 minuty.`,
+      `Na ostatnią minutę dodaj roztarty <strong>czosnek</strong> i skrop <strong>sokiem z cytryny</strong>.`,
+      `Podawaj łososia na brokule, polewając sosem z patelni.`,
+    ],
+    tip: "Łosoś jest gotowy, gdy środek zmienił kolor z ciemnoróżowego na jasnoróżowy. Nie przesmażaj — będzie suchy.",
+  },
+  {
+    id: "krewetki_bowl",
+    match: (p) => p.id === "krewetki",
+    name: () => `Bowl z <em>krewetkami</em> i awokado`,
+    type: "Bowl proteinowy",
+    time: 15,
+    addIngredients: [
+      {ref:"awokado", g:100},
+      {ref:"salata", g:70},
+      {ref:"pomidor", g:80},
+      {ref:"oliwa", g:15},
+      {custom:"Sok z limonki", g:15, cat:"dodatki"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozmroź <strong>krewetki</strong> (jeśli mrożone), osusz. Dopraw solą, pieprzem i czosnkiem.`,
+      `Smaż krewetki na <strong>oliwie</strong> przez 2–3 minuty z każdej strony, aż staną się różowe.`,
+      `Pokrój <strong>awokado</strong> w kostkę, <strong>pomidora</strong> w ćwiartki.`,
+      `W misie ułóż <strong>sałatę</strong>, następnie warzywa i krewetki.`,
+      `Skrop <strong>sokiem z limonki</strong> i oliwą. Dopraw do smaku.`,
+    ],
+    tip: "Krewetki są gotowe w sekundę po tym, jak zwijają się w literę C. W literę O = przesmażone.",
+  },
+  {
+    id: "krewetki_aglio_olio",
+    match: (p) => p.id === "krewetki",
+    name: () => `Spaghetti aglio e olio z <em>krewetkami</em>`,
+    type: "Makaron",
+    time: 20,
+    addIngredients: [
+      {custom:"Spaghetti pełnoziarniste 80 g", g:80, cat:"dodatki"},
+      {ref:"oliwa", g:25},
+      {custom:"Czosnek (4 ząbki)", g:16, cat:"warzywa"},
+      {custom:"Papryczka chili (szczypta)", g:2, cat:"dodatki"},
+      {ref:"natka", g:15},
+      {custom:"Skórka z cytryny", g:5, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Ugotuj <strong>spaghetti</strong> w osolonej wodzie al dente. Zostaw szklankę wody z gotowania.`,
+      `Na zimnej patelni wlej <strong>oliwę</strong> i wrzuć cienko pokrojony <strong>czosnek</strong> z chili. Włącz mały ogień.`,
+      `Gdy czosnek zacznie pachnieć (nie złocić!), dodaj <strong>krewetki</strong> i smaż 2 minuty.`,
+      `Wrzuć makaron z odrobiną wody z gotowania, energicznie wymieszaj — sos ma się zemulgować.`,
+      `Posyp <strong>natką</strong> i <strong>skórką z cytryny</strong>. Podawaj od razu.`,
+    ],
+    tip: "Klucz do aglio e olio: czosnek nigdy nie może się przypalić. Zaczynaj od zimnej oliwy.",
+  },
+  {
+    id: "krewetki_curry_kokos",
+    match: (p) => p.id === "krewetki",
+    name: () => `<em>Krewetki</em> w mleku kokosowym z curry`,
+    type: "Curry",
+    time: 25,
+    addIngredients: [
+      {custom:"Mleko kokosowe 200 ml", g:200, cat:"dodatki"},
+      {custom:"Pasta curry czerwona", g:25, cat:"dodatki"},
+      {ref:"papryka_cz", g:100},
+      {ref:"cebula", g:60},
+      {custom:"Czosnek + imbir", g:10, cat:"warzywa"},
+      {ref:"olej_koko", g:10},
+      {ref:"natka", g:10},
+      {custom:"Sok z limonki", g:10, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>cebulę</strong> i <strong>paprykę</strong> w paski. Posiekaj czosnek i imbir.`,
+      `Rozgrzej <strong>olej kokosowy</strong>, podsmaż cebulę 3 minuty, dodaj czosnek z imbirem.`,
+      `Dorzuć <strong>pastę curry</strong> i smaż 1 minutę aż zapachnie.`,
+      `Wlej <strong>mleko kokosowe</strong>, dodaj paprykę. Gotuj 5 minut.`,
+      `Wrzuć <strong>krewetki</strong> i gotuj 3 minuty, aż zrobią się różowe. Wykończ <strong>limonką</strong> i natką.`,
+      `Podawaj z ryżem jaśminowym lub samodzielnie jako lekkie danie.`,
+    ],
+    tip: "Krewetki dodaj na sam koniec — w gorącym sosie dochodzą w 2-3 minuty.",
+  },
+  {
+    id: "krewetki_zupa_tom_yum",
+    match: (p) => p.id === "krewetki",
+    name: () => `Tajska zupa <em>tom yum</em> z krewetkami`,
+    type: "Zupa",
+    time: 25,
+    addIngredients: [
+      {custom:"Bulion warzywny 700 ml", g:700, cat:"dodatki"},
+      {ref:"pieczarki", g:100},
+      {ref:"pomidor", g:120},
+      {custom:"Trawa cytrynowa (1 łodyga)", g:10, cat:"dodatki"},
+      {custom:"Liście kaffiru (3 szt.)", g:2, cat:"dodatki"},
+      {custom:"Imbir świeży (kciuk)", g:15, cat:"warzywa"},
+      {custom:"Sos rybny", g:10, cat:"dodatki"},
+      {custom:"Sok z limonki", g:20, cat:"dodatki"},
+      {custom:"Chili (1 sztuka)", g:5, cat:"dodatki"},
+      {ref:"natka", g:10},
+    ],
+    steps: () => [
+      `Zagotuj <strong>bulion</strong> z rozgnieciono <strong>trawą cytrynową</strong>, plastrami imbiru i liśćmi kaffiru. Gotuj 10 minut.`,
+      `Odcedź aromaty (lub zostaw — nie jada się ich, ale dają smak).`,
+      `Dodaj pokrojone <strong>pieczarki</strong> i <strong>pomidor</strong> w ósemkach. Gotuj 3 minuty.`,
+      `Wrzuć <strong>krewetki</strong> i pokrojone chili. Gotuj 2-3 minuty.`,
+      `Zdejmij z ognia, dopraw <strong>sosem rybnym</strong> i <strong>sokiem z limonki</strong>. Posyp natką.`,
+    ],
+    tip: "Tom yum dopraw POZA ogniem — gorące mleko/sok dają mniej kwasowy smak niż zimne.",
+  },
+  {
+    id: "krewetki_omlet",
+    match: (p) => p.id === "krewetki",
+    name: () => `<em>Omlet</em> z krewetkami i szczypiorkiem`,
+    type: "Śniadanie białkowe",
+    time: 12,
+    addIngredients: [
+      {ref:"jajko", g:150},
+      {ref:"szczypiorek", g:10},
+      {ref:"oliwa", g:10},
+      {custom:"Masło", g:10, cat:"tluszcze"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Roztrzep <strong>jajka</strong> z solą, pieprzem i posiekanym <strong>szczypiorkiem</strong>.`,
+      `Na <strong>oliwie</strong> z czosnkiem podsmaż <strong>krewetki</strong> 2 minuty z każdej strony. Odłóż.`,
+      `Na tej samej patelni rozpuść <strong>masło</strong>, wlej jajka. Smaż na małym ogniu.`,
+      `Gdy spód się zetnie, ułóż krewetki na połowie, złóż omlet na pół.`,
+      `Podawaj od razu, posypany dodatkowym szczypiorkiem.`,
+    ],
+    tip: "Omlet składaj, gdy wierzch jest jeszcze lekko mokry — dojdzie z resztkowego ciepła i zostanie puszysty.",
+  },
+  {
+    id: "krewetki_cezar",
+    match: (p) => p.id === "krewetki",
+    name: () => `Sałatka <em>Cezar</em> z krewetkami`,
+    type: "Sałatka klasyczna",
+    time: 20,
+    addIngredients: [
+      {ref:"salata", g:120},
+      {ref:"parmezan", g:20},
+      {custom:"Grzanki z ciemnego pieczywa", g:30, cat:"dodatki"},
+      {ref:"jajko", g:55},
+      {ref:"oliwa", g:20},
+      {custom:"Sok z cytryny", g:10, cat:"dodatki"},
+      {custom:"Anchois (2 filety)", g:10, cat:"ryby"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {ref:"musztarda", g:5},
+    ],
+    steps: () => [
+      `Ugotuj <strong>jajko</strong> 6 minut (półpłynne żółtko). Ostudź, obierz, przekrój.`,
+      `Zrób dressing: zmiksuj anchois, czosnek, musztardę, sok z cytryny, oliwę i 1 łyżkę wody.`,
+      `Smaż <strong>krewetki</strong> 2 minuty z każdej strony na rozgrzanej patelni z odrobiną oliwy.`,
+      `Porwij <strong>sałatę</strong> na talerz, polej dressingiem.`,
+      `Ułóż krewetki, jajko, <strong>grzanki</strong>. Posyp wiórami <strong>parmezanu</strong>.`,
+    ],
+    tip: "Klasyczny dressing Cezar zawiera anchois — nie czuć ich w smaku, ale dają charakterystyczne umami.",
+  },
+  {
+    id: "krewetki_grzanka_avocado",
+    match: (p) => p.id === "krewetki",
+    name: () => `Grzanka z <em>krewetkami</em> i awokado`,
+    type: "Tost gourmet",
+    time: 12,
+    addIngredients: [
+      {custom:"Pieczywo żytnie na zakwasie 2 kromki", g:80, cat:"dodatki"},
+      {ref:"awokado", g:80},
+      {ref:"oliwa", g:10},
+      {ref:"maslo", g:8},
+      {custom:"Sok z cytryny", g:8, cat:"dodatki"},
+      {custom:"Płatki chili", g:1, cat:"dodatki"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {ref:"szczypiorek", g:5},
+    ],
+    steps: () => [
+      `Opiecz <strong>kromki chleba</strong> na suchej patelni lub w tosterze do złotości.`,
+      `Rozgnieć <strong>awokado</strong> z sokiem z cytryny, solą i pieprzem.`,
+      `Na <strong>maśle</strong> z czosnkiem smaż <strong>krewetki</strong> 90 sekund z każdej strony.`,
+      `Posmaruj grzanki pastą z awokado, ułóż krewetki.`,
+      `Posyp <strong>szczypiorkiem</strong>, płatkami chili, skrop <strong>oliwą</strong>.`,
+    ],
+    tip: "Awokado nie utlenia się tak szybko, jeśli skropisz je sokiem z cytryny od razu po rozgnieceniu.",
+  },
+  {
+    id: "krewetki_risotto_cytrynowe",
+    match: (p) => p.id === "krewetki",
+    name: () => `Risotto cytrynowe z <em>krewetkami</em>`,
+    type: "Risotto",
+    time: 35,
+    addIngredients: [
+      {custom:"Ryż arborio 80 g", g:80, cat:"dodatki"},
+      {custom:"Bulion warzywny 600 ml", g:600, cat:"dodatki"},
+      {custom:"Białe wino wytrawne 50 ml", g:50, cat:"dodatki"},
+      {ref:"cebula", g:50},
+      {ref:"parmezan", g:20},
+      {ref:"maslo", g:15},
+      {ref:"oliwa", g:10},
+      {custom:"Skórka i sok z cytryny", g:15, cat:"dodatki"},
+      {ref:"natka", g:10},
+    ],
+    steps: () => [
+      `Drobno posiekaj <strong>cebulę</strong>. Podgrzej <strong>bulion</strong> w osobnym garnku.`,
+      `Na <strong>oliwie</strong> z masłem podsmaż cebulę 3 minuty. Dodaj <strong>ryż</strong> i podgrzewaj 2 minuty mieszając.`,
+      `Wlej <strong>wino</strong>, czekaj aż wyparuje. Dodawaj <strong>bulion</strong> chochlami, mieszając, ok. 18 minut.`,
+      `Pod koniec smaż <strong>krewetki</strong> na osobnej patelni 2 minuty z każdej strony.`,
+      `Risotto wykończ <strong>parmezanem</strong>, skórką i sokiem z cytryny. Ułóż krewetki na wierzchu, posyp natką.`,
+    ],
+    tip: "Risotto musi być al onda — falujące, kremowe, nie sztywne. Dodawaj bulion stopniowo i mieszaj cierpliwie.",
+  },
+
+  // ═══ MIĘSO ═══
+  {
+    id: "kurczak_salatka",
+    match: (p) => ["piers_kur", "indyk"].includes(p.id),
+    name: (p) => `Sałatka z <em>${p.name}</em> i warzywami`,
+    type: "Sałatka proteinowa",
+    time: 20,
+    addIngredients: [
+      {ref:"rukola", g:60},
+      {ref:"pomidor", g:100},
+      {ref:"papryka_cz", g:80},
+      {ref:"oliwa", g:15},
+      {custom:"Zioła prowansalskie", g:3, cat:"dodatki"},
+    ],
+    steps: (p) => [
+      `Dopraw <strong>${p.name}</strong> solą, pieprzem i ziołami prowansalskimi.`,
+      `Smaż na <strong>oliwie</strong> po 5–7 minut z każdej strony, aż się zrumieni i będzie w pełni ugotowana. Odłóż na 3 minuty i pokrój w plastry.`,
+      `Umyj <strong>rukolę</strong>. Pokrój <strong>pomidory</strong> w ćwiartki, <strong>paprykę</strong> w paski.`,
+      `Ułóż rukolę na talerzu, dodaj warzywa i pokrojone mięso.`,
+      `Skrop pozostałą <strong>oliwą</strong>, dopraw solą i pieprzem. Opcjonalnie dodaj sok z cytryny.`,
+    ],
+    tip: "Mięso przed pokrojeniem zawsze odpoczywa 2–3 minuty — soki równomiernie się rozchodzą i nie wylewają na deskę.",
+  },
+  {
+    id: "kurczak_patelnia",
+    match: (p) => p.id === "udko_kur",
+    name: () => `<em>Udka kurczaka</em> z cukiniową wstążką`,
+    type: "Danie na patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"cukinia", g:200},
+      {ref:"cebula", g:60},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Papryka wędzona + sól", g:3, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Dopraw <strong>udka</strong> solą, pieprzem i wędzoną papryką. Odłóż na 10 minut.`,
+      `Rozgrzej <strong>oliwę</strong> na patelni. Smaż udka po 8–10 minut z każdej strony na średnim ogniu.`,
+      `W tym czasie pokrój <strong>cukinię</strong> w długie, cienkie wstążki (użyj obieraczki lub mandoliny) i <strong>cebulę</strong> w półkola.`,
+      `Zdejmij udka, na tej samej patelni podsmaż cebulę przez 3 minuty, dodaj czosnek i cukinię. Smaż 3–4 minuty.`,
+      `Ułóż cukiniową wstążkę na talerzu, połóż udka z wierzchu.`,
+    ],
+    tip: "Cukinia puści wodę podczas smażenia — nie przykrywaj patelni, żeby nadmiar wilgoci mógł odparować.",
+  },
+  {
+    id: "wolowina_bowl",
+    match: (p) => p.id === "wolowina",
+    name: () => `Bowl z <em>wołowiną</em> i papryką`,
+    type: "Bowl mięsny",
+    time: 20,
+    addIngredients: [
+      {ref:"papryka_cz", g:120},
+      {ref:"pieczarki", g:100},
+      {ref:"cebula", g:60},
+      {ref:"oliwa", g:20},
+      {ref:"sos_sojowy", g:15},
+    ],
+    steps: () => [
+      `Pokrój <strong>paprykę</strong> w paski, <strong>pieczarki</strong> w plasterki, <strong>cebulę</strong> w półkola.`,
+      `Rozgrzej <strong>oliwę</strong> na woku lub dużej patelni na mocnym ogniu.`,
+      `Smaż <strong>wołowinę mieloną</strong> przez 5–6 minut, rozbijając grudki. Odsuń na bok.`,
+      `Na wolne miejsce wrzuć cebulę i pieczarki, smaż 3 minuty. Dodaj paprykę, smaż kolejne 2 minuty.`,
+      `Wszystko wymieszaj, polej <strong>sosem sojowym</strong>. Dopraw pieprzem.`,
+      `Podawaj w misie — samo lub z garścią rukoli na dnie.`,
+    ],
+    tip: "Sos sojowy zastępuje sól i dodaje głębi smaku — uważaj żeby nie dosolić dodatkowo.",
+  },
+  {
+    id: "boczek_omlet",
+    match: (p) => p.id === "boczek",
+    name: () => `Omlet z <em>boczkiem</em> i serem`,
+    type: "Omlet na patelni",
+    time: 12,
+    addIngredients: [
+      {ref:"jajko", g:220},
+      {ref:"cheddar", g:40},
+      {ref:"pieczarki", g:80},
+      {ref:"maslo", g:10},
+    ],
+    steps: () => [
+      `Pokrój <strong>boczek</strong> w paski. Smaż na suchej patelni na średnim ogniu przez 3–4 minuty, aż będzie chrupiący. Zdejmij i odłóż.`,
+      `Na tej samej patelni (z tłuszczem z boczku) podsmaż <strong>pieczarki</strong> przez 3 minuty.`,
+      `Roztrzep <strong>jajka</strong> z szczyptą soli i pieprzu.`,
+      `Dodaj łyżkę <strong>masła</strong>, wlej jajka. Na małym ogniu, delikatnie podwijaj brzegi szpatułką.`,
+      `Gdy jajka prawie się zetną, dodaj boczek i posyp <strong>cheddarem</strong>. Złóż omlet na pół.`,
+      `Zdejmij z ognia gdy ser zacznie się topić. Podawaj od razu.`,
+    ],
+    tip: "Boczek smażony bez tłuszczu na początku — jego własny tłuszcz jest wystarczający i bardziej aromatyczny.",
+  },
+
+  // ═══ NABIAŁ / JAJKA ═══
+  {
+    id: "jajko_omlet",
+    match: (p) => p.id === "jajko",
+    name: () => `<em>Omlet</em> z warzywami i fetą`,
+    type: "Omlet śniadaniowy",
+    time: 12,
+    addIngredients: [
+      {ref:"szpinak", g:60},
+      {ref:"pomidor", g:80},
+      {ref:"feta", g:40},
+      {ref:"maslo", g:10},
+    ],
+    steps: () => [
+      `Roztrzep <strong>jajka</strong> widelcem, dopraw solą i pieprzem.`,
+      `Umyj <strong>szpinak</strong>. Pokrój <strong>pomidora</strong> w kostkę. Pokrusz <strong>fetę</strong>.`,
+      `Rozgrzej <strong>masło</strong> na patelni na średnim ogniu.`,
+      `Wlej jajka. Gdy brzegi zaczynają ścinać, rozłóż szpinak, pomidora i fetę na połowie omletu.`,
+      `Delikatnie złóż omlet na pół. Zdejmij z ognia gdy środek jest jeszcze lekko wilgotny — dojdzie sam.`,
+      `Podawaj od razu, posypany świeżymi ziołami.`,
+    ],
+    tip: "Sekret miękkiego omletu: niski ogień i zdjęcie z patelni o 10 sekund za wcześnie. Reszta dorobi się sama.",
+  },
+  {
+    id: "jogurt_bowl",
+    match: (p) => ["jogurt_grecki", "jogurt_grecki_0"].includes(p.id),
+    name: (p) => `<em>${p.name}</em> z owocami i orzechami`,
+    type: "Śniadaniowy bowl",
+    time: 5,
+    addIngredients: [
+      {ref:"maliny", g:80},
+      {ref:"borowki", g:60},
+      {ref:"migdaly", g:25},
+      {ref:"nasiona_chia", g:10},
+    ],
+    steps: (p) => [
+      `Nałóż <strong>${p.name}</strong> do głębokiej miseczki.`,
+      `Opłucz <strong>maliny</strong> i <strong>borówki</strong>, osusz delikatnie.`,
+      `Ułóż owoce na jogurcie.`,
+      `Posyp <strong>migdałami</strong> i <strong>nasionami chia</strong>.`,
+      `Podawaj od razu lub schłodź przez 10–15 minut — nasiona chia trochę napęcznieją i bowl będzie bardziej kremowy.`,
+    ],
+    tip: "Nasiona chia warto namoczyć już wieczorem — rano masz gotowy, gęsty puding jako baza.",
+  },
+  {
+    id: "twarog_bowl",
+    match: (p) => ["twarog", "serek_wiej"].includes(p.id),
+    name: (p) => `Bowl z <em>${p.name}</em> i warzywami`,
+    type: "Lekki lunch",
+    time: 8,
+    addIngredients: [
+      {ref:"ogorek", g:80},
+      {ref:"rzodkiewka", g:50},
+      {ref:"szczypiorek", g:15},
+      {ref:"oliwa", g:10},
+    ],
+    steps: (p) => [
+      `Pokrój <strong>ogórka</strong> w plasterki, <strong>rzodkiewki</strong> w plasterki lub ćwiartki.`,
+      `Posiekaj <strong>szczypiorek</strong>.`,
+      `Nałóż <strong>${p.name}</strong> do miseczki, ułóż warzywa dookoła lub na wierzchu.`,
+      `Posyp szczypiorkiem, skrop <strong>oliwą z oliwek</strong>.`,
+      `Dopraw solą i pieprzem. Podawaj z pieczywem keto lub samo.`,
+    ],
+    tip: "Twaróg warto wyjąć z lodówki 15 minut przed podaniem — w temperaturze pokojowej ma kremową konsystencję.",
+  },
+
+  // ═══ WARZYWA ═══
+  {
+    id: "awokado_salatka",
+    match: (p) => p.id === "awokado",
+    name: () => `Sałatka z <em>awokado</em> i rukolą`,
+    type: "Sałatka bez gotowania",
+    time: 8,
+    addIngredients: [
+      {ref:"rukola", g:60},
+      {ref:"pomidor", g:100},
+      {ref:"feta", g:50},
+      {ref:"oliwa", g:15},
+      {custom:"Sok z cytryny", g:15, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Obierz <strong>awokado</strong>, usuń pestkę, pokrój w plastry lub kostkę.`,
+      `Umyj <strong>rukolę</strong>. Pokrój <strong>pomidory</strong> w ćwiartki.`,
+      `Pokrusz <strong>fetę</strong>.`,
+      `Ułóż rukolę na talerzu, dodaj pomidory, awokado i fetę.`,
+      `Skrop <strong>oliwą z oliwek</strong> i sokiem z cytryny, dopraw solą i pieprzem.`,
+    ],
+    tip: "Awokado ciemnieje po przekrojeniu — skrop od razu sokiem z cytryny lub limonki, żeby zachowało kolor.",
+  },
+  {
+    id: "brokul_bowl",
+    match: (p) => p.id === "brokul",
+    name: () => `Warm bowl z <em>brokułem</em> i jajkiem`,
+    type: "Ciepły bowl",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:110},
+      {ref:"pieczarki", g:100},
+      {ref:"oliwa", g:15},
+      {ref:"parmezan", g:20},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Podziel <strong>brokuł</strong> na różyczki. Blanszuj w osolonej wodzie przez 4–5 minut.`,
+      `Ugotuj <strong>jajko</strong> w koszulce lub na miękko (6 min).`,
+      `Podsmaż <strong>pieczarki</strong> z czosnkiem na <strong>oliwie</strong> przez 4 minuty.`,
+      `Ułóż brokuł i pieczarki w misce.`,
+      `Połóż jajko na wierzchu, posyp startym <strong>parmezanem</strong>.`,
+      `Skrop łyżką oliwy, dopraw solą i pieprzem.`,
+    ],
+    tip: "Brokuł zachowuje piękny zielony kolor jeśli po blanszowaniu wrzucisz go od razu do zimnej wody z lodem.",
+  },
+  {
+    id: "pieczarki_omlet",
+    match: (p) => p.id === "pieczarki",
+    name: () => `Omlet z <em>pieczarkami</em> i cheddarem`,
+    type: "Omlet",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:220},
+      {ref:"cheddar", g:40},
+      {ref:"cebula", g:50},
+      {ref:"maslo", g:12},
+    ],
+    steps: () => [
+      `Pokrój <strong>pieczarki</strong> w plasterki, <strong>cebulę</strong> w drobną kostkę.`,
+      `Rozgrzej <strong>masło</strong> na patelni. Podsmaż cebulę przez 2 minuty, dodaj pieczarki i smaż kolejne 4–5 minut aż odparuje woda.`,
+      `Roztrzep <strong>jajka</strong>, dopraw solą i pieprzem.`,
+      `Wlej jajka do pieczarek na patelni. Na małym ogniu, delikatnie podwijaj brzegi.`,
+      `Gdy jajka prawie gotowe, posyp <strong>cheddarem</strong>. Złóż omlet lub zostaw w formie placka.`,
+      `Zdejmij gdy ser się stopi. Podawaj z garścią zielonych liści.`,
+    ],
+    tip: "Pieczarki tracą objętość podczas smażenia o ok. 60% — nie żałuj ich na początku.",
+  },
+
+  // ═══ SERY ═══
+  {
+    id: "halloumi_salatka",
+    match: (p) => p.id === "halloumi",
+    name: () => `Sałatka z <em>halloumi</em> z grilla`,
+    type: "Sałatka z grillowanym serem",
+    time: 15,
+    addIngredients: [
+      {ref:"rukola", g:70},
+      {ref:"pomidor", g:100},
+      {ref:"awokado", g:80},
+      {ref:"oliwa", g:15},
+      {custom:"Sok z cytryny + zioła", g:10, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>halloumi</strong> w plastry grubości ok. 1 cm.`,
+      `Grilluj lub smaż na suchej patelni po 2–3 minuty z każdej strony, aż pojawią się złote pasy.`,
+      `Umyj <strong>rukolę</strong>. Pokrój <strong>pomidory</strong> i <strong>awokado</strong>.`,
+      `Ułóż rukolę na talerzu, dodaj warzywa i plastry halloumi.`,
+      `Skrop <strong>oliwą</strong> i sokiem z cytryny.`,
+    ],
+    tip: "Halloumi nie topi się podczas smażenia — to jedyny ser, który możesz spokojnie grillować bez formy.",
+  },
+  {
+    id: "feta_bowl",
+    match: (p) => p.id === "feta",
+    name: () => `Bowl z <em>fetą</em>, ogórkiem i pomidorem`,
+    type: "Lekki bowl śródziemnomorski",
+    time: 8,
+    addIngredients: [
+      {ref:"ogorek", g:100},
+      {ref:"pomidor", g:100},
+      {ref:"oliwa", g:15},
+      {ref:"orzechy_wl", g:20},
+      {custom:"Oregano + sok z cytryny", g:5, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> i <strong>pomidory</strong> w kostkę lub grube plastry.`,
+      `Ułóż warzywa w misce.`,
+      `Pokrusz <strong>fetę</strong> na wierzch.`,
+      `Posyp <strong>orzechami włoskimi</strong> i oregano.`,
+      `Skrop <strong>oliwą z oliwek</strong> i sokiem z cytryny. Dopraw solą i pieprzem.`,
+    ],
+    tip: "To klasyczna sałatka grecka — najlepsza gdy składniki są bardzo świeże i w temperaturze pokojowej.",
+  },
+
+  // ═══ OWOCE ═══
+  {
+    id: "owoce_bowl",
+    match: (p) => ["truskawki", "maliny", "borowki"].includes(p.id),
+    name: (p) => `Bowl z <em>${p.name}</em> i jogurtem`,
+    type: "Śniadaniowy bowl",
+    time: 5,
+    addIngredients: [
+      {ref:"jogurt_grecki", g:150},
+      {ref:"migdaly", g:20},
+      {ref:"nasiona_chia", g:10},
+      {custom:"Kilka listków mięty", g:3, cat:"warzywa"},
+    ],
+    steps: (p) => [
+      `Opłucz <strong>${p.name}</strong> i osusz delikatnie.`,
+      `Nałóż <strong>jogurt grecki</strong> do miseczki.`,
+      `Ułóż ${p.name} na jogurcie.`,
+      `Posyp <strong>migdałami</strong> i <strong>nasionami chia</strong>.`,
+      `Udekoruj listkami mięty. Podawaj od razu.`,
+    ],
+    tip: "Chia po 5 minutach kontaktu z jogurtem zaczyna pęcznieć — bowl będzie gęstszy im dłużej czekasz.",
+  },
+
+  // ═══ ROŚLINNE ═══
+  {
+    id: "tofu_stir",
+    match: (p) => p.id === "tofu_nat",
+    name: () => `Stir-fry z <em>tofu</em> i warzywami`,
+    type: "Danie smażone",
+    time: 20,
+    addIngredients: [
+      {ref:"brokul", g:150},
+      {ref:"papryka_cz", g:100},
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek + imbir", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Osusz <strong>tofu</strong> ręcznikiem papierowym, pokrój w kostkę. Im bardziej suche, tym lepiej się przyrumieni.`,
+      `Smaż tofu na <strong>oliwie</strong> na mocnym ogniu przez 4–5 minut z każdej strony, aż będzie złote.`,
+      `Dodaj <strong>brokuł</strong> podzielony na różyczki i <strong>paprykę</strong> w paski. Smaż 4 minuty.`,
+      `Dodaj czosnek i imbir, smaż 1 minutę.`,
+      `Polej <strong>sosem sojowym</strong>, wymieszaj. Smaż jeszcze 2 minuty.`,
+      `Podawaj od razu.`,
+    ],
+    tip: "Suche tofu = chrupiące tofu. Przed smażeniem owiń je w papierowy ręcznik i połóż ciężką deskę na 15 minut.",
+  },
+
+  // ═══ CZEKOLADA ═══
+  {
+    id: "czekolada_przekaska",
+    match: (p) => p.cat === "czekolada",
+    name: (p) => `Przekąska z <em>${p.name}</em> i orzechami`,
+    type: "Szybka przekąska",
+    time: 5,
+    addIngredients: [
+      {ref:"migdaly", g:30},
+      {ref:"orzechy_wl", g:20},
+      {ref:"jogurt_grecki", g:100},
+    ],
+    steps: (p) => [
+      `Nałóż <strong>jogurt grecki</strong> do miseczki.`,
+      `Pokrusz lub posiekaj <strong>${p.name}</strong> na kawałki.`,
+      `Posyp jogurt <strong>migdałami</strong>, <strong>orzechami włoskimi</strong> i czekoladą.`,
+      `Podawaj od razu lub wstaw do lodówki na 10 minut.`,
+    ],
+    tip: "Gorzka czekolada powyżej 70% kakao to jedyny słodycz, który może pojawiać się w diecie low carb — w rozsądnych ilościach.",
+  },
+
+  // ═══ CUKINIA ═══
+  {
+    id: "cukinia_grill",
+    match: (p) => p.id === "cukinia",
+    name: () => `<em>Cukinia z grilla</em> z fetą i miętą`,
+    type: "Grillowane warzywa",
+    time: 15,
+    addIngredients: [
+      {ref:"feta", g:60},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Świeża mięta lub bazylia", g:5, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:10, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>cukinię</strong> wzdłuż na plastry grubości ok. 5–7 mm.`,
+      `Posmaruj plastry <strong>oliwą</strong>, dopraw solą, pieprzem i rozgniecionym czosnkiem.`,
+      `Grilluj na mocno rozgrzanej patelni grillowej lub grillu po 3–4 minuty z każdej strony, aż pojawią się wyraźne pasy.`,
+      `Ułóż gotowe plastry na talerzu, pokrusz na wierzch <strong>fetę</strong>.`,
+      `Skrop sokiem z cytryny, posyp posiekaną <strong>miętą lub bazylią</strong>.`,
+      `Podawaj ciepłe lub w temperaturze pokojowej.`,
+    ],
+    tip: "Patelnia grillowa musi być naprawdę gorąca — wtedy cukinia się grilluje, a nie gotuje na parze.",
+  },
+  {
+    id: "cukinia_faszerowana",
+    match: (p) => p.id === "cukinia",
+    name: () => `<em>Cukinia faszerowana</em> mięsem i warzywami`,
+    type: "Danie pieczone",
+    time: 40,
+    addIngredients: [
+      {ref:"wolowina", g:150},
+      {ref:"pomidor", g:100},
+      {ref:"cebula", g:60},
+      {ref:"mozzarella", g:60},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 190°C. Przekrój <strong>cukinię</strong> wzdłuż na pół, wydrąż środek łyżką zostawiając ścianki grubości ok. 1 cm. Miąższ zachowaj.`,
+      `Podsmaż <strong>cebulę</strong> na <strong>oliwie</strong> przez 3 minuty. Dodaj czosnek i miąższ cukinii, smaż kolejne 2 minuty.`,
+      `Dodaj <strong>wołowinę mieloną</strong>, smaż rozbijając grudki przez 5–6 minut. Dodaj pokrojone <strong>pomidory</strong>, dopraw solą i pieprzem.`,
+      `Napełnij połówki cukinii farszem. Ułóż w naczyniu do pieczenia.`,
+      `Posyp startą <strong>mozzarellą</strong>. Piecz 20–25 minut aż ser się zrumieni.`,
+      `Podawaj od razu, posypane świeżymi ziołami.`,
+    ],
+    tip: "Faszerowana cukinia to gotowe danie w jednym naczyniu — żadnych dodatków nie potrzeba.",
+  },
+  {
+    id: "cukinia_pieczona_ser",
+    match: (p) => p.id === "cukinia",
+    name: () => `<em>Cukinia pieczona</em> z parmezanem i czosnkiem`,
+    type: "Zapiekanka",
+    time: 25,
+    addIngredients: [
+      {ref:"parmezan", g:40},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Tymianek lub oregano", g:3, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 200°C. Pokrój <strong>cukinię</strong> w plastry lub słupki.`,
+      `Wymieszaj w misce z <strong>oliwą</strong>, rozgniecionym czosnkiem, solą, pieprzem i tymiankiem.`,
+      `Rozłóż na blasze wyłożonej papierem do pieczenia w jednej warstwie — to ważne, żeby nie parowała.`,
+      `Posyp obficie startym <strong>parmezanem</strong>.`,
+      `Piecz 18–22 minuty aż brzegi będą złote i chrupiące, a parmezan zarumieniony.`,
+      `Podawaj od razu jako dodatek lub samodzielna przekąska.`,
+    ],
+    tip: "Jedna warstwa na blasze to klucz — cukinia ułożona na sobie paruje i robi się miękka zamiast chrupiącej.",
+  },
+  {
+    id: "cukinia_leczo",
+    match: (p) => p.id === "cukinia",
+    name: () => `<em>Leczo</em> z cukinii z papryką`,
+    type: "Duszone warzywa",
+    time: 30,
+    addIngredients: [
+      {ref:"papryka_cz", g:150},
+      {ref:"pomidor", g:200},
+      {ref:"cebula", g:80},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Papryka słodka + kminek", g:4, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>cebulę</strong> w półkola, <strong>paprykę</strong> w paski, <strong>cukinię</strong> w półplasterki, <strong>pomidory</strong> w kostkę.`,
+      `Podsmaż cebulę na <strong>oliwie</strong> przez 4 minuty na średnim ogniu.`,
+      `Dodaj paprykę i czosnek, smaż 3 minuty. Dodaj mieloną paprykę i kminek, smaż 1 minutę.`,
+      `Dodaj cukinię i pomidory. Wymieszaj, przykryj i duś na małym ogniu przez 15 minut.`,
+      `Zdejmij pokrywkę, gotuj jeszcze 5 minut żeby sos zgęstniał. Dopraw solą i pieprzem.`,
+      `Podawaj samo lub z jajkiem sadzonym na wierzchu.`,
+    ],
+    tip: "Leczo jest lepsze na drugi dzień — smaki się przegryzają. Warto zrobić większą porcję.",
+  },
+  {
+    id: "cukinia_zupa",
+    match: (p) => p.id === "cukinia",
+    name: () => `Krem z <em>cukinii</em> z parmezanem`,
+    type: "Zupa krem",
+    time: 25,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"parmezan", g:30},
+      {ref:"smietanka_30", g:50},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Bulion warzywny 300ml", g:300, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>cebulę</strong> w kostkę, <strong>cukinię</strong> w plastry. Podsmaż cebulę na <strong>oliwie</strong> przez 3 minuty.`,
+      `Dodaj czosnek i cukinię, smaż 3 minuty.`,
+      `Zalej <strong>bulionem</strong>, gotuj pod przykryciem 12 minut aż cukinia będzie miękka.`,
+      `Dodaj <strong>śmietankę</strong> i zblenduj do gładkości.`,
+      `Dopraw solą i pieprzem. Podawaj posypany startym <strong>parmezanem</strong> i skropiony oliwą.`,
+    ],
+    tip: "Im mniej wody, tym bardziej intensywny smak kremu — bulion daje głębię, której sama woda nie zastąpi.",
+  },
+
+  // ═══ SZPINAK ═══
+  {
+    id: "szpinak_omlet",
+    match: (p) => p.id === "szpinak",
+    name: () => `Omlet ze <em>szpinakiem</em> i czosnkiem`,
+    type: "Omlet śniadaniowy",
+    time: 12,
+    addIngredients: [
+      {ref:"jajko", g:220},
+      {ref:"cheddar", g:40},
+      {ref:"maslo", g:10},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Roztrzep <strong>jajka</strong> z szczyptą soli i pieprzu.`,
+      `Rozgrzej <strong>masło</strong> na patelni, wrzuć roztarty czosnek — smaż 30 sekund.`,
+      `Dodaj <strong>szpinak</strong>, mieszaj aż zwiędnie (ok. 2 minuty).`,
+      `Wlej jajka, na małym ogniu podwijaj brzegi szpatułką.`,
+      `Gdy jajka prawie gotowe, posyp <strong>cheddarem</strong>. Złóż omlet na pół.`,
+      `Zdejmij gdy ser się stopi. Podawaj od razu.`,
+    ],
+    tip: "Szpinak traci 80% objętości po podgrzaniu — nie żałuj go na patelni.",
+  },
+  {
+    id: "szpinak_zupa",
+    match: (p) => p.id === "szpinak",
+    name: () => `Krem ze <em>szpinaku</em> z gałką muszkatołową`,
+    type: "Zupa krem",
+    time: 20,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"smietanka_30", g:60},
+      {ref:"maslo", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Bulion warzywny 300ml", g:300, cat:"dodatki"},
+      {custom:"Gałka muszkatołowa", g:2, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Podsmaż <strong>cebulę</strong> na <strong>maśle</strong> przez 4 minuty. Dodaj czosnek, smaż 1 minutę.`,
+      `Dodaj <strong>szpinak</strong> i <strong>bulion</strong>. Gotuj 5 minut.`,
+      `Dodaj <strong>śmietankę</strong> i zblenduj do gładkości.`,
+      `Dopraw solą, pieprzem i startą <strong>gałką muszkatołową</strong>.`,
+      `Podawaj z kleksem śmietanki.`,
+    ],
+    tip: "Gałka muszkatołowa to klasyczny partner szpinaku — wystarczy szczypta żeby wyciągnąć głębię smaku.",
+  },
+  {
+    id: "szpinak_zapiekanka",
+    match: (p) => p.id === "szpinak",
+    name: () => `Zapiekanka ze <em>szpinakiem</em> i ricottą`,
+    type: "Zapiekanka",
+    time: 30,
+    addIngredients: [
+      {ref:"ricotta", g:150},
+      {ref:"parmezan", g:40},
+      {ref:"jajko", g:110},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 190°C. Podsmaż <strong>szpinak</strong> z czosnkiem na <strong>oliwie</strong> przez 3 minuty. Ostudź.`,
+      `Wymieszaj <strong>ricottę</strong> z roztrzepanym <strong>jajkiem</strong>, solą i pieprzem.`,
+      `Dodaj szpinak do masy ricotty, wymieszaj.`,
+      `Przełóż do naczynia do pieczenia, posyp startym <strong>parmezanem</strong>.`,
+      `Piecz 20 minut aż wierzch będzie złoty.`,
+    ],
+    tip: "Ricotta po upieczeniu robi się zwarta i kremowa — idealna baza do zapiekanek bez makaronu.",
+  },
+
+  // ═══ KALAFIOR ═══
+  {
+    id: "kalafior_ryz",
+    match: (p) => p.id === "kalafior",
+    name: () => `<em>Ryż</em> z kalafiora z jajkiem`,
+    type: "Zamiennik ryżu",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:110},
+      {ref:"cebula", g:60},
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Zetrzyj <strong>kalafior</strong> na tarce lub zblenduj pulsacyjnie — ma wyglądać jak ryż.`,
+      `Podsmaż <strong>cebulę</strong> na <strong>oliwie</strong> przez 3 minuty. Dodaj czosnek.`,
+      `Dodaj kalafiorowy ryż, smaż 5 minut mieszając aż lekko zbrązowieje.`,
+      `Zsuń na bok, wbij <strong>jajko</strong> i szybko mieszaj aż się zetnie.`,
+      `Wymieszaj wszystko, polej <strong>sosem sojowym</strong>. Dopraw pieprzem.`,
+    ],
+    tip: "Kluczem do suchego ryżu z kalafiora jest wysoka temperatura — wilgoć musi odparować, nie gotować się.",
+  },
+  {
+    id: "kalafior_pieczony",
+    match: (p) => p.id === "kalafior",
+    name: () => `<em>Kalafior pieczony</em> z parmezanem`,
+    type: "Warzywa pieczone",
+    time: 30,
+    addIngredients: [
+      {ref:"parmezan", g:40},
+      {ref:"oliwa", g:25},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Papryka wędzona + kurkuma", g:4, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 220°C. Podziel <strong>kalafior</strong> na różyczki.`,
+      `Wymieszaj z <strong>oliwą</strong>, czosnkiem, wędzoną papryką i kurkumą. Dopraw solą.`,
+      `Rozłóż na blasze w jednej warstwie.`,
+      `Piecz 20 minut, obróć, posyp <strong>parmezanem</strong> i piecz jeszcze 8 minut.`,
+      `Podawaj od razu — z jogurtem czosnkowym lub samodzielnie.`,
+    ],
+    tip: "Kurkuma daje kalafioru piękny złoty kolor i przeciwzapalny bonus.",
+  },
+  {
+    id: "kalafior_zupa",
+    match: (p) => p.id === "kalafior",
+    name: () => `Krem z <em>kalafiora</em> z masłem`,
+    type: "Zupa krem",
+    time: 25,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"maslo", g:20},
+      {ref:"smietanka_30", g:60},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Bulion warzywny 400ml", g:400, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Podsmaż <strong>cebulę</strong> na <strong>maśle</strong> przez 4 minuty. Dodaj czosnek.`,
+      `Dodaj <strong>kalafior</strong> w różyczkach i <strong>bulion</strong>. Gotuj 15 minut.`,
+      `Dodaj <strong>śmietankę</strong>, zblenduj na gładki krem.`,
+      `Dopraw solą i białym pieprzem. Podawaj z kleksem masła i szczypiorkiem.`,
+    ],
+    tip: "Krem z kalafiora jest naturalnie gęsty bez żadnych zagęszczaczy — sam kalafior robi robotę.",
+  },
+
+  // ═══ PAPRYKA ═══
+  {
+    id: "papryka_faszerowana",
+    match: (p) => p.id === "papryka_cz",
+    name: () => `<em>Papryka faszerowana</em> mięsem i serem`,
+    type: "Danie pieczone",
+    time: 40,
+    addIngredients: [
+      {ref:"wolowina", g:150},
+      {ref:"cebula", g:60},
+      {ref:"cheddar", g:50},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Koncentrat pomidorowy 1 łyżka", g:20, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 190°C. Odetnij czubek <strong>papryki</strong>, usuń gniazdo nasienne.`,
+      `Podsmaż <strong>cebulę</strong> na <strong>oliwie</strong>, dodaj czosnek i <strong>wołowinę</strong>. Smaż 6 minut.`,
+      `Dodaj koncentrat pomidorowy, dopraw solą i pieprzem. Wymieszaj.`,
+      `Napełnij papryki farszem, ustaw w naczyniu do pieczenia.`,
+      `Posyp <strong>cheddarem</strong>. Piecz 25 minut.`,
+    ],
+    tip: "Paprykę możesz zblanszować 3 minuty przed faszerowaniem — będzie miękka po krótszym pieczeniu.",
+  },
+  {
+    id: "papryka_zupa",
+    match: (p) => p.id === "papryka_cz",
+    name: () => `Krem z <em>pieczonej papryki</em>`,
+    type: "Zupa krem",
+    time: 35,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"oliwa", g:20},
+      {ref:"smietanka_30", g:60},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+      {custom:"Bulion warzywny 300ml", g:300, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 220°C. Połóż <strong>paprykę</strong> na blasze, skrop oliwą. Piecz 25 minut aż skórka sczernieje.`,
+      `Włóż do woreczka na 10 minut — para ułatwi obieranie. Obierz i usuń gniazdo.`,
+      `Podsmaż <strong>cebulę</strong> z czosnkiem na <strong>oliwie</strong>.`,
+      `Dodaj upieczoną paprykę i <strong>bulion</strong>. Gotuj 5 minut, zblenduj.`,
+      `Dodaj <strong>śmietankę</strong>, dopraw. Podawaj z kleksem śmietany.`,
+    ],
+    tip: "Pieczenie papryki aż do czarnej skórki to nie błąd — miąższ pod spodem robi się słodki i dymny.",
+  },
+  {
+    id: "papryka_stir",
+    match: (p) => p.id === "papryka_cz",
+    name: () => `Stir-fry z <em>papryką</em> i kurczakiem`,
+    type: "Danie smażone",
+    time: 20,
+    addIngredients: [
+      {ref:"piers_kur", g:150},
+      {ref:"cebula", g:60},
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek + imbir", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>filet z kurczaka</strong> w cienkie paski, <strong>paprykę</strong> i <strong>cebulę</strong> w paski.`,
+      `Smaż kurczaka na mocnym ogniu przez 4 minuty. Odłóż.`,
+      `Na tej samej patelni smaż cebulę 2 minuty, dodaj paprykę — 3 minuty.`,
+      `Dodaj czosnek i imbir, smaż 1 minutę. Wrzuć z powrotem kurczaka.`,
+      `Polej <strong>sosem sojowym</strong>, wymieszaj. Podawaj od razu.`,
+    ],
+    tip: "Stir-fry wymaga najwyższego ognia jaki masz — to smaż, nie duś.",
+  },
+
+  // ═══ BAKŁAŻAN ═══
+  {
+    id: "baklakan_pieczony",
+    match: (p) => p.id === "baklakan",
+    name: () => `<em>Bakłażan pieczony</em> z fetą i ziołami`,
+    type: "Warzywa pieczone",
+    time: 35,
+    addIngredients: [
+      {ref:"feta", g:60},
+      {ref:"oliwa", g:25},
+      {ref:"pomidor", g:100},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Oregano + tymianek", g:4, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 200°C. Przekrój <strong>bakłażan</strong> wzdłuż na pół, natnij miąższ w kratkę.`,
+      `Posmaruj <strong>oliwą</strong> z czosnkiem i oregano. Dopraw solą.`,
+      `Piecz 25 minut miąższem do dołu, potem obróć i piecz 5 minut.`,
+      `Ułóż na wierzchu pokrojone <strong>pomidory</strong> i pokruszoną <strong>fetę</strong>.`,
+      `Piecz jeszcze 5 minut. Posyp tymiankiem i skrop oliwą.`,
+    ],
+    tip: "Nacięcie w kratkę pozwala oliwie i przyprawom wniknąć głęboko w miąższ.",
+  },
+  {
+    id: "baklakan_duszony",
+    match: (p) => p.id === "baklakan",
+    name: () => `<em>Bakłażan</em> duszony z pomidorami`,
+    type: "Danie duszone",
+    time: 30,
+    addIngredients: [
+      {ref:"pomidor", g:200},
+      {ref:"cebula", g:80},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+      {custom:"Bazylia + oregano", g:5, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>bakłażan</strong> w kostkę, posól i odłóż na 10 minut — wypuści wodę i goryczkę.`,
+      `Osusz papierowym ręcznikiem. Podsmaż na <strong>oliwie</strong> na złoto — ok. 6 minut.`,
+      `Dodaj <strong>cebulę</strong> i czosnek, smaż 3 minuty.`,
+      `Dodaj pokrojone <strong>pomidory</strong>. Duś pod przykryciem 15 minut.`,
+      `Dopraw solą, pieprzem i świeżą <strong>bazylią</strong>.`,
+    ],
+    tip: "Solenie bakłażana przed smażeniem naprawdę redukuje goryczkę i zużycie oleju.",
+  },
+  {
+    id: "baklakan_zapiekanka",
+    match: (p) => p.id === "baklakan",
+    name: () => `Zapiekanka z <em>bakłażana</em> i mozzarelli`,
+    type: "Zapiekanka",
+    time: 40,
+    addIngredients: [
+      {ref:"mozzarella", g:120},
+      {ref:"pomidor", g:150},
+      {ref:"oliwa", g:20},
+      {ref:"parmezan", g:30},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Bazylia świeża", g:5, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 190°C. Pokrój <strong>bakłażan</strong> w plastry, posól, odłóż 10 minut, osusz.`,
+      `Obsmaż plastry na <strong>oliwie</strong> po 2 minuty z każdej strony.`,
+      `W naczyniu układaj warstwy: bakłażan, plastry <strong>pomidora</strong>, plastry <strong>mozzarelli</strong>.`,
+      `Posyp czosnkiem, solą i pieprzem między warstwami.`,
+      `Posyp <strong>parmezanem</strong>, piecz 20 minut. Przed podaniem posyp świeżą <strong>bazylią</strong>.`,
+    ],
+    tip: "To low carb wersja parmigiana — bez panierki, bez makaronu, za to z całym smakiem.",
+  },
+
+  // ═══ KAPUSTA PEKIŃSKA ═══
+  {
+    id: "kapusta_stir",
+    match: (p) => p.id === "kapusta_pek",
+    name: () => `Stir-fry z <em>kapustą pekińską</em> i jajkiem`,
+    type: "Danie smażone",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:110},
+      {ref:"cebula", g:60},
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek + imbir", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>kapustę pekińską</strong> w paski — białe łodygi osobno, zielone liście osobno.`,
+      `Rozgrzej <strong>oliwę</strong> na woku. Wrzuć łodygi, smaż 2 minuty.`,
+      `Dodaj czosnek, imbir i <strong>cebulę</strong>, smaż 2 minuty. Dodaj liście — 1 minuta.`,
+      `Zsuń warzywa na bok, wbij <strong>jajko</strong> i szybko mieszaj.`,
+      `Połącz wszystko, polej <strong>sosem sojowym</strong>.`,
+    ],
+    tip: "Łodygi i liście kapusty pekińskiej mają różny czas gotowania — wrzucaj je osobno.",
+  },
+  {
+    id: "kapusta_salatka_ciepla",
+    match: (p) => p.id === "kapusta_pek",
+    name: () => `Ciepła sałatka z <em>kapusty pekińskiej</em> i boczkiem`,
+    type: "Ciepła sałatka",
+    time: 15,
+    addIngredients: [
+      {ref:"boczek", g:80},
+      {ref:"orzechy_wl", g:25},
+      {ref:"oliwa", g:10},
+      {custom:"Ocet jabłkowy 1 łyżka", g:15, cat:"dodatki"},
+      {custom:"Musztarda 1 łyżeczka", g:8, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>boczek</strong> w paski, smaż na suchej patelni aż będzie chrupiący.`,
+      `Poszatkuj <strong>kapustę pekińską</strong>, ułóż w misce.`,
+      `Na tłuszczu z boczku podsmaż <strong>orzechy włoskie</strong> przez 2 minuty.`,
+      `Wymieszaj ocet, musztardę i łyżkę oliwy — to sos.`,
+      `Polej kapustę gorącym tłuszczem z boczku, dodaj boczek, orzechy i sos. Wymieszaj.`,
+    ],
+    tip: "Gorący tłuszcz z boczku podany na kapustę lekko ją podwędza — technika prosto z kuchni alzackiej.",
+  },
+
+  // ═══ POMIDOR ═══
+  {
+    id: "pomidor_zupa",
+    match: (p) => p.id === "pomidor",
+    name: () => `Krem z <em>pomidorów</em> z bazylią`,
+    type: "Zupa krem",
+    time: 25,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"smietanka_30", g:60},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+      {custom:"Bazylia świeża", g:8, cat:"warzywa"},
+      {custom:"Bulion warzywny 200ml", g:200, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Podsmaż <strong>cebulę</strong> na <strong>oliwie</strong> przez 5 minut. Dodaj czosnek.`,
+      `Dodaj pokrojone <strong>pomidory</strong> i <strong>bulion</strong>. Gotuj 15 minut.`,
+      `Dodaj większość <strong>bazylii</strong>, zblenduj na gładki krem.`,
+      `Wlej <strong>śmietankę</strong>, podgrzej nie gotując. Dopraw solą i pieprzem.`,
+      `Podawaj z listkami bazylii i skropiony oliwą.`,
+    ],
+    tip: "Im dojrzalsze pomidory, tym słodsza zupa — latem ta zupa jest zupełnie inna niż zimą.",
+  },
+  {
+    id: "pomidor_jajka",
+    match: (p) => p.id === "pomidor",
+    name: () => `Jajka sadzone na <em>pomidorach</em>`,
+    type: "Danie na patelni",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:220},
+      {ref:"feta", g:40},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Oregano + papryka", g:4, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>pomidory</strong> w grube plastry lub ćwiartki.`,
+      `Rozgrzej <strong>oliwę</strong> na patelni, dodaj czosnek i oregano — 1 minuta.`,
+      `Dodaj pomidory, smaż 3–4 minuty aż zmiękną i zrobią sos.`,
+      `Zrób łyżką zagłębienia w pomidorach, wbij <strong>jajka</strong>.`,
+      `Przykryj pokrywką, gotuj 3–4 minuty (białko ścięte, żółtko płynne).`,
+      `Posyp pokruszoną <strong>fetą</strong> i papryką.`,
+    ],
+    tip: "To turecki shakshuka w wersji low carb — śniadanie gotowe w jednej patelni.",
+  },
+  {
+    id: "pomidor_caprese",
+    match: (p) => p.id === "pomidor",
+    name: () => `Caprese z <em>pomidorem</em> i mozzarellą`,
+    type: "Sałatka bez gotowania",
+    time: 8,
+    addIngredients: [
+      {ref:"mozzarella", g:120},
+      {ref:"oliwa", g:20},
+      {custom:"Bazylia świeża", g:8, cat:"warzywa"},
+      {custom:"Ocet balsamiczny", g:15, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>pomidory</strong> w plastry grubości ok. 1 cm.`,
+      `Pokrój <strong>mozzarellę</strong> w podobne plastry.`,
+      `Układaj naprzemiennie: pomidor, mozzarella, liść bazylii.`,
+      `Skrop obficie <strong>oliwą z oliwek</strong> i octem balsamicznym.`,
+      `Dopraw solą i świeżo mielonym pieprzem.`,
+    ],
+    tip: "Caprese jest dobre tylko z dojrzałymi pomidorami i mozzarellą w zalewie — nie z tej w bloku.",
+  },
+
+  // ═══ JARMUŻ ═══
+  {
+    id: "jarmuz_chipsy",
+    match: (p) => p.id === "jarmuz",
+    name: () => `Chipsy z <em>jarmużu</em>`,
+    type: "Przekąska pieczona",
+    time: 20,
+    addIngredients: [
+      {ref:"oliwa", g:20},
+      {ref:"parmezan", g:25},
+      {custom:"Papryka wędzona + sól", g:4, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 160°C. Odrywaj liście <strong>jarmużu</strong> od grubych łodyg.`,
+      `Umyj i bardzo dokładnie osusz liście — mokre nie będą chrupiące.`,
+      `Wymieszaj z <strong>oliwą</strong>, solą i wędzoną papryką.`,
+      `Rozłóż w jednej warstwie na blasze. Posyp startym <strong>parmezanem</strong>.`,
+      `Piecz 12–15 minut aż będą chrupiące. Pilnuj — szybko się przypalają.`,
+    ],
+    tip: "Niska temperatura (160°C) to klucz — przy wyższej jarmuż spali się zanim wyschnie.",
+  },
+  {
+    id: "jarmuz_ciepla",
+    match: (p) => p.id === "jarmuz",
+    name: () => `Ciepła sałatka z <em>jarmużem</em> i jajkiem`,
+    type: "Ciepła sałatka",
+    time: 15,
+    addIngredients: [
+      {ref:"jajko", g:110},
+      {ref:"orzechy_wl", g:25},
+      {ref:"oliwa", g:20},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:15, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Ugotuj <strong>jajko</strong> na miękko (6 min), obierz i przekrój na pół.`,
+      `Usuń grube łodygi z <strong>jarmużu</strong>, porwij liście.`,
+      `Rozgrzej <strong>oliwę</strong> z czosnkiem, wrzuć jarmuż — smaż 3–4 minuty mieszając aż zwiędnie.`,
+      `Przełóż na talerz, ułóż jajko i posyp <strong>orzechami włoskimi</strong>.`,
+      `Skrop sokiem z cytryny, dopraw solą i pieprzem.`,
+    ],
+    tip: "Jarmuż po podsmażeniu traci twardość i goryczkę — to zupełnie inne warzywo niż na surowo.",
+  },
+
+  // ═══ SELER NACIOWY ═══
+  {
+    id: "seler_zupa",
+    match: (p) => p.id === "seler_naciowy",
+    name: () => `Zupa z <em>selera naciowego</em> z migdałami`,
+    type: "Zupa krem",
+    time: 25,
+    addIngredients: [
+      {ref:"cebula", g:80},
+      {ref:"migdaly", g:30},
+      {ref:"smietanka_30", g:60},
+      {ref:"maslo", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Bulion warzywny 400ml", g:400, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>seler naciowy</strong> i <strong>cebulę</strong> w kawałki.`,
+      `Podsmaż na <strong>maśle</strong> przez 5 minut. Dodaj czosnek.`,
+      `Dodaj <strong>bulion</strong>, gotuj 15 minut aż seler będzie miękki.`,
+      `Dodaj <strong>śmietankę</strong> i większość <strong>migdałów</strong>. Zblenduj.`,
+      `Dopraw solą i pieprzem. Podawaj posypany prażonymi migdałami.`,
+    ],
+    tip: "Seler naciowy po ugotowaniu traci intensywność — zupa jest zaskakująco łagodna i kremowa.",
+  },
+  {
+    id: "seler_stir",
+    match: (p) => p.id === "seler_naciowy",
+    name: () => `Stir-fry z <em>selerem naciowym</em> i krewetkami`,
+    type: "Danie smażone",
+    time: 15,
+    addIngredients: [
+      {ref:"krewetki", g:150},
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek + imbir", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>seler naciowy</strong> ukośnie w kawałki ok. 3 cm.`,
+      `Rozgrzej <strong>oliwę</strong> na woku na mocnym ogniu.`,
+      `Smaż <strong>krewetki</strong> 2 minuty z każdej strony. Odłóż.`,
+      `Na tej samej patelni smaż seler z czosnkiem i imbirem przez 3 minuty.`,
+      `Wrzuć krewetki, polej <strong>sosem sojowym</strong>, wymieszaj i zdejmij z ognia.`,
+    ],
+    tip: "Seler naciowy w stir-fry jest niedoceniony — zostaje chrupiący i wchłania azjatyckie smaki.",
+  },
+
+  // ═══ OGÓREK ═══
+  {
+    id: "ogorek_tzatziki",
+    match: (p) => p.id === "ogorek",
+    name: () => `<em>Tzatziki</em> z ogórka`,
+    type: "Sos i dip",
+    time: 10,
+    addIngredients: [
+      {ref:"jogurt_grecki", g:200},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Koper świeży", g:5, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:10, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Zetrzyj <strong>ogórka</strong> na tarce, posól i odłóż na 5 minut. Odciśnij nadmiar wody ręką lub przez ściereczkę.`,
+      `Wymieszaj z <strong>jogurtem greckim</strong>, rozgniecionym czosnkiem i koprem.`,
+      `Dodaj <strong>oliwę</strong> i sok z cytryny. Dopraw solą i pieprzem.`,
+      `Schłodź w lodówce min. 10 minut przed podaniem.`,
+      `Podawaj jako dip do warzyw lub dodatek do grillowanego mięsa.`,
+    ],
+    tip: "Im dłużej tzatziki stoi w lodówce, tym lepiej smakuje — następnego dnia jest najlepsze.",
+  },
+  {
+    id: "ogorek_salatka_azjatycka",
+    match: (p) => p.id === "ogorek",
+    name: () => `Sałatka z <em>ogórka</em> po azjatycku`,
+    type: "Sałatka bez gotowania",
+    time: 10,
+    addIngredients: [
+      {ref:"sos_sojowy", g:20},
+      {ref:"oliwa", g:10},
+      {ref:"pestki_dyni", g:20},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Ocet ryżowy lub jabłkowy", g:15, cat:"dodatki"},
+      {custom:"Sezam (opcja)", g:5, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> w cienkie plasterki lub rozbij płazem noża i pokrój na kawałki.`,
+      `Wymieszaj <strong>sos sojowy</strong>, ocet, oliwę i rozgnieciony czosnek.`,
+      `Polej ogórka dressingiem, wymieszaj.`,
+      `Posyp <strong>pestkami dyni</strong> i sezamem.`,
+      `Podawaj od razu lub po 10 minutach marynowania.`,
+    ],
+    tip: "Rozbijanie ogórka płazem noża zamiast krojenia tworzy nieregularne kawałki, które lepiej wchłaniają dressing.",
+  },
+  {
+    id: "ogorek_mizeria",
+    match: (p) => p.id === "ogorek",
+    name: () => `<em>Mizeria</em> klasyczna ze śmietaną`,
+    type: "Sałatka klasyczna",
+    time: 10,
+    addIngredients: [
+      {ref:"smietana_18", g:60},
+      {custom:"Świeży koperek", g:10, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> na bardzo cienkie plasterki — mandolina lub ostry nóż.`,
+      `Posól lekko, zostaw 5 minut, odciśnij nadmiar wody ręką.`,
+      `Wymieszaj z <strong>śmietaną</strong>, dopraw pieprzem. W razie potrzeby dosól.`,
+      `Dodaj obficie posiekany <strong>koperek</strong>. Wymieszaj.`,
+      `Podawaj od razu lub schłodź 10 minut.`,
+    ],
+    tip: "Odciśnięcie wody po soleniu to klucz — bez tego mizeria będzie rzadka i wodnista.",
+  },
+  {
+    id: "ogorek_chlodnik",
+    match: (p) => p.id === "ogorek",
+    name: () => `<em>Chłodnik</em> ogórkowy`,
+    type: "Zupa na zimno",
+    time: 10,
+    addIngredients: [
+      {ref:"jogurt_grecki", g:200},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Koperek świeży", g:10, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:15, cat:"dodatki"},
+      {ref:"oliwa", g:10},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> na kawałki — nie trzeba obierać jeśli skórka jest cienka.`,
+      `Wrzuć do blendera razem z <strong>jogurtem greckim</strong>, czosnkiem, koperkiem i sokiem z cytryny.`,
+      `Blenduj do gładkości. Dopraw solą i pieprzem.`,
+      `Jeśli za gęsty, rozcieńcz zimną wodą.`,
+      `Schłodź 15 minut. Podawaj skropiony <strong>oliwą</strong>.`,
+    ],
+    tip: "Chłodnik musi być naprawdę zimny — wstaw miskę do zamrażarki na 5 minut przed podaniem.",
+  },
+  {
+    id: "ogorek_pasta_twarogowa",
+    match: (p) => p.id === "ogorek",
+    name: () => `Ogórki z <em>pastą twarogową</em>`,
+    type: "Przekąska",
+    time: 10,
+    addIngredients: [
+      {ref:"twarog", g:150},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Koperek świeży", g:8, cat:"warzywa"},
+      {ref:"oliwa", g:10},
+    ],
+    steps: () => [
+      `Przekrój <strong>ogórka</strong> wzdłuż na pół. Wydrąż łyżeczką nasiona tworząc łódeczkę.`,
+      `Wymieszaj <strong>twaróg</strong> z rozgniecionym czosnkiem, posiekanym koperkiem i oliwą.`,
+      `Dopraw solą i pieprzem.`,
+      `Napełnij łódeczki pastą twarogową.`,
+      `Podawaj od razu lub schłodź do 30 minut.`,
+    ],
+    tip: "Twaróg wyjmij z lodówki 15 minut wcześniej — w temperaturze pokojowej jest znacznie łatwiejszy do mieszania.",
+  },
+
+  // ═══ KURCZAK (warianty filetu) ═══
+  {
+    id: "kur_smietana_musztarda",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Filet z kurczaka w sosie <em>śmietanowo-musztardowym</em>`,
+    type: "Danie na patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"smietanka_30", g:100},{ref:"musztarda", g:20},{ref:"maslo", g:10},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozbij <strong>filet z kurczaka</strong> tłuczkiem. Dopraw solą i pieprzem.`,
+      `Smaż na <strong>maśle</strong> po 4–5 minut z każdej strony. Wyjmij.`,
+      `Na tej samej patelni zeszklij czosnek 30 sekund. Wlej <strong>śmietankę</strong> i <strong>musztardę</strong>. Gotuj 4 minuty aż zgęstnieje.`,
+      `Włóż kurczaka z powrotem, podgrzej 2 minuty. Dopraw do smaku.`,
+    ],
+    tip: "Musztarda ziarnista (francuska) jest łagodniejsza i dodaje tekstury — użyj jej jeśli masz.",
+  },
+  {
+    id: "kur_pieczarki_tymianek",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z <em>pieczarkami</em> i tymiankiem`,
+    type: "Danie na patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"pieczarki", g:200},{ref:"maslo", g:20},{ref:"smietanka_30", g:80},
+      {custom:"Świeży tymianek", g:5, cat:"warzywa"},{custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>filet z kurczaka</strong> w plastry 1 cm. Smaż na <strong>maśle</strong> po 3 minuty z każdej strony. Wyjmij.`,
+      `Na tej samej patelni podsmaż <strong>pieczarki</strong> z czosnkiem przez 5 minut.`,
+      `Dodaj <strong>śmietankę</strong> i gałązki <strong>tymianku</strong>. Gotuj 3 minuty.`,
+      `Włóż kurczaka z powrotem. Podgrzej, dopraw do smaku.`,
+    ],
+    tip: "Pieczarki muszą dobrze odparować — smaż partiami, nie wszystkie naraz.",
+  },
+  {
+    id: "kur_curry_kokos",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>curry</em> z mlekiem kokosowym`,
+    type: "Danie duszone",
+    time: 30,
+    addIngredients: [
+      {ref:"cebula", g:80},{ref:"oliwa", g:15},
+      {custom:"Mleko kokosowe 150ml", g:150, cat:"dodatki"},
+      {custom:"Pasta curry 1 łyżka", g:20, cat:"dodatki"},
+      {custom:"Czosnek + imbir", g:10, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>filet z kurczaka</strong> w kostkę. Podsmaż <strong>cebulę</strong> na <strong>oliwie</strong> 4 minuty. Dodaj czosnek, imbir i pastę curry — smaż 1 minutę.`,
+      `Wrzuć kurczaka, obsmaż 3 minuty.`,
+      `Zalej <strong>mlekiem kokosowym</strong>. Duś 15 minut pod przykryciem.`,
+      `Gotuj jeszcze 5 minut bez pokrywki aż sos zgęstnieje.`,
+    ],
+    tip: "Mleko kokosowe rozdzieli się przy mocnym gotowaniu — trzymaj na małym ogniu.",
+  },
+  {
+    id: "kur_grill_cytryna",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Grillowany filet z <em>cytryną i rozmarynem</em>`,
+    type: "Danie z grilla",
+    time: 25,
+    addIngredients: [
+      {ref:"oliwa", g:30},
+      {custom:"Sok i skórka z 1 cytryny", g:30, cat:"dodatki"},
+      {custom:"Rozmaryn 2 gałązki", g:8, cat:"warzywa"},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Wymieszaj <strong>oliwę</strong>, sok z cytryny, skórkę, czosnek i rozmaryn.`,
+      `Rozbij <strong>filet z kurczaka</strong> tłuczkiem. Zamarynuj minimum 20 minut.`,
+      `Rozgrzej mocno patelnię grillową. Osusz mięso z marynaty.`,
+      `Grilluj po 5–6 minut z każdej strony. Odpocznij 3 minuty przed podaniem.`,
+    ],
+    tip: "Im dłużej marynata — tym lepiej. Noc w lodówce robi spektakularną różnicę.",
+  },
+  {
+    id: "kur_szpinak_smietana",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>szpinakowo-śmietanowym</em>`,
+    type: "Danie na patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"szpinak", g:120},{ref:"smietanka_30", g:100},{ref:"maslo", g:10},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Gałka muszkatołowa", g:1, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Smaż <strong>filet z kurczaka</strong> na <strong>maśle</strong> po 5 minut z każdej strony. Wyjmij.`,
+      `Podsmaż czosnek 30 sekund. Dodaj <strong>szpinak</strong> — zwiędnie po 2 minutach.`,
+      `Wlej <strong>śmietankę</strong>, dodaj gałkę. Gotuj 3 minuty.`,
+      `Włóż kurczaka z powrotem, podgrzej 2 minuty.`,
+    ],
+    tip: "Gałka muszkatołowa to sekret kremowych sosów ze szpinakiem — wystarczy szczypta.",
+  },
+  {
+    id: "kur_brokul_czosnek",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z <em>brokułami</em> w sosie czosnkowym`,
+    type: "Danie z jednej patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"brokul", g:200},{ref:"oliwa", g:20},{ref:"smietanka_30", g:80},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},{ref:"parmezan", g:20},
+    ],
+    steps: () => [
+      `Blanszuj <strong>brokuł</strong> 4 minuty w osolonej wodzie. Odcedź.`,
+      `Pokrój <strong>filet z kurczaka</strong> w paski. Smaż na <strong>oliwie</strong> 5–6 minut. Wyjmij.`,
+      `Podsmaż czosnek 30 sekund. Wlej <strong>śmietankę</strong>, gotuj 2 minuty.`,
+      `Dodaj brokuł i kurczaka do sosu. Podgrzej 2 minuty. Posyp <strong>parmezanem</strong>.`,
+    ],
+    tip: "Brokuł po blanszowaniu wrzuć do zimnej wody — zachowa intensywny zielony kolor.",
+  },
+  {
+    id: "kur_imbir_sojowy",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z <em>imbirem</em> i sosem sojowym`,
+    type: "Danie w stylu azjatyckim",
+    time: 20,
+    addIngredients: [
+      {ref:"sos_sojowy", g:30},{ref:"oliwa", g:15},
+      {custom:"Świeży imbir 2 cm", g:10, cat:"warzywa"},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Sezam łyżeczka", g:5, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>filet z kurczaka</strong> w cienkie paski. Zamarynuj w połowie <strong>sosu sojowego</strong> przez 10 minut.`,
+      `Smaż na <strong>oliwie</strong> na mocnym ogniu 3–4 minuty. Wyjmij.`,
+      `Podsmaż starty imbir i czosnek 30 sekund. Wróć kurczaka.`,
+      `Polej resztą sosu sojowego. Posyp <strong>sezamem</strong>.`,
+    ],
+    tip: "Cienkie paski smażą się szybko i równomiernie — klucz do soczystości.",
+  },
+
+  // ═══ KURCZAK — dodatkowe warianty ═══
+  {
+    id: "kur_mozzarella_nadziewana",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Filet z kurczaka nadziewany <em>mozzarellą</em>`,
+    type: "Danie pieczone",
+    time: 35,
+    addIngredients: [
+      {ref:"mozzarella", g:80},{ref:"oliwa", g:15},
+      {custom:"Suszone pomidory (3 szt.)", g:20, cat:"dodatki"},
+      {custom:"Bazylia świeża", g:5, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 200°C. W <strong>filecie z kurczaka</strong> natnij głęboką kieszeń.`,
+      `Włóż do środka plastry <strong>mozzarelli</strong>, suszone pomidory i <strong>bazylię</strong>. Spiń wykałaczkami.`,
+      `Posmaruj <strong>oliwą</strong>, dopraw z zewnątrz solą i pieprzem.`,
+      `Piecz 22–25 minut. Odpocznij 3 minuty przed podaniem.`,
+    ],
+    tip: "Wykałaczki to klucz — bez nich nadzienie wypłynie podczas pieczenia.",
+  },
+  {
+    id: "kur_pomidor_oliwki",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>pomidorowym z oliwkami</em>`,
+    type: "Danie śródziemnomorskie",
+    time: 30,
+    addIngredients: [
+      {ref:"pomidor", g:200},{ref:"cebula", g:60},{ref:"oliwa", g:20},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+      {custom:"Oliwki czarne 50g", g:50, cat:"dodatki"},
+      {custom:"Oregano + bazylia", g:3, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Obsmaż <strong>filet z kurczaka</strong> na <strong>oliwie</strong> po 3 minuty z każdej strony. Wyjmij.`,
+      `Podsmaż <strong>cebulę</strong> 3 minuty, dodaj czosnek 1 minutę.`,
+      `Dodaj <strong>pomidory</strong> i zioła. Gotuj 5 minut. Włóż kurczaka i <strong>oliwki</strong>.`,
+      `Duś pod przykryciem 12 minut. Dopraw do smaku.`,
+    ],
+    tip: "Oliwki dodaj pod koniec — długo duszone tracą intensywność smaku.",
+  },
+  {
+    id: "kur_sos_serowy",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>serowym</em>`,
+    type: "Danie na patelni",
+    time: 25,
+    addIngredients: [
+      {ref:"cheddar", g:80},{ref:"smietanka_30", g:100},{ref:"maslo", g:10},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Gałka muszkatołowa", g:1, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Smaż <strong>filet z kurczaka</strong> na <strong>maśle</strong> po 5 minut z każdej strony. Wyjmij pod folię.`,
+      `Zeszklij czosnek 30 sekund. Wlej <strong>śmietankę</strong>, gotuj 2 minuty.`,
+      `Dodaj starty <strong>cheddar</strong> i gałkę. Mieszaj na małym ogniu aż ser się rozpuści.`,
+      `Polej sosem kurczaka. Podawaj od razu.`,
+    ],
+    tip: "Ser dodawaj po zdjęciu z ognia — wysoka temperatura sprawi że sos będzie ziarnisty.",
+  },
+  {
+    id: "kur_panierka_migdalowa",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Filet z kurczaka w panierce <em>migdałowej</em>`,
+    type: "Danie smażone",
+    time: 25,
+    addIngredients: [
+      {ref:"migdaly", g:80},{ref:"jajko", g:55},{ref:"oliwa", g:25},
+      {custom:"Czosnek granulowany + papryka", g:3, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Zmiel <strong>migdały</strong> na gruby proszek. Wymieszaj z czosnkiem i papryką.`,
+      `Roztrzep <strong>jajko</strong>. Rozbij <strong>filet z kurczaka</strong> na grubość 1 cm.`,
+      `Maczaj w jajku, obtaczaj w migdałach — mocno dociskaj.`,
+      `Smaż na <strong>oliwie</strong> po 4–5 minut z każdej strony na średnim ogniu.`,
+    ],
+    tip: "Migdałowa panierka pali się szybciej niż bułka tarta — pilnuj średniego ognia.",
+  },
+  {
+    id: "kur_wloski_parmezan",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak po włosku z <em>parmezanem</em>`,
+    type: "Danie pieczone",
+    time: 30,
+    addIngredients: [
+      {ref:"parmezan", g:50},{ref:"pomidor", g:150},{ref:"oliwa", g:15},
+      {custom:"Bazylia świeża", g:5, cat:"warzywa"},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 200°C. Obsmaż <strong>filet z kurczaka</strong> na <strong>oliwie</strong> po 3 minuty z każdej strony.`,
+      `Przełóż do naczynia. Ułóż plastry <strong>pomidora</strong> i czosnek na wierzchu.`,
+      `Posyp <strong>parmezanem</strong> i bazylią.`,
+      `Piecz 15–18 minut aż parmezan będzie złoty.`,
+    ],
+    tip: "Obsmaż kurczaka przed pieczeniem — złota skórka to gwarancja smaku.",
+  },
+  {
+    id: "kur_cukinia_czosnek",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z <em>cukinią</em> i czosnkiem`,
+    type: "Szybkie danie z patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"cukinia", g:200},{ref:"oliwa", g:20},
+      {custom:"Czosnek (3 ząbki)", g:12, cat:"warzywa"},
+      {custom:"Papryka wędzona + oregano", g:3, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>filet z kurczaka</strong> w paski. Dopraw papryką, oregano, solą i pieprzem.`,
+      `Smaż na <strong>oliwie</strong> na mocnym ogniu 5–6 minut. Wyjmij.`,
+      `Podsmaż plastry <strong>cukinii</strong> z czosnkiem 4 minuty.`,
+      `Wróć kurczaka. Wymieszaj, smaż razem 2 minuty.`,
+    ],
+    tip: "Mocny ogień to klucz — kurczak powinien się rumienić, nie dusić.",
+  },
+  {
+    id: "kur_sos_pieprzowy",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>pieprzowym</em>`,
+    type: "Danie na patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"smietanka_30", g:100},{ref:"maslo", g:15},
+      {custom:"Zielony pieprz w zalewie 1 łyżka", g:15, cat:"dodatki"},
+      {custom:"Bulion 2 łyżki", g:30, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozbij <strong>filet z kurczaka</strong> tłuczkiem. Smaż na <strong>maśle</strong> po 5 minut z każdej strony. Wyjmij.`,
+      `Dodaj <strong>zielony pieprz</strong>, smaż 30 sekund. Wlej bulion — zdrap dno patelni.`,
+      `Dodaj <strong>śmietankę</strong>, gotuj 3–4 minuty aż zgęstnieje.`,
+      `Polej sosem kurczaka. Podawaj od razu.`,
+    ],
+    tip: "Zielony pieprz w zalewie jest łagodniejszy od czarnego — nie bój się go używać.",
+  },
+  {
+    id: "kur_ziolowe_maslo",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Filet z kurczaka w <em>ziołowym maśle</em>`,
+    type: "Danie na patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"maslo", g:40},{ref:"natka", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Sok i skórka z cytryny", g:15, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Wymieszaj <strong>masło</strong> z posiekaną <strong>natką</strong>, czosnkiem i skórką cytryny.`,
+      `Rozbij <strong>filet z kurczaka</strong>. Smaż na łyżce masła po 5 minut z każdej strony.`,
+      `Na ostatnią minutę dodaj ziołowe masło — będzie się topić tworząc aromatyczny sos.`,
+      `Podawaj polewając sosem z patelni i sokiem z cytryny.`,
+    ],
+    tip: "Ziołowe masło można zrobić z zapasem, zawinąć w folię i mrozić.",
+  },
+  {
+    id: "kur_wegierski",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z papryką w stylu <em>węgierskim</em>`,
+    type: "Danie duszone",
+    time: 35,
+    addIngredients: [
+      {ref:"papryka_cz", g:150},{ref:"cebula", g:100},{ref:"smietana_18", g:80},{ref:"oliwa", g:15},
+      {custom:"Słodka papryka w proszku 2 łyżeczki", g:6, cat:"dodatki"},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Obsmaż <strong>filet z kurczaka</strong> na <strong>oliwie</strong>. Wyjmij.`,
+      `Podsmaż <strong>cebulę</strong> 5 minut. Dodaj czosnek i <strong>paprykę w proszku</strong> — smaż 1 minutę.`,
+      `Dodaj <strong>paprykę czerwoną</strong> w paski. Smaż 3 minuty. Wróć kurczaka, dodaj 100ml wody.`,
+      `Duś pod przykryciem 15 minut. Zdejmij z ognia, wmieszaj <strong>śmietanę</strong>.`,
+    ],
+    tip: "Paprykę w proszku zawsze smaż chwilę na tłuszczu — to aktywuje jej aromat.",
+  },
+  {
+    id: "kur_roladki_boczek",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Roladki z kurczaka z <em>boczkiem i serem</em>`,
+    type: "Danie pieczone",
+    time: 40,
+    addIngredients: [
+      {ref:"boczek", g:80},{ref:"cheddar", g:60},{ref:"oliwa", g:15},
+      {custom:"Czosnek granulowany + oregano", g:3, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozgrzej piekarnik do 190°C. Rozbij <strong>filet z kurczaka</strong> na cienki płat.`,
+      `Ułóż plastry <strong>boczku</strong> i starty <strong>cheddar</strong>. Zwiń ciasno, spiń wykałaczkami.`,
+      `Posmaruj <strong>oliwą</strong>, posyp czosnkiem i oregano.`,
+      `Piecz 25–30 minut aż boczek się zrumieni. Odpocznij 5 minut przed krojeniem.`,
+    ],
+    tip: "Im cieńszy płat mięsa, tym lepiej trzyma kształt roladki.",
+  },
+  {
+    id: "kur_sos_porowy",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>porowym</em>`,
+    type: "Danie na patelni",
+    time: 30,
+    addIngredients: [
+      {ref:"maslo", g:20},{ref:"smietanka_30", g:100},
+      {custom:"Por (biała część) 1 szt.", g:120, cat:"warzywa"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+      {custom:"Bulion 50ml", g:50, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>por</strong> w krążki. Podsmaż na <strong>maśle</strong> 8 minut na małym ogniu.`,
+      `Smaż <strong>filet z kurczaka</strong> osobno po 5 minut z każdej strony. Wyjmij.`,
+      `Do pora dodaj czosnek i bulion. Gotuj 2 minuty. Wlej <strong>śmietankę</strong>, gotuj 3 minuty.`,
+      `Pokrój kurczaka. Podawaj na sosie porowym.`,
+    ],
+    tip: "Por na małym ogniu przez dłuższy czas staje się kremowy i lekko słodki.",
+  },
+  {
+    id: "kur_pesto_pomidorki",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak z <em>pesto</em> i pomidorkami`,
+    type: "Danie na patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"pomidor", g:150},{ref:"oliwa", g:15},{ref:"parmezan", g:20},
+      {custom:"Pesto bazyliowe 2 łyżki", g:40, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Rozbij <strong>filet z kurczaka</strong>. Smaż na <strong>oliwie</strong> po 5 minut z każdej strony.`,
+      `Na ostatnie 2 minuty posmaruj wierzch <strong>pesto</strong>.`,
+      `Na tej samej patelni chwilę podsmaż przekrojone <strong>pomidorki</strong>.`,
+      `Podawaj z pomidorkami, posypany <strong>parmezanem</strong>.`,
+    ],
+    tip: "Pesto dodaj na końcu — podgrzewane traci świeży aromat i kolor.",
+  },
+  {
+    id: "kur_cytrynowo_maslany",
+    match: (p) => p.id === "piers_kur",
+    name: () => `Kurczak w sosie <em>cytrynowo-maślanym</em>`,
+    type: "Danie na patelni",
+    time: 20,
+    addIngredients: [
+      {ref:"maslo", g:40},{ref:"natka", g:10},
+      {custom:"Sok z 1 cytryny + skórka", g:30, cat:"dodatki"},
+      {custom:"Czosnek (1 ząbek)", g:4, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Rozbij <strong>filet z kurczaka</strong>. Smaż na łyżce <strong>masła</strong> po 5 minut z każdej strony. Wyjmij pod folię.`,
+      `Roztop resztę <strong>masła</strong> z czosnkiem przez 1 minutę.`,
+      `Dodaj <strong>sok z cytryny</strong> i skórkę — sos połączy się z tłuszczem.`,
+      `Polej sosem kurczaka, posyp posiekaną <strong>natką</strong>.`,
+    ],
+    tip: "Masło musi być zimne gdy trafia na patelnię — dzięki temu sos jest kremowy, nie rozdzielony.",
+  },
+
+  // ═══ OGÓREK — dodatkowe warianty ═══
+  {
+    id: "ogorek_mizeria_cytrynowa",
+    match: (p) => p.id === "ogorek",
+    name: () => `Mizeria <em>cytrynowa</em> z oliwą`,
+    type: "Sałatka lekka",
+    time: 8,
+    addIngredients: [
+      {ref:"oliwa", g:20},
+      {custom:"Sok z cytryny", g:15, cat:"dodatki"},
+      {custom:"Świeży koperek", g:10, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> na cienkie plasterki.`,
+      `Posól lekko, odstaw 5 minut, odciśnij wodę.`,
+      `Skrop <strong>oliwą</strong> i <strong>sokiem z cytryny</strong>. Dopraw pieprzem.`,
+      `Posyp obficie posiekanym <strong>koperkiem</strong>. Wymieszaj i podawaj.`,
+    ],
+    tip: "Lżejsza wersja bez śmietany — idealna gdy chcesz mniej kalorii, a więcej świeżości.",
+  },
+  {
+    id: "ogorek_tzatziki_full",
+    match: (p) => p.id === "ogorek",
+    name: () => `<em>Tzatziki</em> z jogurtem greckim`,
+    type: "Sos / dip",
+    time: 15,
+    addIngredients: [
+      {ref:"jogurt_grecki", g:200},
+      {ref:"oliwa", g:15},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Koperek lub mięta", g:8, cat:"warzywa"},
+      {custom:"Sok z cytryny", g:10, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Zetrzyj <strong>ogórka</strong> na grubych oczkach tarki. Posól i zostaw 10 minut.`,
+      `Odciśnij mocno przez ścierkę — im bardziej suchy, tym gęstsze tzatziki.`,
+      `Wymieszaj z <strong>jogurtem greckim</strong>, rozgniecionym czosnkiem i oliwą.`,
+      `Dodaj posiekany <strong>koperek lub miętę</strong>, sok z cytryny.`,
+      `Schłodź co najmniej 20 minut przed podaniem.`,
+    ],
+    tip: "Odciśnięcie ogórka to najważniejszy krok — pomiń go a tzatziki będzie wodniste.",
+  },
+  {
+    id: "ogorek_awokado",
+    match: (p) => p.id === "ogorek",
+    name: () => `Sałatka <em>ogórkowo-awokadowa</em>`,
+    type: "Sałatka bez gotowania",
+    time: 8,
+    addIngredients: [
+      {ref:"awokado", g:100},
+      {ref:"cebula", g:30},
+      {ref:"oliwa", g:15},
+      {custom:"Sok z limonki", g:15, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> w półplasterki, <strong>awokado</strong> w kostkę, <strong>cebulę</strong> w drobną kostkę.`,
+      `Wymieszaj w misce.`,
+      `Skrop <strong>oliwą</strong> i <strong>sokiem z limonki</strong>.`,
+      `Dopraw solą i pieprzem. Podawaj od razu — awokado szybko ciemnieje.`,
+    ],
+    tip: "Limonka zamiast cytryny daje bardziej świeży, lekko tropikalny akcent — idealnie do awokado.",
+  },
+  {
+    id: "ogorek_rzodkiewka",
+    match: (p) => p.id === "ogorek",
+    name: () => `Sałatka ogórkowa z <em>rzodkiewką</em>`,
+    type: "Sałatka wiosenna",
+    time: 8,
+    addIngredients: [
+      {ref:"rzodkiewka", g:80},
+      {ref:"szczypiorek", g:15},
+      {ref:"smietana_18", g:50},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> w półplasterki, <strong>rzodkiewki</strong> w cienkie plasterki.`,
+      `Posiekaj <strong>szczypiorek</strong>.`,
+      `Wymieszaj warzywa ze <strong>śmietaną</strong>. Dopraw solą i pieprzem.`,
+      `Posyp szczypiorkiem. Podawaj od razu lub schłodź 10 minut.`,
+    ],
+    tip: "Rzodkiewka po 20 minutach w śmietanie traci ostrość — jedz od razu jeśli lubisz pikantność.",
+  },
+  {
+    id: "ogorek_salsa",
+    match: (p) => p.id === "ogorek",
+    name: () => `<em>Ogórkowa salsa</em> z pomidorem`,
+    type: "Salsa / dip",
+    time: 10,
+    addIngredients: [
+      {ref:"pomidor", g:120},
+      {ref:"cebula", g:40},
+      {ref:"oliwa", g:10},
+      {custom:"Sok z limonki", g:15, cat:"dodatki"},
+      {custom:"Kolendra lub natka", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong>, <strong>pomidora</strong> i <strong>cebulę</strong> w drobną kostkę — mniej więcej równą.`,
+      `Wymieszaj w misce.`,
+      `Skrop <strong>oliwą</strong> i <strong>sokiem z limonki</strong>.`,
+      `Dodaj posiekaną <strong>kolendrę lub natkę</strong>. Dopraw solą i pieprzem.`,
+      `Zostaw 5 minut żeby smaki się połączyły. Podawaj jako dodatek lub samodzielnie.`,
+    ],
+    tip: "Im mniejsza kostka, tym lepsza salsa — poświęć chwilę na staranne krojenie.",
+  },
+  {
+    id: "ogorek_smazony",
+    match: (p) => p.id === "ogorek",
+    name: () => `Ogórek <em>smażony</em> na maśle z czosnkiem`,
+    type: "Ciepła przystawka",
+    time: 10,
+    addIngredients: [
+      {ref:"maslo", g:20},
+      {custom:"Czosnek (2 ząbki)", g:8, cat:"warzywa"},
+      {custom:"Koperek świeży", g:8, cat:"warzywa"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> w plastry grubości ok. 5–7 mm. Osusz papierowym ręcznikiem.`,
+      `Rozgrzej <strong>masło</strong> na patelni na średnim ogniu.`,
+      `Smaż plastry ogórka przez 2–3 minuty z każdej strony — mają być złote, ale nadal lekko chrupiące.`,
+      `Na ostatnią minutę dodaj roztarty czosnek.`,
+      `Posyp świeżym <strong>koperkiem</strong>. Dopraw solą i pieprzem.`,
+    ],
+    tip: "Smażony ogórek to zaskoczenie dla wielu gości — delikatny, ciepły, zupełnie inny niż na surowo.",
+  },
+  {
+    id: "ogorek_woda",
+    match: (p) => p.id === "ogorek",
+    name: () => `Woda <em>ogórkowo-cytrynowa</em> z miętą`,
+    type: "Napój",
+    time: 5,
+    addIngredients: [
+      {custom:"Sok z 1 cytryny", g:30, cat:"dodatki"},
+      {custom:"Świeża mięta (kilka listków)", g:5, cat:"warzywa"},
+      {custom:"Woda gazowana lub niegazowana 500ml", g:500, cat:"dodatki"},
+    ],
+    steps: () => [
+      `Pokrój <strong>ogórka</strong> w cienkie plasterki.`,
+      `Wrzuć do dzbanka razem z plasterkami cytryny i listkami mięty.`,
+      `Zalej zimną wodą. Wstaw do lodówki minimum na 30 minut.`,
+      `Podawaj z lodem. Im dłużej stoi, tym intensywniejszy smak.`,
+    ],
+    tip: "Świetna alternatywa dla słodkich napojów — zero kalorii, dużo świeżości.",
+  },
+
+  // ═══ DOMYŚLNY (fallback) ═══
+  {
+    id: "fallback",
+    match: () => true,
+    name: (p) => `Posiłek z <em>${p.name}</em>`,
+    type: "Propozycja posiłku",
+    time: 15,
+    addIngredients: (p) => {
+      const extras: AddIngredient[] = [];
+      if (p.id !== "salata") extras.push({ref:"salata", g:80});
+      if (p.id !== "ogorek") extras.push({ref:"ogorek", g:80});
+      extras.push({ref:"oliwa", g:15});
+      return extras;
+    },
+    steps: (p) => [
+      `Przygotuj <strong>${p.name}</strong> — umyj, pokrój lub wyjmij z opakowania.`,
+      `Umyj i osusz pozostałe składniki, pokrój w wygodne kawałki.`,
+      `Ułóż sałatę jako bazę, dodaj warzywa i ${p.name}.`,
+      `Skrop <strong>oliwą z oliwek</strong>, dopraw solą i pieprzem.`,
+      `Podawaj od razu.`,
+    ],
+    tip: "Każdy składnik low carb świetnie sprawdza się jako baza do sałatki — oliwa, cytryna i dobre przyprawy to klucz.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// LOGIKA WYBORU PRZEPISU
+// ---------------------------------------------------------------------------
+
+export interface ResolvedIngredient {
+  product: { id: string; name: string; cat: Category };
+  g: number;
+  isStar: boolean;
+  isCustom?: boolean;
+}
+
+/**
+ * Domyślna gramatura składnika gwiazdkowego, kiedy użytkownik nie podaje własnej.
+ */
+export function getDefaultG(p: Product): number {
+  if (p.cat === "tluszcze" || p.cat === "dodatki") return 15;
+  if (p.cat === "orzechy") return 30;
+  if (p.cat === "czekolada") return 25;
+  if (p.cat === "sery") return 60;
+  if (p.id === "jajko") return 220;
+  if (p.cat === "nabial") return 150;
+  if (p.cat === "mieso" || p.cat === "ryby") return 150;
+  if (p.cat === "owoce") return 100;
+  return 150;
+}
+
+/**
+ * Wybiera przepis dopasowany do produktu. Pomija ostatnio użyty,
+ * żeby kliknięcie "Inny wariant" zawsze dawało coś nowego.
+ */
+export function findRecipe(
+  p: Product,
+  recent: string[] | string | null = []
+): KreatorRecipe {
+  const matches = RECIPES.filter((r) => r.id !== "fallback" && r.match(p));
+  if (!matches.length) {
+    return RECIPES.find((r) => r.id === "fallback")!;
+  }
+  if (matches.length === 1) return matches[0];
+  // Wyklucz wszystkie ostatnio użyte przepisy (nie tylko ostatni) — dzięki temu
+  // kolejne generowania przechodzą przez cały wachlarz wariantów zanim się powtórzą.
+  const recentList = Array.isArray(recent) ? recent : recent ? [recent] : [];
+  const recentSet = new Set(recentList);
+  const pool = matches.filter((r) => !recentSet.has(r.id));
+  const arr = pool.length ? pool : matches;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Rozwija listę składników: gwiazdkowy + dodatkowe z bazy + custom.
+ */
+export function resolveIngredients(
+  recipe: KreatorRecipe,
+  starProduct: Product
+): ResolvedIngredient[] {
+  const list: ResolvedIngredient[] = [];
+  list.push({ product: starProduct, g: getDefaultG(starProduct), isStar: true });
+
+  const addList =
+    typeof recipe.addIngredients === "function"
+      ? recipe.addIngredients(starProduct)
+      : recipe.addIngredients;
+
+  addList.forEach((item) => {
+    if ("ref" in item) {
+      const p = DB.find((x) => x.id === item.ref);
+      if (p) list.push({ product: p, g: item.g, isStar: false });
+    } else {
+      list.push({
+        product: { id: "custom_" + Math.random().toString(36).slice(2), name: item.custom, cat: item.cat },
+        g: item.g,
+        isStar: false,
+        isCustom: true,
+      });
+    }
+  });
+  return list;
+}
+
+/**
+ * Usuwa znaczniki HTML (<em>, <strong>) — używane przy zapisie do "Moich przepisów".
+ */
+export function stripHtml(s: string): string {
+  return s.replace(/<\/?(em|strong|i|b)>/g, "");
+}
+
+/**
+ * Propozycja przepisu z Kreatora — przepis + reprezentatywny "star product",
+ * po którym można od razu zbudować pełny posiłek bez wybierania składnika.
+ */
+export interface KreatorProposal {
+  recipe: KreatorRecipe;
+  starProduct: Product;
+}
+
+/**
+ * Zwraca wszystkie unikalne propozycje przepisów Kreatora dla danej kategorii.
+ * Dla każdego produktu w kategorii znajdujemy wszystkie pasujące przepisy
+ * i wybieramy ten produkt jako reprezentatywny "star product" dla tego przepisu.
+ */
+export function findKreatorProposalsForCategory(cat: Category): KreatorProposal[] {
+  const out: KreatorProposal[] = [];
+  const seen = new Set<string>();
+  const products = DB.filter((p) => p.cat === cat);
+  for (const p of products) {
+    for (const r of RECIPES) {
+      if (r.id === "fallback") continue;
+      if (!r.match(p)) continue;
+      if (seen.has(r.id)) continue;
+      seen.add(r.id);
+      out.push({ recipe: r, starProduct: p });
+    }
+  }
+  return out;
+}

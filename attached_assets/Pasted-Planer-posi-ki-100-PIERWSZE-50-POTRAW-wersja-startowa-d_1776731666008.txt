@@ -1,0 +1,139 @@
+Planer - posiłki 100
+
+PIERWSZE 50 POTRAW (wersja startowa do aplikacji)
+Kolumny:
+nazwa | czas (min) | typ posiłku | krótki opis | składniki (skrót) | przygotowanie (skrót) | TAGI
+ŚNIADANIA
+Omlet serowy z ziołami | 10 | śniadanie | szybki, sycący | jajka, ser, masło | wymieszaj, smaż | low_carb, keto, szybkie, do_15_min, wysokobiałkowe
+Jajka sadzone z awokado | 8 | śniadanie | tłuszcz + białko | jajka, awokado | usmaż, podaj | low_carb, keto, szybkie
+Twarożek ze szczypiorkiem | 5 | śniadanie | klasyka | twaróg, śmietana | wymieszaj | low_carb, szybkie
+Jogurt kokosowy z orzechami | 5 | śniadanie | wegańskie | jogurt kokosowy, orzechy | wymieszaj | wegańska, szybkie
+Omlet na słodko | 12 | śniadanie | deserowe | jajka, kakao | smaż | low_carb, deser
+Jajecznica z boczkiem | 10 | śniadanie | klasyczna | jajka, boczek | smaż | keto, szybkie
+Pasta jajeczna | 10 | śniadanie | do pieczywa | jajka, majonez | wymieszaj | low_carb
+Smoothie białkowe | 5 | śniadanie | szybkie | białko, mleko | blenduj | wysokobiałkowe
+Owsianka keto | 10 | śniadanie | zamiennik | kokos, nasiona | gotuj | low_carb
+Kanapki bez chleba | 5 | śniadanie | kreatywne | ser, szynka | złóż | szybkie
+OBIADY
+Kurczak z brokułem | 20 | obiad | prosty | kurczak, brokuł | smaż/gotuj | low_carb
+Łosoś z masłem | 15 | obiad | tłusty | łosoś, masło | piecz | keto
+Wołowina stir-fry | 15 | obiad | azjatyckie | wołowina, warzywa | smaż | szybkie
+Curry kokosowe | 25 | obiad | aromatyczne | mleko kokosowe | gotuj | wegańska
+Indyk z warzywami | 20 | obiad | lekki | indyk, warzywa | smaż | wysokobiałkowe
+Sałatka z tuńczykiem | 10 | obiad | szybka | tuńczyk, sałata | mieszaj | szybkie
+Makaron z cukinii | 15 | obiad | zamiennik | cukinia | smaż | low_carb
+Zupa krem brokułowa | 25 | obiad | kremowa | brokuł | blenduj | tanie
+Selerowe puree + mięso | 30 | obiad | zamiennik ziemniaków | seler | gotuj | low_carb
+Kotlety z indyka | 25 | obiad | klasyka | mięso | smaż | dla_rodziny
+KOLACJE
+Sałatka grecka | 10 | kolacja | lekka | feta, warzywa | mieszaj | śródziemnomorska
+Jajka na miękko | 6 | kolacja | szybkie | jajka | gotuj | szybkie
+Serek + orzechy | 5 | kolacja | szybka | serek | jedz | low_carb
+Wrapy sałatowe | 10 | kolacja | lekkie | sałata, mięso | złóż | szybkie
+Zupa pomidorowa | 20 | kolacja | klasyka | pomidory | gotuj | tanie
+DESERY
+Sernik bez cukru | 60 | deser | klasyka | twaróg | piecz | low_carb
+Mus czekoladowy | 10 | deser | szybki | kakao | miksuj | szybkie
+Pudding chia | 5 | deser | nocny | chia | odstaw | wegańska
+Ciasto jogurtowe | 50 | deser | lekkie | jogurt | piecz | low_carb
+Pianka kakaowa | 20 | deser | lekka | białka | ubij | keto
+PRZEKĄSKI
+Orzechy mieszane | 2 | przekąska | szybkie | orzechy | jedz | szybkie
+Warzywa + dip | 10 | przekąska | zdrowe | warzywa | podaj | dash
+Jajko na twardo | 10 | przekąska | proste | jajko | gotuj | wysokobiałkowe
+Ser + oliwki | 5 | przekąska | tłuste | ser | jedz | keto
+Koktajl białkowy | 5 | przekąska | szybki | białko | blenduj | szybkie
+SZYBKIE (do 15 min)
+Omlet warzywny | 10 | obiad | szybki | jajka | smaż | do_15_min
+Sałatka kurczak | 12 | obiad | szybka | kurczak | mieszaj | szybkie
+Tofu stir-fry | 15 | obiad | wegańskie | tofu | smaż | wegańska
+Makaron konjac | 10 | obiad | zero kcal | konjac | podgrzej | low_carb
+Krem awokado | 5 | przekąska | szybkie | awokado | blenduj | szybkie
+RÓŻNE / BAZOWE
+Ryż kalafiorowy | 10 | dodatek | zamiennik | kalafior | smaż | low_carb
+Frytki z selera | 25 | dodatek | pieczone | seler | piecz | low_carb
+Placki kokosowe | 15 | deser | szybkie | kokos | smaż | keto
+Zupa jarzynowa | 30 | obiad | klasyka | warzywa | gotuj | dash
+Sałatka jajko + awokado | 10 | kolacja | sycąca | jajko | mieszaj | keto
+BONUS
+Pancakes low carb | 15 | śniadanie | szybkie | jajka | smaż | keto
+Burger bez bułki | 20 | obiad | sycący | mięso | smaż | low_carb
+Zapiekanka warzywna | 40 | obiad | pieczona | warzywa | piecz | dla_rodziny
+Smoothie zielone | 5 | śniadanie | zdrowe | szpinak | blenduj | wegańska
+Deser kokosowy | 10 | deser | szybki | kokos | mieszaj | low_carb
+Co masz teraz
+👉 50 potraw
+👉 gotowe do arkusza
+👉 z tagami
+👉 do natychmiastowego użycia
+Co dalej (ważne)
+Teraz NIE dodawaj kolejnych 200.
+👉 najpierw:
+popraw opisy
+dodaj makra
+ujednolić nazwy
+sprawdź filtry
+
+
+
+KOLEJNE 50 POTRAW (51–100)
+format:
+nazwa | czas | typ | opis | składniki | przygotowanie | TAGI
+ŚNIADANIA
+Jajka po turecku (çılbır) | 12 | śniadanie | kremowe, czosnkowe | jajka, jogurt | gotuj, polej | wysokobiałkowe, szybkie
+Omlet z łososiem | 12 | śniadanie | tłusty, sycący | jajka, łosoś | smaż | keto
+Pasta z awokado i jajka | 8 | śniadanie | kremowa | awokado, jajka | mieszaj | low_carb
+Jogurt grecki + nasiona | 5 | śniadanie | szybkie | jogurt, chia | mieszaj | szybkie
+Tofu scramble | 10 | śniadanie | wegańska jajecznica | tofu | smaż | wegańska
+Placuszki migdałowe | 15 | śniadanie | delikatne | migdały | smaż | low_carb
+Smoothie kokosowo-kakaowe | 5 | śniadanie | deserowe | kokos, kakao | blenduj | szybkie
+Twarożek z rzodkiewką | 5 | śniadanie | świeże | twaróg | mieszaj | szybkie
+Jajka w koszulce + szpinak | 10 | śniadanie | lekkie | jajka | gotuj | wysokobiałkowe
+Mus z mascarpone | 5 | śniadanie | kremowy | mascarpone | mieszaj | keto
+OBIADY
+Kurczak curry z kalafiorem | 25 | obiad | aromatyczny | kurczak | gotuj | low_carb
+Krewetki czosnkowe | 10 | obiad | szybkie | krewetki | smaż | szybkie
+Tofu w sosie sojowym | 15 | obiad | azjatyckie | tofu | smaż | wegańska
+Gulasz wołowy | 60 | obiad | klasyka | wołowina | duś | dla_rodziny
+Zupa kokosowa (tom kha) | 25 | obiad | azjatycka | kokos | gotuj | low_carb
+Kurczak pieczony z ziołami | 45 | obiad | prosty | kurczak | piecz | dla_rodziny
+Sałatka z grillowanym serem | 15 | obiad | sycąca | ser | grilluj | wegetariańska
+Makaron z bakłażana | 20 | obiad | zamiennik | bakłażan | smaż | low_carb
+Pulpeciki w sosie pomidorowym | 30 | obiad | klasyka | mięso | gotuj | dla_rodziny
+Ryba pieczona z cytryną | 25 | obiad | lekka | ryba | piecz | śródziemnomorska
+KOLACJE
+Sałatka z kurczakiem | 15 | kolacja | szybka | kurczak | mieszaj | szybkie
+Krem z cukinii | 20 | kolacja | lekki | cukinia | blenduj | tanie
+Jajka faszerowane | 15 | kolacja | klasyka | jajka | nadziej | keto
+Sałatka z awokado i tuńczykiem | 10 | kolacja | tłusta | tuńczyk | mieszaj | keto
+Warzywa pieczone | 30 | kolacja | uniwersalne | warzywa | piecz | dash
+DESERY
+Brownie low carb | 35 | deser | czekoladowe | kakao | piecz | low_carb
+Krem waniliowy | 10 | deser | lekki | śmietanka | miksuj | szybkie
+Lody kokosowe | 15 | deser | mrożone | kokos | mroź | wegańska
+Sernik na zimno | 20 | deser | bez pieczenia | twaróg | chłodź | low_carb
+Kulki kakaowe | 10 | deser | szybkie | kakao | formuj | szybkie
+PRZEKĄSKI
+Chipsy z cukinii | 25 | przekąska | pieczone | cukinia | piecz | low_carb
+Migdały prażone | 10 | przekąska | chrupiące | migdały | praż | szybkie
+Pasta hummus | 15 | przekąska | klasyka | ciecierzyca | blenduj | wegańska
+Ser grillowany | 10 | przekąska | tłusty | ser | smaż | keto
+Jajka marynowane | 20 | przekąska | kwaśne | jajka | marynuj | tanie
+SZYBKIE (do 15 min)
+Omlet z warzywami | 10 | obiad | szybki | jajka | smaż | do_15_min
+Sałatka caprese | 5 | obiad | świeża | mozzarella | układaj | szybkie
+Wrap z sałaty i indyka | 10 | obiad | lekki | indyk | złóż | szybkie
+Stir-fry z kurczakiem | 15 | obiad | szybkie | kurczak | smaż | szybkie
+Krem z awokado | 5 | przekąska | szybki | awokado | blenduj | szybkie
+RÓŻNE / BAZOWE
+Placki z cukinii | 20 | obiad | lekkie | cukinia | smaż | low_carb
+Frytki z dyni | 30 | dodatek | pieczone | dynia | piecz | dash
+Sałatka coleslaw | 15 | dodatek | klasyka | kapusta | mieszaj | tanie
+Zupa rosół | 60 | obiad | tradycyjna | mięso | gotuj | dla_rodziny
+Ryż konjac | 10 | dodatek | zero kcal | konjac | podgrzej | low_carb
+BONUS
+Pancakes kokosowe | 15 | śniadanie | słodkie | kokos | smaż | keto
+Burger z indyka | 20 | obiad | lekki | indyk | smaż | wysokobiałkowe
+Zapiekanka z kalafiora | 40 | obiad | kremowa | kalafior | piecz | low_carb
+Smoothie malinowe | 5 | śniadanie | szybkie | maliny | blenduj | szybkie
+Mus czekoladowy keto | 10 | deser | kremowy | kakao | miksuj | keto
