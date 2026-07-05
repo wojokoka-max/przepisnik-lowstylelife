@@ -11,6 +11,8 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
+import { ClerkLoaded, ClerkProvider } from "@clerk/expo";
+import { tokenCache } from "@clerk/expo/token-cache";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -21,12 +23,19 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { setBaseUrl } from "@workspace/api-client-react";
 
 import LoginOverlay from "../components/LoginOverlay";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { RecipesProvider } from "../context/RecipesContext";
 
 SplashScreen.preventAutoHideAsync();
+
+const domain = process.env.EXPO_PUBLIC_DOMAIN;
+if (domain) setBaseUrl(`https://${domain}`);
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const proxyUrl = process.env.EXPO_PUBLIC_CLERK_PROXY_URL || undefined;
 
 const queryClient = new QueryClient();
 
@@ -80,19 +89,27 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <RecipesProvider>
-              <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#fdf8ef" }}>
-                <KeyboardProvider>
-                  <Gate>
-                    <RootLayoutNav />
-                  </Gate>
-                </KeyboardProvider>
-              </GestureHandlerRootView>
-            </RecipesProvider>
-          </AuthProvider>
-        </QueryClientProvider>
+        <ClerkProvider
+          publishableKey={publishableKey}
+          tokenCache={tokenCache}
+          proxyUrl={proxyUrl}
+        >
+          <ClerkLoaded>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <RecipesProvider>
+                  <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#fdf8ef" }}>
+                    <KeyboardProvider>
+                      <Gate>
+                        <RootLayoutNav />
+                      </Gate>
+                    </KeyboardProvider>
+                  </GestureHandlerRootView>
+                </RecipesProvider>
+              </AuthProvider>
+            </QueryClientProvider>
+          </ClerkLoaded>
+        </ClerkProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
   );

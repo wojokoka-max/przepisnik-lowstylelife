@@ -1,6 +1,6 @@
 // Port webowego Home.tsx (Moje przepisy) na React Native.
 
-import { Link as LinkIcon, Search, Star, X } from "lucide-react-native";
+import { Link as LinkIcon, Search, Sparkles, Star, X } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
@@ -36,6 +36,7 @@ const CATEGORIES = [
   "Pieczywo",
   "Przetwory",
   "Świąteczne",
+  "Z Kreatora",
   "Pobrane",
   "Ulubione",
 ];
@@ -52,15 +53,18 @@ export default function HomeTab() {
 
   const q = searchQuery.trim().toLowerCase();
 
-  const { listed, isPobrane, isUlubione } = useMemo(() => {
+  const { listed, isPobrane, isUlubione, isKreator } = useMemo(() => {
     const showPobrane = selectedCategory === "Pobrane";
     const showUlubione = selectedCategory === "Ulubione";
+    const showKreator = selectedCategory === "Z Kreatora";
 
     let list: Recipe[];
     if (showUlubione) {
       list = allRecipes.filter((r) => favorites.has(r.id));
     } else if (showPobrane) {
       list = allRecipes.filter((r) => r.category === "Pobrane");
+    } else if (showKreator) {
+      list = allRecipes.filter((r) => r.category === "Kreator");
     } else if (selectedCategory === "Wszystkie") {
       list = allRecipes.filter((r) => r.category !== "Pobrane");
     } else {
@@ -69,11 +73,17 @@ export default function HomeTab() {
       );
     }
     if (q) list = list.filter((r) => r.title.toLowerCase().includes(q));
-    return { listed: list, isPobrane: showPobrane, isUlubione: showUlubione };
+    return {
+      listed: list,
+      isPobrane: showPobrane,
+      isUlubione: showUlubione,
+      isKreator: showKreator,
+    };
   }, [allRecipes, favorites, selectedCategory, q]);
 
   const pobraneCount = allRecipes.filter((r) => r.category === "Pobrane").length;
   const ulubioneCount = allRecipes.filter((r) => favorites.has(r.id)).length;
+  const kreatorCount = allRecipes.filter((r) => r.category === "Kreator").length;
 
   const onAddRecipe = () => setAddOpen(true);
 
@@ -141,7 +151,14 @@ export default function HomeTab() {
               {CATEGORIES.map((cat) => {
                 const active = selectedCategory === cat;
                 const isFav = cat === "Ulubione";
-                const count = isFav ? ulubioneCount : cat === "Pobrane" ? pobraneCount : null;
+                const isKreatorChip = cat === "Z Kreatora";
+                const count = isFav
+                  ? ulubioneCount
+                  : cat === "Pobrane"
+                    ? pobraneCount
+                    : isKreatorChip
+                      ? kreatorCount
+                      : null;
                 return (
                   <Pressable
                     key={cat}
@@ -156,6 +173,14 @@ export default function HomeTab() {
                         size={11}
                         color={active ? "#fff" : "#837694"}
                         fill={active ? "#fff" : "transparent"}
+                        strokeWidth={2}
+                        style={{ marginRight: 4 }}
+                      />
+                    ) : null}
+                    {isKreatorChip ? (
+                      <Sparkles
+                        size={11}
+                        color={active ? "#fff" : "#8b4fd1"}
                         strokeWidth={2}
                         style={{ marginRight: 4 }}
                       />
@@ -190,7 +215,17 @@ export default function HomeTab() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyEmoji}>
-              {q ? "🔍" : isUlubione ? "⭐" : isPobrane ? "🔗" : allRecipes.length === 0 ? "📖" : "🍽️"}
+              {q
+                ? "🔍"
+                : isUlubione
+                  ? "⭐"
+                  : isPobrane
+                    ? "🔗"
+                    : isKreator
+                      ? "✨"
+                      : allRecipes.length === 0
+                        ? "📖"
+                        : "🍽️"}
             </Text>
             <Text style={styles.emptyText}>
               {q
@@ -199,9 +234,11 @@ export default function HomeTab() {
                   ? "Brak ulubionych. Kliknij gwiazdkę przy przepisie."
                   : isPobrane
                     ? "Brak zapisanych linków."
-                    : allRecipes.length === 0
-                      ? "Brak przepisów. Dodaj swój pierwszy przepis."
-                      : "Brak przepisów w tej kategorii."}
+                    : isKreator
+                      ? "Brak przepisów z Kreatora. Zapisz danie z zakładki „Z lodówki”."
+                      : allRecipes.length === 0
+                        ? "Brak przepisów. Dodaj swój pierwszy przepis."
+                        : "Brak przepisów w tej kategorii."}
             </Text>
           </View>
         }

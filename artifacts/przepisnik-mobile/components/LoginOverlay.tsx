@@ -1,10 +1,19 @@
 // Login / register overlay shown when there is no active session.
+//
+// Two paths:
+//   • Regular users → email + password (sign in / sign up with email code).
+//   • Admin (owner) → "Zaloguj przez GitHub" (only the admin GitHub account
+//     is accepted; anyone else is rejected).
+//
 // Visual language matches the rest of the app: cream brand, navy serif title,
-// lavender CTA, gold accents. High contrast so everything reads clearly.
+// lavender CTA, gold accents.
 
+import { useSSO, useSignIn, useSignUp } from "@clerk/expo";
+import * as AuthSession from "expo-auth-session";
 import { LinearGradient } from "expo-linear-gradient";
-import { CircleAlert } from "lucide-react-native";
-import React, { useState } from "react";
+import * as WebBrowser from "expo-web-browser";
+import { CircleAlert, LogIn } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -25,33 +34,132 @@ import { useAuth } from "../context/AuthContext";
 const heroImg = require("../assets/images/start-hero.png");
 const HERO_H = Math.round(Dimensions.get("window").height * 0.5);
 
+// Completes any pending browser-based auth session (GitHub OAuth).
+WebBrowser.maybeCompleteAuthSession();
+
 type Mode = "signin" | "signup";
+type Step = "form" | "verify";
+
+function errText(err: unknown, fallback: string): string {
+  const e = err as
+    | { errors?: { longMessage?: string; message?: string }[]; message?: string }
+    | undefined;
+  return (
+    e?.errors?.[0]?.longMessage ||
+    e?.errors?.[0]?.message ||
+    e?.message ||
+    fallback
+  );
+}
 
 export default function LoginOverlay() {
   const insets = useSafeAreaInsets();
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+  const { startSSOFlow } = useSSO();
+  const { githubAccessDenied, clearGithubAccessDenied } = useAuth();
 
   const [mode, setMode] = useState<Mode>("signin");
+  const [step, setStep] = useState<Step>("form");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [ghBusy, setGhBusy] = useState(false);
+
+  // Preload the browser on Android to speed up OAuth.
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
 
   const submit = async () => {
     if (busy) return;
     setError(null);
     setBusy(true);
     try {
-      const fn = mode === "signin" ? signIn : signUp;
-      const res = await fn(email, password);
-      if (!res.ok) setError(res.error);
+      if (mode === "signin") {
+        const res = await signIn.password({ emailAddress: email, password });
+        if (res?.error) {
+          setError(errText(res.error, "Nie udało się zalogować."));
+          return;
+        }
+        if (signIn.status === "complete") {
+          await signIn.finalize({ navigate: () => {} });
+        } else {
+          setError("Nie udało się dokończyć logowania.");
+        }
+      } else {
+        const res = await signUp.password({ emailAddress: email, password });
+        if (res?.error) {
+          setError(errText(res.error, "Nie udało się założyć konta."));
+          return;
+        }
+        await signUp.verifications.sendEmailCode();
+        setStep("verify");
+      }
+    } catch (e) {
+      setError(errText(e, "Coś poszło nie tak. Spróbuj ponownie."));
     } finally {
       setBusy(false);
     }
   };
 
+  const verify = async () => {
+    if (busy) return;
+    setError(null);
+    setBusy(true);
+    try {
+      await signUp.verifications.verifyEmailCode({ code });
+      if (signUp.status === "complete") {
+        await signUp.finalize({ navigate: () => {} });
+      } else {
+        setError("Nieprawidłowy kod. Spróbuj ponownie.");
+      }
+    } catch (e) {
+      setError(errText(e, "Nieprawidłowy kod. Spróbuj ponownie."));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const resendCode = async () => {
+    setError(null);
+    try {
+      await signUp.verifications.sendEmailCode();
+    } catch (e) {
+      setError(errText(e, "Nie udało się wysłać kodu."));
+    }
+  };
+
+  const signInWithGitHub = async () => {
+    if (ghBusy) return;
+    setError(null);
+    clearGithubAccessDenied();
+    setGhBusy(true);
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_github",
+        redirectUrl: AuthSession.makeRedirectUri(),
+      });
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+      }
+    } catch (e) {
+      setError(errText(e, "Logowanie przez GitHub nie powiodło się."));
+    } finally {
+      setGhBusy(false);
+    }
+  };
+
   const switchMode = () => {
     setError(null);
+    setStep("form");
+    setCode("");
     setMode(mode === "signin" ? "signup" : "signin");
   };
 
@@ -61,7 +169,6 @@ export default function LoginOverlay() {
       locations={[0, 0.5, 1]}
       style={styles.root}
     >
-      {/* Full lavender-notebook photo as the start-screen hero, melting into cream */}
       <View pointerEvents="none" style={styles.hero}>
         <Image source={heroImg} style={styles.heroImg} resizeMode="cover" />
         <LinearGradient
@@ -96,71 +203,161 @@ export default function LoginOverlay() {
             <Text style={styles.kicker}>L O W S T Y L E L I F E</Text>
             <View style={styles.divider} />
             <Text style={styles.tagline}>
-              {mode === "signin" ? "Witaj z powrotem w swojej kuchni." : "Załóż konto i zacznij gotować."}
+              {step === "verify"
+                ? "Sprawdź skrzynkę i wpisz kod potwierdzający."
+                : mode === "signin"
+                  ? "Witaj z powrotem w swojej kuchni."
+                  : "Załóż konto i zacznij gotować."}
             </Text>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              placeholder="twoj@email.com"
-              placeholderTextColor="#b9aa8c"
-              style={styles.input}
-              editable={!busy}
-              returnKeyType="next"
-            />
+            {step === "verify" ? (
+              <>
+                <Text style={styles.label}>Kod z e-maila</Text>
+                <TextInput
+                  value={code}
+                  onChangeText={setCode}
+                  keyboardType="number-pad"
+                  placeholder="np. 123456"
+                  placeholderTextColor="#b9aa8c"
+                  style={styles.input}
+                  editable={!busy}
+                  returnKeyType="go"
+                  onSubmitEditing={verify}
+                />
 
-            <Text style={[styles.label, { marginTop: 14 }]}>Hasło</Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder={mode === "signup" ? "min. 6 znaków" : "twoje hasło"}
-              placeholderTextColor="#b9aa8c"
-              style={styles.input}
-              editable={!busy}
-              returnKeyType="go"
-              onSubmitEditing={submit}
-            />
+                {error ? (
+                  <View style={styles.errorBox}>
+                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                ) : null}
 
-            {error ? (
-              <View style={styles.errorBox}>
-                <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
+                <Pressable
+                  onPress={verify}
+                  disabled={busy}
+                  style={({ pressed }) => [
+                    styles.cta,
+                    { opacity: pressed || busy ? 0.85 : 1 },
+                  ]}
+                >
+                  {busy ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.ctaText}>P O T W I E R D Ź</Text>
+                  )}
+                </Pressable>
 
-            <Pressable
-              onPress={submit}
-              disabled={busy}
-              style={({ pressed }) => [
-                styles.cta,
-                { opacity: pressed || busy ? 0.85 : 1 },
-              ]}
-            >
-              {busy ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.ctaText}>
-                  {mode === "signin" ? "Z A L O G U J   S I Ę" : "Z A Ł Ó Ż   K O N T O"}
-                </Text>
-              )}
-            </Pressable>
+                <Pressable onPress={resendCode} hitSlop={10} style={styles.switchBtn}>
+                  <Text style={styles.switchText}>
+                    Nie dostałaś kodu? <Text style={styles.switchTextEm}>Wyślij ponownie</Text>
+                  </Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  placeholder="twoj@email.com"
+                  placeholderTextColor="#b9aa8c"
+                  style={styles.input}
+                  editable={!busy}
+                  returnKeyType="next"
+                />
 
-            <Pressable onPress={switchMode} hitSlop={10} style={styles.switchBtn}>
-              <Text style={styles.switchText}>
-                {mode === "signin" ? "Nie masz konta? " : "Masz już konto? "}
-                <Text style={styles.switchTextEm}>
-                  {mode === "signin" ? "Załóż konto" : "Zaloguj się"}
-                </Text>
-              </Text>
-            </Pressable>
+                <Text style={[styles.label, { marginTop: 14 }]}>Hasło</Text>
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  placeholder={mode === "signup" ? "min. 8 znaków" : "twoje hasło"}
+                  placeholderTextColor="#b9aa8c"
+                  style={styles.input}
+                  editable={!busy}
+                  returnKeyType="go"
+                  onSubmitEditing={submit}
+                />
+
+                {/* Clerk bot-protection mount (required for sign-up). */}
+                <View nativeID="clerk-captcha" />
+
+                {error ? (
+                  <View style={styles.errorBox}>
+                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                ) : null}
+
+                {githubAccessDenied ? (
+                  <View style={styles.errorBox}>
+                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <Text style={styles.errorText}>
+                      To konto GitHub nie ma dostępu. Logowanie przez GitHub jest tylko dla administratora.
+                    </Text>
+                  </View>
+                ) : null}
+
+                <Pressable
+                  onPress={submit}
+                  disabled={busy}
+                  style={({ pressed }) => [
+                    styles.cta,
+                    { opacity: pressed || busy ? 0.85 : 1 },
+                  ]}
+                >
+                  {busy ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.ctaText}>
+                      {mode === "signin" ? "Z A L O G U J   S I Ę" : "Z A Ł Ó Ż   K O N T O"}
+                    </Text>
+                  )}
+                </Pressable>
+
+                <Pressable onPress={switchMode} hitSlop={10} style={styles.switchBtn}>
+                  <Text style={styles.switchText}>
+                    {mode === "signin" ? "Nie masz konta? " : "Masz już konto? "}
+                    <Text style={styles.switchTextEm}>
+                      {mode === "signin" ? "Załóż konto" : "Zaloguj się"}
+                    </Text>
+                  </Text>
+                </Pressable>
+
+                {/* Divider */}
+                <View style={styles.orRow}>
+                  <View style={styles.orLine} />
+                  <Text style={styles.orText}>ALBO</Text>
+                  <View style={styles.orLine} />
+                </View>
+
+                {/* Admin GitHub login */}
+                <Pressable
+                  onPress={signInWithGitHub}
+                  disabled={ghBusy}
+                  style={({ pressed }) => [
+                    styles.ghBtn,
+                    { opacity: pressed || ghBusy ? 0.85 : 1 },
+                  ]}
+                >
+                  {ghBusy ? (
+                    <ActivityIndicator color="#f4ecdd" />
+                  ) : (
+                    <>
+                      <LogIn size={18} color="#f4ecdd" strokeWidth={2} />
+                      <Text style={styles.ghText}>Zaloguj przez GitHub</Text>
+                    </>
+                  )}
+                </Pressable>
+                <Text style={styles.ghHint}>Dostęp administratora</Text>
+              </>
+            )}
           </View>
 
           <View style={styles.foot}>
@@ -303,6 +500,50 @@ const styles = StyleSheet.create({
   switchTextEm: {
     color: "#7a3fc0",
     fontFamily: "Inter_700Bold",
+  },
+
+  orRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 20,
+    marginBottom: 14,
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "rgba(168,128,31,0.25)",
+  },
+  orText: {
+    color: "#8a6a1f",
+    fontFamily: "Inter_700Bold",
+    fontSize: 10,
+    letterSpacing: 2,
+  },
+  ghBtn: {
+    height: 48,
+    borderRadius: 999,
+    backgroundColor: "#1a1a2e",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderColor: "rgba(168,128,31,0.35)",
+  },
+  ghText: {
+    color: "#f4ecdd",
+    fontFamily: "Inter_600SemiBold",
+    fontSize: 14.5,
+    letterSpacing: 0.3,
+  },
+  ghHint: {
+    marginTop: 8,
+    textAlign: "center",
+    color: "#8a7c5f",
+    fontFamily: "Inter_500Medium",
+    fontSize: 11,
+    letterSpacing: 1,
   },
 
   foot: {
