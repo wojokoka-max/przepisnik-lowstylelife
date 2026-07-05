@@ -52,6 +52,15 @@ function errText(err: unknown, fallback: string): string {
   );
 }
 
+function isOAuthStrategyError(err: unknown): boolean {
+  const text = errText(err, "").toLowerCase();
+  return (
+    text.includes("oauth_github") &&
+    text.includes("allowed values") &&
+    text.includes("strategy")
+  );
+}
+
 export default function LoginOverlay() {
   const insets = useSafeAreaInsets();
   const { signIn } = useSignIn();
@@ -150,7 +159,11 @@ export default function LoginOverlay() {
         await setActive({ session: createdSessionId });
       }
     } catch (e) {
-      setError(errText(e, "Logowanie przez GitHub nie powiodło się."));
+      setError(
+        isOAuthStrategyError(e)
+          ? "Logowanie przez GitHub nie jest jeszcze włączone w Clerk. Zaloguj się e-mailem albo włącz GitHub OAuth w panelu Clerk."
+          : errText(e, "Logowanie przez GitHub nie powiodło się."),
+      );
     } finally {
       setGhBusy(false);
     }
@@ -330,32 +343,24 @@ export default function LoginOverlay() {
                   </Text>
                 </Pressable>
 
-                {/* Divider */}
-                <View style={styles.orRow}>
-                  <View style={styles.orLine} />
-                  <Text style={styles.orText}>ALBO</Text>
-                  <View style={styles.orLine} />
-                </View>
-
-                {/* Admin GitHub login */}
                 <Pressable
                   onPress={signInWithGitHub}
                   disabled={ghBusy}
+                  hitSlop={12}
                   style={({ pressed }) => [
-                    styles.ghBtn,
-                    { opacity: pressed || ghBusy ? 0.85 : 1 },
+                    styles.adminLink,
+                    { opacity: pressed || ghBusy ? 0.65 : 1 },
                   ]}
                 >
                   {ghBusy ? (
-                    <ActivityIndicator color="#f4ecdd" />
+                    <ActivityIndicator color="#8a7c5f" size="small" />
                   ) : (
                     <>
-                      <LogIn size={18} color="#f4ecdd" strokeWidth={2} />
-                      <Text style={styles.ghText}>Zaloguj przez GitHub</Text>
+                      <LogIn size={13} color="#8a7c5f" strokeWidth={2} />
+                      <Text style={styles.adminLinkText}>admin GitHub</Text>
                     </>
                   )}
                 </Pressable>
-                <Text style={styles.ghHint}>Dostęp administratora</Text>
               </>
             )}
           </View>
@@ -502,48 +507,21 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
   },
 
-  orRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 20,
-    marginBottom: 14,
-  },
-  orLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "rgba(168,128,31,0.25)",
-  },
-  orText: {
-    color: "#8a6a1f",
-    fontFamily: "Inter_700Bold",
-    fontSize: 10,
-    letterSpacing: 2,
-  },
-  ghBtn: {
-    height: 48,
-    borderRadius: 999,
-    backgroundColor: "#1a1a2e",
+  adminLink: {
+    alignSelf: "center",
+    marginTop: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
-    borderWidth: 1,
-    borderColor: "rgba(168,128,31,0.35)",
+    gap: 6,
   },
-  ghText: {
-    color: "#f4ecdd",
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 14.5,
-    letterSpacing: 0.3,
-  },
-  ghHint: {
-    marginTop: 8,
-    textAlign: "center",
+  adminLinkText: {
     color: "#8a7c5f",
     fontFamily: "Inter_500Medium",
-    fontSize: 11,
-    letterSpacing: 1,
+    fontSize: 11.5,
+    letterSpacing: 0.2,
   },
 
   foot: {

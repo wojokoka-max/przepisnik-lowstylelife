@@ -2,9 +2,8 @@
 //
 // Two login paths:
 //   • Regular users  → email + password (handled in LoginOverlay via Clerk).
-//   • Admin (owner)  → "Zaloguj przez GitHub". GitHub sign-in is admin-only:
-//     only the GitHub account below is allowed; any other GitHub account is
-//     rejected (regular users must use email/password).
+//   • Admin (owner)  → GitHub with the admin GitHub username below.
+//     Any other GitHub account is rejected.
 //
 // This file keeps the same surface the rest of the app already consumes
 // (ready, user, isAdmin, signOut) so screens don't need to change.
@@ -20,7 +19,9 @@ import React, {
 } from "react";
 
 // The single GitHub account that is granted admin access.
-export const ADMIN_GITHUB_USERNAME = "wojokoka-max";
+export const ADMIN_GITHUB_USERNAME =
+  process.env.EXPO_PUBLIC_ADMIN_GITHUB_USERNAME?.trim().toLowerCase() ||
+  "wojokoka-max";
 
 export interface User {
   email: string;
