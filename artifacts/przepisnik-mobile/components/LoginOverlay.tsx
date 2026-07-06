@@ -161,7 +161,7 @@ export default function LoginOverlay() {
     } catch (e) {
       setError(
         isOAuthStrategyError(e)
-          ? "Logowanie przez GitHub nie jest jeszcze włączone w Clerk. Zaloguj się e-mailem albo włącz GitHub OAuth w panelu Clerk."
+          ? "Logowanie admina przez GitHub nie jest jeszcze włączone w Clerk. Włącz GitHub OAuth w panelu Clerk."
           : errText(e, "Logowanie przez GitHub nie powiodło się."),
       );
     } finally {

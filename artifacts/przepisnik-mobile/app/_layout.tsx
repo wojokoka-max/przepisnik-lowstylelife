@@ -18,6 +18,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -36,6 +37,7 @@ if (domain) setBaseUrl(`https://${domain}`);
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 const proxyUrl = process.env.EXPO_PUBLIC_CLERK_PROXY_URL || undefined;
+const hasClerkConfig = Boolean(publishableKey?.trim());
 
 const queryClient = new QueryClient();
 
@@ -66,6 +68,20 @@ function Gate({ children }: { children: React.ReactNode }) {
   );
 }
 
+function MissingClerkConfig() {
+  return (
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      <View style={styles.configRoot}>
+        <Text style={styles.configTitle}>Brakuje konfiguracji logowania</Text>
+        <Text style={styles.configText}>
+          Ustaw EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY dla aplikacji mobilnej.
+        </Text>
+      </View>
+    </SafeAreaProvider>
+  );
+}
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -85,6 +101,10 @@ export default function RootLayout() {
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) return null;
+
+  if (!hasClerkConfig) {
+    return <MissingClerkConfig />;
+  }
 
   return (
     <SafeAreaProvider>
@@ -114,3 +134,28 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  configRoot: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 28,
+    backgroundColor: "#fdf8ef",
+  },
+  configTitle: {
+    color: "#1a1a2e",
+    fontFamily: "CormorantGaramond_600SemiBold",
+    fontSize: 26,
+    lineHeight: 31,
+    textAlign: "center",
+  },
+  configText: {
+    marginTop: 10,
+    color: "#6a5d44",
+    fontFamily: "Inter_500Medium",
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+  },
+});
