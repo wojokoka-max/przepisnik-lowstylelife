@@ -10,6 +10,7 @@
 
 import { useSSO, useSignIn, useSignUp } from "@clerk/expo";
 import * as AuthSession from "expo-auth-session";
+import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { CircleAlert, LogIn } from "lucide-react-native";
@@ -151,9 +152,17 @@ export default function LoginOverlay() {
     clearGithubAccessDenied();
     setGhBusy(true);
     try {
+      const redirectUrl =
+        Constants.appOwnership === "expo"
+          ? AuthSession.makeRedirectUri({ path: "sso-callback" })
+          : AuthSession.makeRedirectUri({
+              scheme: "przepisnik",
+              path: "sso-callback",
+            });
+      console.log("Clerk GitHub redirect URL:", redirectUrl);
       const { createdSessionId, setActive } = await startSSOFlow({
         strategy: "oauth_github",
-        redirectUrl: AuthSession.makeRedirectUri(),
+        redirectUrl,
       });
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
