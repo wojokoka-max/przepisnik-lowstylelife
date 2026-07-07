@@ -36,7 +36,7 @@ const CATEGORIES = [
   "Pieczywo",
   "Przetwory",
   "Świąteczne",
-  "Z Kreatora",
+  "Z lodówki",
   "Pobrane",
   "Ulubione",
 ];
@@ -56,7 +56,7 @@ export default function HomeTab() {
   const { listed, isPobrane, isUlubione, isKreator } = useMemo(() => {
     const showPobrane = selectedCategory === "Pobrane";
     const showUlubione = selectedCategory === "Ulubione";
-    const showKreator = selectedCategory === "Z Kreatora";
+    const showKreator = selectedCategory === "Z lodówki";
 
     let list: Recipe[];
     if (showUlubione) {
@@ -151,7 +151,7 @@ export default function HomeTab() {
               {CATEGORIES.map((cat) => {
                 const active = selectedCategory === cat;
                 const isFav = cat === "Ulubione";
-                const isKreatorChip = cat === "Z Kreatora";
+                const isKreatorChip = cat === "Z lodówki";
                 const count = isFav
                   ? ulubioneCount
                   : cat === "Pobrane"
@@ -235,7 +235,7 @@ export default function HomeTab() {
                   : isPobrane
                     ? "Brak zapisanych linków."
                     : isKreator
-                      ? "Brak przepisów z Kreatora. Zapisz danie z zakładki „Z lodówki”."
+                      ? "Brak przepisów z lodówki. Zapisz danie z zakładki „Z lodówki”."
                       : allRecipes.length === 0
                         ? "Brak przepisów. Dodaj swój pierwszy przepis."
                         : "Brak przepisów w tej kategorii."}
