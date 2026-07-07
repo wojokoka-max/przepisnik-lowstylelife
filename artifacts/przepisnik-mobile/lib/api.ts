@@ -27,7 +27,61 @@ export type GeneratedRecipe = {
   notes: string;
 };
 
+function localRecipe(title: string, hint: string): GeneratedRecipe {
+  const cleanTitle = title.trim() || "Domowe danie";
+  return {
+    title: cleanTitle,
+    description: `Prosty przepis LowStyleLife przygotowany lokalnie: ${hint}.`,
+    category: "Kreator",
+    prepTime: "30 min",
+    servings: 2,
+    difficulty: "łatwy",
+    emoji: "🍲",
+    notes:
+      "To wersja lokalna bez połączenia z backendem AI. Po podłączeniu API aplikacja wygeneruje pełniejszy przepis.",
+    ingredients: [
+      "1 porcja głównego składnika",
+      "1 łyżka oliwy lub masła",
+      "1 ząbek czosnku",
+      "sól i pieprz do smaku",
+      "ulubione zioła",
+    ],
+    steps: [
+      "Przygotuj i pokrój składniki na równe kawałki.",
+      "Rozgrzej oliwę lub masło na patelni, dodaj czosnek i chwilę podsmaż.",
+      "Dodaj główny składnik, dopraw solą, pieprzem i ziołami.",
+      "Duś lub smaż na średnim ogniu, aż składniki będą miękkie i aromatyczne.",
+      "Podawaj od razu, najlepiej z prostą sałatką albo ulubionym dodatkiem.",
+    ],
+  };
+}
+
+async function readJsonResponse<T>(res: Response, fallbackMessage: string): Promise<T> {
+  const text = await res.text();
+  const trimmed = text.trimStart();
+
+  if (!trimmed) {
+    throw new Error(fallbackMessage);
+  }
+
+  if (trimmed.startsWith("<")) {
+    throw new Error(
+      "Generator AI nie ma teraz połączenia z backendem. Używam przepisu lokalnego.",
+    );
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(fallbackMessage);
+  }
+}
+
 export async function generateRecipeFromName(name: string): Promise<GeneratedRecipe> {
+  if (!baseDomain) {
+    return localRecipe(name, "na podstawie wpisanej nazwy dania");
+  }
+
   const res = await fetch(apiUrl("/recipe-from-name"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -43,12 +97,19 @@ export async function generateRecipeFromName(name: string): Promise<GeneratedRec
     }
     throw new Error(msg);
   }
-  return (await res.json()) as GeneratedRecipe;
+  return readJsonResponse<GeneratedRecipe>(res, "Błąd generowania przepisu.");
 }
 
 export async function generateRecipeFromIngredients(
   ingredients: string[],
 ): Promise<GeneratedRecipe> {
+  if (!baseDomain) {
+    return localRecipe(
+      ingredients.filter(Boolean).join(", ") || "Danie z lodówki",
+      "na podstawie składników z lodówki",
+    );
+  }
+
   const res = await fetch(apiUrl("/recipe-from-ingredients"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -64,7 +125,7 @@ export async function generateRecipeFromIngredients(
     }
     throw new Error(msg);
   }
-  return (await res.json()) as GeneratedRecipe;
+  return readJsonResponse<GeneratedRecipe>(res, "Błąd generowania przepisu.");
 }
 
 export type PhotoRecipe = {
