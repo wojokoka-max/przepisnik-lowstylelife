@@ -833,6 +833,29 @@ function dishFormKey(id: number): string | null {
   return null
 }
 
+const THEME_PATTERNS: [string, RegExp][] = [
+  ['ziemniak', /ziemniak|batat|frytki|placki ziemniacz/i],
+  ['jajka', /jajk|jajec|omlet|frittat|szakszuk|shakshuk/i],
+  ['kurczak', /kurczak|filet z kurczaka/i],
+  ['indyk', /\bindyk|indyka|indyczy/i],
+  ['wolowina', /wołowin|wolowin|\bstek\b|polędwic|poledwic|burger wołow|burger wolow/i],
+  ['ryba', /łoso|losos|tuńczyk|tunczyk|dorsz|makrel|śledź|sledz|krewetk|\bryba\b|\bryby\b/i],
+  ['tofu', /\btofu\b|tempeh|seitan/i],
+  ['straczki', /ciecierzyc|soczewic|fasol|edamame|hummus|groch[oó]wk/i],
+  ['kokos', /kokos|mleko kokos|wi[oó]rki kokos|śmietanka kokos|smietanka kokos/i],
+  ['awokado', /awokado|guacamole/i],
+  ['sernik', /sernik/i],
+  ['lody', /\blody\b|sorbet/i],
+  ['czekolada', /czekolad|kakao|brownie/i],
+]
+
+function dishThemeKeys(id: number): string[] {
+  const d = DISH_BY_ID.get(id)
+  if (!d) return []
+  const text = `${d.nazwa} ${d.opis} ${d.skladniki}`
+  return THEME_PATTERNS.filter(([, re]) => re.test(text)).map(([theme]) => theme)
+}
+
 /**
  * Wybiera 3 dania z puli tak, by — gdy to możliwe — pochodziły
  * z różnych kategorii (białko/forma). Zawsze deterministyczne dla danego seed.
@@ -864,9 +887,17 @@ export function pickDiverseTriple(
   const usedNames = new Set<string>()
   const usedTypes = new Set<DishType>()
   const usedForms = new Set<string>()
+  const usedThemes = new Set<string>()
   // Nazwy dań użytych już w innych posiłkach dnia też blokujemy,
   // żeby ta sama potrawa nie wracała pod innym id.
-  exclude?.forEach(id => usedNames.add(dishNameKey(id)))
+  exclude?.forEach(id => {
+    usedNames.add(dishNameKey(id))
+    const type = DISH_TYPE_MAP.get(id) ?? 'inne'
+    if (type !== 'inne') usedTypes.add(type)
+    const form = dishFormKey(id)
+    if (form) usedForms.add(form)
+    dishThemeKeys(id).forEach(theme => usedThemes.add(theme))
+  })
 
   // Dodaje danie tylko, gdy jest INNEJ kategorii niż już wybrane. Twarde,
   // nierelaksowane wymogi w obrębie trójki:
@@ -883,10 +914,13 @@ export function pickDiverseTriple(
     if (type !== 'inne' && usedTypes.has(type)) return false
     const form = dishFormKey(id)
     if (form && usedForms.has(form)) return false
+    const themes = dishThemeKeys(id)
+    if (themes.some(theme => usedThemes.has(theme))) return false
     result.push(id)
     usedNames.add(name)
     if (type !== 'inne') usedTypes.add(type)
     if (form) usedForms.add(form)
+    themes.forEach(theme => usedThemes.add(theme))
     return true
   }
 
@@ -912,10 +946,13 @@ export function pickDiverseTriple(
       if (type !== 'inne' && usedTypes.has(type)) continue
       const form = dishFormKey(id)
       if (form && usedForms.has(form)) continue
+      const themes = dishThemeKeys(id)
+      if (themes.some(theme => usedThemes.has(theme))) continue
       result.push(id)
       namesInResult.add(name)
       if (type !== 'inne') usedTypes.add(type)
       if (form) usedForms.add(form)
+      themes.forEach(theme => usedThemes.add(theme))
     }
   }
 
