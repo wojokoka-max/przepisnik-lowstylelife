@@ -5,7 +5,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as Print from "expo-print";
 import { ChevronLeft, Printer, Star } from "lucide-react-native";
 import React from "react";
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useRecipes } from "../../context/RecipesContext";
@@ -112,9 +112,16 @@ export default function RecipeDetail() {
   }
 
   const isFav = favorites.has(recipe.id);
+  const hasFullRecipe = recipe.ingredients.length > 0 || recipe.steps.length > 0;
+  const sourceUrl = recipe.sourceUrl;
+  const isSavedLink = Boolean(sourceUrl) && !hasFullRecipe;
 
   async function handlePrint() {
     if (!recipe || printing) return;
+    if (isSavedLink) {
+      Alert.alert("Zapisany link", "Ten wpis jest linkiem do przepisu, nie pełnym przepisem do wydruku.");
+      return;
+    }
     setPrinting(true);
     try {
       const html = buildRecipeHtml(recipe);
@@ -127,6 +134,15 @@ export default function RecipeDetail() {
       Alert.alert("Drukowanie", e instanceof Error ? e.message : "Nie udało się otworzyć drukowania.");
     } finally {
       setPrinting(false);
+    }
+  }
+
+  async function handleOpenSourceUrl() {
+    if (!sourceUrl) return;
+    try {
+      await Linking.openURL(sourceUrl);
+    } catch {
+      Alert.alert("Link", "Nie udało się otworzyć linku.");
     }
   }
 
@@ -167,6 +183,21 @@ export default function RecipeDetail() {
       <Text style={styles.title}>{recipe.title}</Text>
       {recipe.description ? <Text style={styles.desc}>{recipe.description}</Text> : null}
 
+      {isSavedLink ? (
+        <View style={styles.sourceCard}>
+          <Text style={styles.sourceKicker}>Zapisany link</Text>
+          <Text style={styles.sourceTitle}>Ten przepis czeka pod zapisanym adresem.</Text>
+          <Text style={styles.sourceText} numberOfLines={3}>
+            {recipe.sourceUrl}
+          </Text>
+          <Pressable onPress={handleOpenSourceUrl} style={styles.sourceButton}>
+            <Text style={styles.sourceButtonText}>Otwórz link</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {hasFullRecipe ? (
+        <>
       <View style={styles.meta}>
         {recipe.prepTime ? <Pill text={recipe.prepTime} /> : null}
         {recipe.servings ? <Pill text={`${recipe.servings} porcji`} /> : null}
@@ -191,6 +222,16 @@ export default function RecipeDetail() {
           </View>
         ))}
       </View>
+        </>
+      ) : !isSavedLink ? (
+        <View style={styles.sourceCard}>
+          <Text style={styles.sourceKicker}>Przepis roboczy</Text>
+          <Text style={styles.sourceTitle}>Ten wpis nie ma jeszcze składników ani kroków.</Text>
+          <Text style={styles.sourceText}>
+            Wróć do listy i dodaj pełną wersję przepisu, kiedy będziesz gotowa.
+          </Text>
+        </View>
+      ) : null}
 
       {recipe.notes ? (
         <>
@@ -248,6 +289,47 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: "center",
     marginTop: 6,
+  },
+  sourceCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#ebe3ef",
+    backgroundColor: "#fffdfb",
+    padding: 16,
+    marginTop: 18,
+    gap: 8,
+  },
+  sourceKicker: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 11,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    color: "#b88a2c",
+  },
+  sourceTitle: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 16,
+    color: "#34284b",
+    lineHeight: 21,
+  },
+  sourceText: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    color: "#6f6580",
+    lineHeight: 19,
+  },
+  sourceButton: {
+    alignSelf: "flex-start",
+    borderRadius: 999,
+    backgroundColor: "#8b4fd1",
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    marginTop: 4,
+  },
+  sourceButtonText: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 13,
+    color: "#fff",
   },
   meta: {
     flexDirection: "row",

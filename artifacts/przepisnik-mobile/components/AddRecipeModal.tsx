@@ -616,7 +616,8 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
                   {!isSupported ? (
                     <Text style={styles.noVoice}>
-                      Dyktowanie głosowe jest dostępne w przeglądarce.
+                      Dyktowanie głosowe nie działa w Expo Go na Androidzie. Ten tryb wymaga później
+                      natywnej wersji aplikacji z modułem rozpoznawania mowy.
                     </Text>
                   ) : null}
 

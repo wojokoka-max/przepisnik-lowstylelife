@@ -65,9 +65,7 @@ async function readJsonResponse<T>(res: Response, fallbackMessage: string): Prom
   }
 
   if (trimmed.startsWith("<")) {
-    throw new Error(
-      "Generator AI nie ma teraz połączenia z backendem. Używam przepisu lokalnego.",
-    );
+    throw new Error(fallbackMessage);
   }
 
   try {
@@ -137,6 +135,12 @@ export type PhotoRecipe = {
 // Wysyła zdjęcie do api-server (OCR + AI) i zwraca odczytany przepis.
 // Web: pobiera blob z uri; natywnie: przekazuje obiekt { uri, name, type }.
 export async function recipeFromImage(uri: string, mimeType?: string): Promise<PhotoRecipe> {
+  if (!baseDomain) {
+    throw new Error(
+      "Import ze zdjęcia wymaga podłączonego backendu AI. Na razie wpisz przepis ręcznie albo zapisz go z linku.",
+    );
+  }
+
   const formData = new FormData();
 
   if (Platform.OS === "web") {
@@ -166,7 +170,10 @@ export async function recipeFromImage(uri: string, mimeType?: string): Promise<P
     throw new Error(msg);
   }
 
-  const data = (await res.json()) as Partial<PhotoRecipe>;
+  const data = await readJsonResponse<Partial<PhotoRecipe>>(
+    res,
+    "Nie udało się odczytać przepisu ze zdjęcia.",
+  );
   return {
     title: data.title ?? "",
     ingredients: Array.isArray(data.ingredients) ? data.ingredients : [],
