@@ -1,17 +1,32 @@
 // Proste helpery do wołania api-server.
-//
-// API żyje pod ścieżką /api głównej domeny Replita (path-routing proxy),
-// a Expo Web działa na poddomenie expo.*. Dlatego ZAWSZE budujemy pełny URL
-// na podstawie EXPO_PUBLIC_DOMAIN (wyeksportowane przez skrypt dev/build).
 
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const baseDomain = process.env.EXPO_PUBLIC_DOMAIN ?? "";
+const explicitApiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL ?? "";
+
+function inferLocalApiBaseUrl(): string {
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.manifest2?.extra?.expoClient?.hostUri ||
+    "";
+  const host = hostUri.split(":")[0];
+  return host ? `http://${host}:3001/api` : "";
+}
+
+function apiBaseUrl(): string {
+  const cleanExplicit = explicitApiBaseUrl.trim().replace(/\/$/, "");
+  if (cleanExplicit) return cleanExplicit.endsWith("/api") ? cleanExplicit : `${cleanExplicit}/api`;
+  if (baseDomain) return `https://${baseDomain}/api`;
+  if (Platform.OS !== "web") return inferLocalApiBaseUrl();
+  return "/api";
+}
 
 export function apiUrl(path: string): string {
   const clean = path.startsWith("/") ? path : `/${path}`;
-  if (!baseDomain) return `/api${clean}`;
-  return `https://${baseDomain}/api${clean}`;
+  const base = apiBaseUrl();
+  return base ? `${base}${clean}` : `/api${clean}`;
 }
 
 export type GeneratedRecipe = {
@@ -76,7 +91,7 @@ async function readJsonResponse<T>(res: Response, fallbackMessage: string): Prom
 }
 
 export async function generateRecipeFromName(name: string): Promise<GeneratedRecipe> {
-  if (!baseDomain) {
+  if (!apiBaseUrl() || apiBaseUrl() === "/api") {
     return localRecipe(name, "na podstawie wpisanej nazwy dania");
   }
 
@@ -101,7 +116,7 @@ export async function generateRecipeFromName(name: string): Promise<GeneratedRec
 export async function generateRecipeFromIngredients(
   ingredients: string[],
 ): Promise<GeneratedRecipe> {
-  if (!baseDomain) {
+  if (!apiBaseUrl() || apiBaseUrl() === "/api") {
     return localRecipe(
       ingredients.filter(Boolean).join(", ") || "Danie z lodówki",
       "na podstawie składników z lodówki",
@@ -135,9 +150,10 @@ export type PhotoRecipe = {
 // Wysyła zdjęcie do api-server (OCR + AI) i zwraca odczytany przepis.
 // Web: pobiera blob z uri; natywnie: przekazuje obiekt { uri, name, type }.
 export async function recipeFromImage(uri: string, mimeType?: string): Promise<PhotoRecipe> {
-  if (!baseDomain) {
+  const base = apiBaseUrl();
+  if (!base || base === "/api") {
     throw new Error(
-      "Import ze zdjęcia wymaga podłączonego backendu AI. Na razie wpisz przepis ręcznie albo zapisz go z linku.",
+      "Import ze zdjęcia wymaga adresu backendu AI. Uruchom API lokalnie albo ustaw EXPO_PUBLIC_API_BASE_URL.",
     );
   }
 
