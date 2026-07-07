@@ -72,10 +72,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const cu = clerkUser as ClerkUserLike | null;
   const hasGithub = !!githubAccountOf(cu);
   const ghUsername = githubUsernameOf(cu);
+  const normalizedGithubUsername = ghUsername?.toLowerCase() ?? null;
+  const canVerifyGithubUsername = Boolean(normalizedGithubUsername);
   const isAdminGithub =
-    hasGithub && ghUsername?.toLowerCase() === ADMIN_GITHUB_USERNAME;
-  // A GitHub login that is not the admin account is not allowed anywhere.
-  const githubNotAllowed = hasGithub && !isAdminGithub;
+    hasGithub &&
+    (!canVerifyGithubUsername || normalizedGithubUsername === ADMIN_GITHUB_USERNAME);
+  // A GitHub login that is verifiably not the admin account is not allowed anywhere.
+  // Clerk/Expo can briefly omit the GitHub username after OAuth on Android; do not
+  // sign the owner out just because that field has not arrived yet.
+  const githubNotAllowed =
+    hasGithub && canVerifyGithubUsername && normalizedGithubUsername !== ADMIN_GITHUB_USERNAME;
 
   // Reject non-admin GitHub sign-ins.
   useEffect(() => {
