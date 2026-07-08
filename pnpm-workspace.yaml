@@ -4,6 +4,12 @@ packages:
   - lib/integrations/*
   - scripts
 
+allowBuilds:
+  browser-tabs-lock: true
+  core-js: true
+  esbuild: true
+  tesseract.js: true
+
 autoInstallPeers: false
 
 catalog:
@@ -37,8 +43,11 @@ minimumReleaseAgeExclude:
 
 onlyBuiltDependencies:
   - '@swc/core'
+  - browser-tabs-lock
+  - core-js
   - esbuild
   - msw
+  - tesseract.js
   - unrs-resolver
 
 overrides:
