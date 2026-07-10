@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 
 const router = Router();
 
@@ -42,8 +42,13 @@ router.post("/", upload.single("audio"), async (req: Request, res: Response) => 
     }
 
     const client = getClient();
+    const audioFile = await toFile(
+      fs.createReadStream(filePath),
+      req.file.originalname || "recording.m4a",
+      { type: req.file.mimetype || "audio/mp4" },
+    );
     const response = await client.audio.transcriptions.create({
-      file: fs.createReadStream(filePath),
+      file: audioFile,
       model: "gpt-4o-mini-transcribe",
       language: "pl",
     });
