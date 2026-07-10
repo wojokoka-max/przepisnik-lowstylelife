@@ -55,6 +55,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 type FieldKey = "title" | "ingredients" | "preparation" | "notes";
+type PhotoImportTarget = "ingredients" | "preparation";
 
 interface Props {
   open: boolean;
@@ -185,7 +186,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
     }
   }
 
-  async function pickImage(from: "camera" | "library") {
+  async function pickImage(from: "camera" | "library", target: PhotoImportTarget) {
     if (!aiLimit.canUse) {
       Alert.alert(
         "Limit dzienny",
@@ -216,7 +217,11 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
       const asset = result.assets[0];
 
       setPhotoLoading(true);
-      setPhotoStatus("Przetwarzam zdjęcie…");
+      setPhotoStatus(
+        target === "ingredients"
+          ? "Odczytuję składniki ze zdjęcia..."
+          : "Odczytuję przygotowanie ze zdjęcia...",
+      );
 
       const data = await recipeFromImage(asset.uri, asset.mimeType);
 
@@ -231,28 +236,32 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
       const ingredients = splitItems(data.ingredients);
       const preparation = splitItems(data.preparation);
-      const title = data.title?.trim() || "Przepis ze zdjęcia";
-      const ts = Date.now();
+      const importedText =
+        target === "ingredients" ? ingredients.join("\n") : preparation.join("\n");
 
-      const recipe: Recipe = {
-        id: `photo-${ts}`,
-        slug: `${generateSlug(title)}-${ts.toString(36).slice(-5)}`,
-        title,
-        description: "",
-        category: "Pobrane",
-        prepTime: "—",
-        servings: 0,
-        difficulty: "łatwy",
-        emoji: "📷",
-        ingredients,
-        steps: preparation,
-        images: [asset.uri],
-        notes: "Zaimportowano ze zdjęcia.",
-      };
+      if (!importedText.trim()) {
+        setPhotoStatus(
+          target === "ingredients"
+            ? "Nie udało się znaleźć składników na zdjęciu. Zrób bliższe zdjęcie samej listy składników."
+            : "Nie udało się znaleźć przygotowania na zdjęciu. Zrób bliższe zdjęcie samych kroków.",
+        );
+        setTimeout(() => setPhotoStatus(""), 8000);
+        return;
+      }
 
-      setPhotoStatus("Przepis zapisany ze zdjęcia ✓");
-      onSave(recipe);
-      onClose();
+      setForm((f) => ({
+        ...f,
+        [target]: f[target].trim()
+          ? `${f[target].trim()}\n${importedText}`
+          : importedText,
+      }));
+      setErrors((e) => ({ ...e, [target]: undefined }));
+      setPhotoStatus(
+        target === "ingredients"
+          ? "OK: Składniki uzupełnione ze zdjęcia"
+          : "OK: Przygotowanie uzupełnione ze zdjęcia",
+      );
+      setTimeout(() => setPhotoStatus(""), 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Nie udało się odczytać przepisu ze zdjęcia";
       setPhotoStatus(msg);
@@ -262,17 +271,30 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
     }
   }
 
-  function importFromPhoto() {
+  function choosePhotoSource(target: PhotoImportTarget) {
     if (photoLoading) return;
     if (Platform.OS === "web") {
-      void pickImage("library");
+      void pickImage("library", target);
       return;
     }
-    Alert.alert("Importuj ze zdjęcia", "Skąd chcesz wziąć zdjęcie przepisu?", [
-      { text: "Aparat", onPress: () => void pickImage("camera") },
-      { text: "Galeria", onPress: () => void pickImage("library") },
+    Alert.alert("Importuj ze zdjęcia", "Skąd chcesz wziąć zdjęcie?", [
+      { text: "Aparat", onPress: () => void pickImage("camera", target) },
+      { text: "Galeria", onPress: () => void pickImage("library", target) },
       { text: "Anuluj", style: "cancel" },
     ]);
+  }
+
+  function importFromPhoto() {
+    if (photoLoading) return;
+    Alert.alert(
+      "Importuj ze zdjęcia",
+      "Co chcesz uzupełnić tym zdjęciem? Tytuł, kategorię i notatki wpisz ręcznie.",
+      [
+        { text: "Składniki", onPress: () => choosePhotoSource("ingredients") },
+        { text: "Przygotowanie", onPress: () => choosePhotoSource("preparation") },
+        { text: "Anuluj", style: "cancel" },
+      ],
+    );
   }
 
   function validate() {
@@ -485,13 +507,13 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                     <View
                       style={[
                         styles.statusBox,
-                        photoStatus.includes("✓") ? styles.statusOk : styles.statusWarn,
+                        photoStatus.startsWith("OK:") ? styles.statusOk : styles.statusWarn,
                       ]}
                     >
                       <Text
                         style={[
                           styles.statusText,
-                          photoStatus.includes("✓")
+                          photoStatus.startsWith("OK:")
                             ? { color: "#065f46" }
                             : { color: "#92400e" },
                         ]}
