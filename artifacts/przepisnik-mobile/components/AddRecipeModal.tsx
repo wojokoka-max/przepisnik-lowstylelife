@@ -486,6 +486,9 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         : `AI dzisiaj: ${aiLimit.remaining}/${aiLimit.limit}`}
                     </Text>
                   </View>
+                  <Text style={styles.voiceHint}>
+                    Dyktowanie działa przy wybranym polu. Tekst pojawi się po zatrzymaniu nagrania.
+                  </Text>
 
                   {/* Photo import */}
                   <Pressable
@@ -874,6 +877,12 @@ const styles = StyleSheet.create({
     color: "#7a3fc0",
     fontFamily: "Inter_600SemiBold",
     fontSize: 11.5,
+  },
+  voiceHint: {
+    color: "#7a6f58",
+    fontFamily: "Inter_400Regular",
+    fontSize: 11.5,
+    lineHeight: 16,
   },
 
   noVoice: {
