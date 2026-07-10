@@ -231,15 +231,28 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
       const ingredients = splitItems(data.ingredients);
       const preparation = splitItems(data.preparation);
+      const title = data.title?.trim() || "Przepis ze zdjęcia";
+      const ts = Date.now();
 
-      setForm((f) => ({
-        ...f,
-        title: data.title?.trim() || f.title,
-        ingredients: ingredients.join("\n") || f.ingredients,
-        preparation: preparation.join("\n") || f.preparation,
-      }));
-      setPhotoStatus("Przepis uzupełniony ze zdjęcia ✓");
-      setTimeout(() => setPhotoStatus(""), 4000);
+      const recipe: Recipe = {
+        id: `photo-${ts}`,
+        slug: `${generateSlug(title)}-${ts.toString(36).slice(-5)}`,
+        title,
+        description: "",
+        category: "Pobrane",
+        prepTime: "—",
+        servings: 0,
+        difficulty: "łatwy",
+        emoji: "📷",
+        ingredients,
+        steps: preparation,
+        images: [asset.uri],
+        notes: "Zaimportowano ze zdjęcia.",
+      };
+
+      setPhotoStatus("Przepis zapisany ze zdjęcia ✓");
+      onSave(recipe);
+      onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Nie udało się odczytać przepisu ze zdjęcia";
       setPhotoStatus(msg);
