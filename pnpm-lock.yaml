@@ -154,9 +154,7 @@ overrides:
   esbuild: 0.27.3
 
 patchedDependencies:
-  '@clerk/expo@3.6.5':
-    hash: 1206e66b5b89f147e50fa49a14b4206567ab14f0d5fc613579a615fa0e72c8ea
-    path: patches/@clerk__expo@3.6.5.patch
+  '@clerk/expo@3.6.5': 1206e66b5b89f147e50fa49a14b4206567ab14f0d5fc613579a615fa0e72c8ea
 
 importers:
 
@@ -626,6 +624,9 @@ importers:
       '@expo-google-fonts/cormorant-garamond':
         specifier: ^0.4.1
         version: 0.4.1
+      expo-audio:
+        specifier: ~1.1.1
+        version: 1.1.1(expo-asset@12.0.13(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3))(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-print:
         specifier: ~15.0.8
         version: 15.0.8(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))
@@ -4283,6 +4284,14 @@ packages:
       react: '*'
       react-native: '*'
 
+  expo-audio@1.1.1:
+    resolution: {integrity: sha512-CPCpJ+0AEHdzWROc0f00Zh6e+irLSl2ALos/LPvxEeIcJw1APfBa4DuHPkL4CQCWsVe7EnUjFpdwpqsEUWcP0g==}
+    peerDependencies:
+      expo: '*'
+      expo-asset: '*'
+      react: '*'
+      react-native: '*'
+
   expo-auth-session@7.0.11:
     resolution: {integrity: sha512-AhWtt/m9rb1Po77X/VBFbeE6UTgbm2vXP2iCblUSRsHCw2qD6lO0ulKUB8Xyxy9FtoI9yrNQ1iwCNgIIgo8VYQ==}
     peerDependencies:
@@ -6431,6 +6440,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -11251,6 +11261,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
       - typescript
+
+  expo-audio@1.1.1(expo-asset@12.0.13(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3))(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      expo: 54.0.34(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
+      expo-asset: 12.0.13(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
 
   expo-auth-session@7.0.11(expo@54.0.34)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:

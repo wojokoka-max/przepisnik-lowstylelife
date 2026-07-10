@@ -196,3 +196,44 @@ export async function recipeFromImage(uri: string, mimeType?: string): Promise<P
     preparation: Array.isArray(data.preparation) ? data.preparation : [],
   };
 }
+
+export async function transcribeAudio(uri: string, mimeType?: string): Promise<string> {
+  const base = apiBaseUrl();
+  if (!base || base === "/api") {
+    throw new Error(
+      "Dyktowanie wymaga adresu backendu AI. Uruchom API lokalnie albo ustaw EXPO_PUBLIC_API_BASE_URL.",
+    );
+  }
+
+  const formData = new FormData();
+
+  if (Platform.OS === "web") {
+    const blob = await (await fetch(uri)).blob();
+    formData.append("audio", blob, "recording.webm");
+  } else {
+    formData.append("audio", {
+      uri,
+      name: "recording.m4a",
+      type: mimeType ?? "audio/mp4",
+    } as unknown as Blob);
+  }
+
+  const res = await fetch(apiUrl("/transcribe-audio"), {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    let msg = "Nie udało się przepisać nagrania.";
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (body?.error) msg = body.error;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg);
+  }
+
+  const data = await readJsonResponse<{ text?: string }>(res, "Nie udało się przepisać nagrania.");
+  return data.text?.trim() ?? "";
+}

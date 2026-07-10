@@ -1,8 +1,13 @@
-// Dyktowanie głosowe — port webowego hooka.
-// Działa tylko tam, gdzie dostępne jest Web Speech API (Expo Web / przeglądarka).
-// Na natywnym iOS/Android `isSupported` jest false i przycisk "Dyktuj" się chowa.
+import {
+  AudioModule,
+  RecordingPresets,
+  setAudioModeAsync,
+  useAudioRecorder,
+} from "expo-audio";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Platform } from "react-native";
 
-import { useRef, useState, useEffect } from "react";
+import { transcribeAudio } from "../lib/api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -15,22 +20,41 @@ function getRecognitionCtor(): (new () => any) | null {
 export interface UseSpeechRecognitionResult {
   isSupported: boolean;
   activeField: string | null;
-  startListening: (fieldKey: string, onResult: (text: string) => void) => void;
-  stopListening: () => void;
+  isProcessing: boolean;
+  startListening: (fieldKey: string, onResult: (text: string) => void) => Promise<void>;
+  stopListening: () => Promise<void>;
 }
 
 export function useSpeechRecognition(): UseSpeechRecognitionResult {
-  // Wyznaczamy konstruktor w runtime (nie przy imporcie modułu), żeby detekcja
-  // działała też gdy Web Speech API pojawia się po hydratacji.
   const [RecognitionCtor] = useState<(new () => any) | null>(() => getRecognitionCtor());
-  const isSupported = RecognitionCtor !== null;
+  const isWebSpeechSupported = Platform.OS === "web" && RecognitionCtor !== null;
+  const isNativeSpeechSupported = Platform.OS !== "web";
+  const isSupported = isWebSpeechSupported || isNativeSpeechSupported;
+
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   const [activeField, setActiveField] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const recRef = useRef<any | null>(null);
   const shouldKeepListeningRef = useRef(false);
   const activeFieldRef = useRef<string | null>(null);
   const onResultRef = useRef<((text: string) => void) | null>(null);
+
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+
+    (async () => {
+      try {
+        await setAudioModeAsync({
+          allowsRecording: true,
+          playsInSilentMode: true,
+        });
+      } catch {
+        /* Expo Go may defer audio mode until permission is granted. */
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -41,10 +65,20 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       } catch {
         /* ignore */
       }
+      if (Platform.OS !== "web" && audioRecorder.isRecording) {
+        void audioRecorder.stop();
+      }
     };
-  }, []);
+  }, [audioRecorder]);
 
-  function createAndStart() {
+  function appendResult(text: string) {
+    const trimmed = text.trim();
+    if (trimmed && onResultRef.current) {
+      onResultRef.current(trimmed);
+    }
+  }
+
+  function createAndStartWeb() {
     if (!RecognitionCtor || !activeFieldRef.current) return;
 
     const rec = new (RecognitionCtor as any)();
@@ -60,9 +94,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
           finalText += event.results[i][0].transcript;
         }
       }
-      if (finalText.trim() && onResultRef.current) {
-        onResultRef.current(finalText.trim());
-      }
+      appendResult(finalText);
     };
 
     rec.onerror = (event: any) => {
@@ -77,7 +109,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       if (shouldKeepListeningRef.current && activeFieldRef.current) {
         setTimeout(() => {
           if (shouldKeepListeningRef.current && activeFieldRef.current) {
-            createAndStart();
+            createAndStartWeb();
           }
         }, 150);
       } else {
@@ -97,8 +129,49 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     }
   }
 
-  function startListening(fieldKey: string, onResult: (text: string) => void) {
-    if (!RecognitionCtor) return;
+  async function startNativeRecording(fieldKey: string, onResult: (text: string) => void) {
+    const permission = await AudioModule.requestRecordingPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Mikrofon", "Zezwól aplikacji na dostęp do mikrofonu, żeby używać dyktowania.");
+      return;
+    }
+
+    onResultRef.current = onResult;
+    activeFieldRef.current = fieldKey;
+    setActiveField(fieldKey);
+
+    await setAudioModeAsync({
+      allowsRecording: true,
+      playsInSilentMode: true,
+    });
+    await audioRecorder.prepareToRecordAsync();
+    audioRecorder.record();
+  }
+
+  async function stopNativeRecording() {
+    const field = activeFieldRef.current;
+    activeFieldRef.current = null;
+    setActiveField(null);
+
+    if (!field || !audioRecorder.isRecording) return;
+
+    setIsProcessing(true);
+    try {
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
+      if (!uri) throw new Error("Nie udało się zapisać nagrania.");
+      const text = await transcribeAudio(uri, "audio/mp4");
+      appendResult(text);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Nie udało się przepisać nagrania.";
+      Alert.alert("Dyktowanie", msg);
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  async function startListening(fieldKey: string, onResult: (text: string) => void) {
+    if (!isSupported) return;
 
     shouldKeepListeningRef.current = false;
     if (recRef.current) {
@@ -110,15 +183,27 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       recRef.current = null;
     }
 
+    if (Platform.OS !== "web") {
+      await stopNativeRecording();
+      await startNativeRecording(fieldKey, onResult);
+      return;
+    }
+
     activeFieldRef.current = fieldKey;
     onResultRef.current = onResult;
     shouldKeepListeningRef.current = true;
-
-    createAndStart();
+    createAndStartWeb();
   }
 
-  function stopListening() {
+  async function stopListening() {
     shouldKeepListeningRef.current = false;
+
+    if (Platform.OS !== "web") {
+      await stopNativeRecording();
+      onResultRef.current = null;
+      return;
+    }
+
     activeFieldRef.current = null;
     onResultRef.current = null;
     setActiveField(null);
@@ -133,5 +218,5 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     }
   }
 
-  return { isSupported, activeField, startListening, stopListening };
+  return { isSupported, activeField, isProcessing, startListening, stopListening };
 }
