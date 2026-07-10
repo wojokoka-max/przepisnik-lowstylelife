@@ -49,8 +49,10 @@ router.post("/", upload.single("audio"), async (req: Request, res: Response) => 
     );
     const response = await client.audio.transcriptions.create({
       file: audioFile,
-      model: "gpt-4o-mini-transcribe",
+      model: "gpt-4o-transcribe",
       language: "pl",
+      prompt:
+        "To jest polskie dyktowanie przepisu kulinarnego w aplikacji Przepiśnik LowStyleLife. Zapisz tekst naturalną polszczyzną, popraw typowe przesłyszenia, nie używaj języka czeskiego ani słowackiego.",
     });
 
     cleanup(filePath);

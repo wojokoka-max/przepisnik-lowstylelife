@@ -130,14 +130,12 @@ function MicPill({
 export default function AddRecipeModal({ open, onClose, onSave }: Props) {
   const insets = useSafeAreaInsets();
   const aiLimit = useAiLimit();
-  const { isSupported, activeField, isProcessing, startListening, stopListening } =
-    useSpeechRecognition();
+  const { isSupported, activeField, startListening, stopListening } = useSpeechRecognition();
 
   const [linkMode, setLinkMode] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<FieldKey | "category", string>>>({});
   const [lastDoneField, setLastDoneField] = useState<string | null>(null);
-  const [voiceTarget, setVoiceTarget] = useState<FieldKey>("ingredients");
 
   const [photoLoading, setPhotoLoading] = useState(false);
   const [photoStatus, setPhotoStatus] = useState("");
@@ -186,14 +184,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
       setLastDoneField(field);
       setTimeout(() => setLastDoneField((f) => (f === field ? null : f)), 2500);
     }
-  }
-
-  function toggleVoiceTarget() {
-    if (activeField) {
-      void handleStop();
-      return;
-    }
-    handleStart(voiceTarget);
   }
 
   async function pickImage(from: "camera" | "library", target: PhotoImportTarget) {
@@ -533,66 +523,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                     </View>
                   ) : null}
 
-                  <View style={styles.voiceBox}>
-                    <View>
-                      <Text style={styles.voiceTitle}>Dyktowanie</Text>
-                      <Text style={styles.voiceHint}>
-                        Wybierz pole, nagraj kilka zdań i zatrzymaj. Tekst dopisze się automatycznie.
-                      </Text>
-                    </View>
-                    <View style={styles.voiceTargets}>
-                      {([
-                        ["ingredients", "Składniki"],
-                        ["preparation", "Przygotowanie"],
-                        ["notes", "Notatki"],
-                        ["title", "Tytuł"],
-                      ] as const).map(([key, label]) => {
-                        const active = voiceTarget === key;
-                        return (
-                          <Pressable
-                            key={key}
-                            onPress={() => setVoiceTarget(key)}
-                            disabled={Boolean(activeField) || isProcessing}
-                            style={[styles.voiceTarget, active && styles.voiceTargetActive]}
-                          >
-                            <Text
-                              style={[
-                                styles.voiceTargetText,
-                                active && styles.voiceTargetTextActive,
-                              ]}
-                            >
-                              {label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    <Pressable
-                      onPress={toggleVoiceTarget}
-                      disabled={!isSupported || isProcessing}
-                      style={[
-                        styles.voiceButton,
-                        activeField && styles.voiceButtonRecording,
-                        (!isSupported || isProcessing) && { opacity: 0.65 },
-                      ]}
-                    >
-                      {isProcessing ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                      ) : activeField ? (
-                        <Radio size={18} color="#fff" strokeWidth={2} />
-                      ) : (
-                        <Mic size={18} color="#fff" strokeWidth={2} />
-                      )}
-                      <Text style={styles.voiceButtonText}>
-                        {isProcessing
-                          ? "Przepisuję nagranie..."
-                          : activeField
-                            ? "Zatrzymaj i wpisz tekst"
-                            : "Nagraj głos"}
-                      </Text>
-                    </Pressable>
-                  </View>
-
                   {/* Title */}
                   <View style={styles.field}>
                     <Text style={styles.label}>Tytuł przepisu</Text>
@@ -926,67 +856,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontFamily: "Inter_500Medium",
     fontSize: 12.5,
-  },
-
-  voiceBox: {
-    gap: 12,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "rgba(139,79,209,0.22)",
-    backgroundColor: "#fffaf7",
-    padding: 14,
-  },
-  voiceTitle: {
-    color: "#1c1810",
-    fontFamily: "Inter_700Bold",
-    fontSize: 14.5,
-  },
-  voiceHint: {
-    color: "#7a6f58",
-    fontFamily: "Inter_400Regular",
-    fontSize: 12,
-    lineHeight: 17,
-    marginTop: 3,
-  },
-  voiceTargets: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  voiceTarget: {
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(139,79,209,0.22)",
-    backgroundColor: "rgba(139,79,209,0.08)",
-  },
-  voiceTargetActive: {
-    backgroundColor: "#7a3fc0",
-    borderColor: "#7a3fc0",
-  },
-  voiceTargetText: {
-    color: "#7a3fc0",
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 11.5,
-  },
-  voiceTargetTextActive: { color: "#fff" },
-  voiceButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-    borderRadius: 999,
-    backgroundColor: "#7a3fc0",
-    paddingVertical: 13,
-  },
-  voiceButtonRecording: {
-    backgroundColor: "#e0506e",
-  },
-  voiceButtonText: {
-    color: "#fff",
-    fontFamily: "Inter_700Bold",
-    fontSize: 13.5,
   },
 
   aiBadge: {
