@@ -29,6 +29,7 @@ export interface Recipe {
   steps: string[];
   emoji: string;
   notes?: string;
+  handwrittenNote?: string;
   images?: string[];
   ocrText?: string;
   sourceUrl?: string;

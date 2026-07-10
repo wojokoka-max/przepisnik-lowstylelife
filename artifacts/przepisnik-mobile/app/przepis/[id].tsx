@@ -3,11 +3,12 @@
 
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as Print from "expo-print";
-import { ChevronLeft, Printer, Star } from "lucide-react-native";
+import { ChevronLeft, PencilLine, Printer, Star } from "lucide-react-native";
 import React from "react";
 import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import EditRecipeModal from "../../components/EditRecipeModal";
 import { useRecipes } from "../../context/RecipesContext";
 import type { Recipe } from "../../data/recipes";
 
@@ -93,10 +94,11 @@ export default function RecipeDetail() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { allRecipes, favorites, toggleFavorite } = useRecipes();
+  const { allRecipes, favorites, toggleFavorite, updateRecipe } = useRecipes();
 
   const recipe = allRecipes.find((r) => r.slug === id || r.id === id);
   const [printing, setPrinting] = React.useState(false);
+  const [editOpen, setEditOpen] = React.useState(false);
 
   if (!recipe) {
     return (
@@ -157,6 +159,12 @@ export default function RecipeDetail() {
       showsVerticalScrollIndicator={false}
     >
       <Stack.Screen options={{ headerShown: false }} />
+      <EditRecipeModal
+        open={editOpen}
+        recipe={recipe}
+        onClose={() => setEditOpen(false)}
+        onSave={updateRecipe}
+      />
 
       <View style={styles.headerRow}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8}>
@@ -164,6 +172,9 @@ export default function RecipeDetail() {
           <Text style={styles.backText}>Wstecz</Text>
         </Pressable>
         <View style={styles.headerActions}>
+          <Pressable onPress={() => setEditOpen(true)} hitSlop={8}>
+            <PencilLine size={22} color="#8b4fd1" strokeWidth={2} />
+          </Pressable>
           <Pressable onPress={handlePrint} hitSlop={8} disabled={printing} style={printing && styles.actionDisabled}>
             <Printer size={22} color="#8b4fd1" strokeWidth={2} />
           </Pressable>
@@ -238,6 +249,15 @@ export default function RecipeDetail() {
           <Text style={styles.section}>Wskazówka</Text>
           <View style={styles.list}>
             <Text style={[styles.li, { fontStyle: "italic" }]}>{recipe.notes}</Text>
+          </View>
+        </>
+      ) : null}
+
+      {recipe.handwrittenNote ? (
+        <>
+          <Text style={styles.section}>Notatka odręczna</Text>
+          <View style={[styles.list, styles.handNoteBox]}>
+            <Text style={[styles.li, styles.handNoteText]}>{recipe.handwrittenNote}</Text>
           </View>
         </>
       ) : null}
@@ -365,7 +385,17 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 4,
   },
+  handNoteBox: {
+    borderStyle: "dashed",
+    backgroundColor: "#fffaf0",
+  },
   li: { fontFamily: "Inter_400Regular", fontSize: 14, lineHeight: 22, color: "#34284b" },
+  handNoteText: {
+    fontFamily: "CormorantGaramond_400Regular_Italic",
+    fontSize: 17,
+    lineHeight: 24,
+    color: "#4f3f24",
+  },
   stepNum: {
     fontFamily: "Inter_700Bold",
     fontSize: 14,
