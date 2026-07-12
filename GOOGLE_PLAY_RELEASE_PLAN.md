@@ -55,6 +55,8 @@ Stan na 2026-07-12.
    - Instrukcja dostępu dla recenzenta, jeżeli część aplikacji wymaga konta lub admina.
 
 8. Przygotować listing sklepu.
+   - Status: rozpoczęte.
+   - Dodano szkic listingu: `GOOGLE_PLAY_STORE_LISTING_DRAFT.md`.
    - Ikona 512x512.
    - Grafika wyróżniająca 1024x500.
    - Zrzuty ekranu telefonu.
