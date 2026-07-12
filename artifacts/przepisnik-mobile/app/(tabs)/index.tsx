@@ -89,7 +89,6 @@ export default function HomeTab() {
 
   const handleSaveRecipe = (recipe: Recipe) => {
     addRecipe(recipe);
-    router.push(`/przepis/${recipe.slug ?? recipe.id}`);
   };
 
   return (

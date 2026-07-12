@@ -7,7 +7,6 @@ import {
   Camera,
   Check,
   Link as LinkIcon,
-  Sparkles,
   X,
 } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -30,15 +29,7 @@ import { generateSlug, type Recipe } from "../data/recipes";
 import { useAiLimit } from "../hooks/useAiLimit";
 import { recipeFromImage } from "../lib/api";
 
-const CATEGORIES = [
-  "Dania główne",
-  "Zupy",
-  "Desery",
-  "Śniadania",
-  "Pieczywo",
-  "Przetwory",
-  "Świąteczne",
-];
+const DEFAULT_CATEGORY = "Dania główne";
 
 const CATEGORY_EMOJI: Record<string, string> = {
   "Dania główne": "🍝",
@@ -69,7 +60,7 @@ interface FormState {
 
 const emptyForm: FormState = {
   title: "",
-  category: "",
+  category: DEFAULT_CATEGORY,
   ingredients: "",
   preparation: "",
   notes: "",
@@ -208,9 +199,9 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
   function validate() {
     const e: typeof errors = {};
     if (!form.title.trim()) e.title = "Podaj tytuł przepisu";
-    if (!form.category) e.category = "Wybierz kategorię";
-    if (!form.ingredients.trim()) e.ingredients = "Dodaj przynajmniej jeden składnik";
-    if (!form.preparation.trim()) e.preparation = "Dodaj przynajmniej jeden krok";
+    if (!form.ingredients.trim() && !form.preparation.trim()) {
+      e.ingredients = "Dodaj składniki albo przygotowanie";
+    }
     setErrors(e);
     return !Object.keys(e).length;
   }
@@ -231,11 +222,11 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
       slug: `${generateSlug(form.title.trim())}-${ts.toString(36).slice(-5)}`,
       title: form.title.trim(),
       description: "",
-      category: form.category,
+      category: form.category || DEFAULT_CATEGORY,
       prepTime: "—",
       servings: 2,
       difficulty: "łatwy",
-      emoji: CATEGORY_EMOJI[form.category] ?? "📝",
+      emoji: CATEGORY_EMOJI[form.category || DEFAULT_CATEGORY] ?? "📝",
       ingredients,
       steps,
       notes: form.notes.trim() || undefined,
@@ -381,17 +372,8 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                 </View>
               ) : (
                 <View style={{ gap: 16 }}>
-                  {/* AI usage */}
-                  <View style={styles.aiBadge}>
-                    <Sparkles size={11} color="#8b4fd1" strokeWidth={2} />
-                    <Text style={styles.aiBadgeText}>
-                      {aiLimit.unlimited
-                        ? "AI: nielimitowane (admin)"
-                        : `AI dzisiaj: ${aiLimit.remaining}/${aiLimit.limit}`}
-                    </Text>
-                  </View>
                   <Text style={styles.photoHelp}>
-                    Tytuł i notatki wpisz ręcznie. Zdjęcie dodawaj osobno przy składnikach albo przy przygotowaniu - aplikacja wstawi tekst do właściwego pola.
+                    Wpisz tytuł. Zdjęcia dodawaj osobno przy składnikach i przygotowaniu.
                   </Text>
 
                   {photoStatus ? (
@@ -427,32 +409,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                     {errors.title ? <Text style={styles.errText}>{errors.title}</Text> : null}
                   </View>
 
-                  {/* Category */}
-                  <View style={styles.field}>
-                    <Text style={styles.label}>Kategoria</Text>
-                    <View style={styles.catGrid}>
-                      {CATEGORIES.map((cat) => {
-                        const active = form.category === cat;
-                        return (
-                          <Pressable
-                            key={cat}
-                            onPress={() => {
-                              setForm((f) => ({ ...f, category: cat }));
-                              setErrors((e) => ({ ...e, category: undefined }));
-                            }}
-                            style={[styles.catChip, active && styles.catChipActive]}
-                          >
-                            <Text style={styles.catEmoji}>{CATEGORY_EMOJI[cat]}</Text>
-                            <Text style={[styles.catText, active && styles.catTextActive]}>
-                              {cat}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    {errors.category ? <Text style={styles.errText}>{errors.category}</Text> : null}
-                  </View>
-
                   {/* Ingredients */}
                   <View style={styles.field}>
                     <View style={styles.labelRow}>
@@ -463,10 +419,10 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
                       >
                         <Camera size={13} color="#7a3fc0" strokeWidth={2} />
-                        <Text style={styles.inlinePhotoText}>Wczytaj składniki ze zdjęcia</Text>
+                        <Text style={styles.inlinePhotoText}>Zdjęcie składników</Text>
                       </Pressable>
                     </View>
-                    <Text style={styles.hint}>AI ułoży składniki jeden pod drugim.</Text>
+                    <Text style={styles.hint}>AI ułoży je jeden pod drugim.</Text>
                     <TextInput
                       value={form.ingredients}
                       onChangeText={(v) => set("ingredients", v)}
@@ -490,10 +446,10 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
                       >
                         <Camera size={13} color="#7a3fc0" strokeWidth={2} />
-                        <Text style={styles.inlinePhotoText}>Wczytaj przygotowanie ze zdjęcia</Text>
+                        <Text style={styles.inlinePhotoText}>Zdjęcie kroków</Text>
                       </Pressable>
                     </View>
-                    <Text style={styles.hint}>AI ułoży kroki przygotowania jeden pod drugim.</Text>
+                    <Text style={styles.hint}>AI ułoży kroki jeden pod drugim.</Text>
                     <TextInput
                       value={form.preparation}
                       onChangeText={(v) => set("preparation", v)}
@@ -646,34 +602,6 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
   },
 
-  catGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  catChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(168,128,31,0.3)",
-    backgroundColor: "#fffdf8",
-  },
-  catChipActive: {
-    backgroundColor: "#7a3fc0",
-    borderColor: "#7a3fc0",
-  },
-  catEmoji: { fontSize: 14 },
-  catText: {
-    color: "#5a4f3a",
-    fontFamily: "Inter_500Medium",
-    fontSize: 12.5,
-  },
-  catTextActive: { color: "#fff" },
-
   inlinePhotoBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -705,23 +633,6 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
   },
 
-  aiBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(139,79,209,0.25)",
-    backgroundColor: "rgba(139,79,209,0.08)",
-  },
-  aiBadgeText: {
-    color: "#7a3fc0",
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 11.5,
-  },
   photoHelp: {
     color: "#7a6f58",
     fontFamily: "Inter_400Regular",
