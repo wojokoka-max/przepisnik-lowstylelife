@@ -39,6 +39,8 @@ Stan na 2026-07-12.
    - Jeśli to nowe konto osobiste, Google może wymagać zamkniętych testów: minimum 12 testerów przez 14 kolejnych dni.
 
 6. Utworzyć aplikację w Google Play Console.
+   - Status: przygotowane.
+   - Dodano szkic pól: `GOOGLE_PLAY_APP_SETUP.md`.
    - Typ: aplikacja.
    - Kategoria robocza: jedzenie i napoje albo styl życia, do decyzji po opisie sklepowym.
    - Monetyzacja: jeszcze nieustalona, więc na tym etapie nie dodajemy subskrypcji ani płatności.
