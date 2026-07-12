@@ -46,6 +46,9 @@ Stan na 2026-07-12.
    - Monetyzacja: jeszcze nieustalona, więc na tym etapie nie dodajemy subskrypcji ani płatności.
 
 7. Przygotować zgodność i deklaracje.
+   - Status: rozpoczęte.
+   - Dodano szkic polityki prywatności: `PRIVACY_POLICY_DRAFT_PL.md`.
+   - Dodano szkic Data safety: `GOOGLE_PLAY_DATA_SAFETY_DRAFT.md`.
    - Polityka prywatności.
    - Formularz Data safety.
    - Deklaracja reklam: obecnie brak reklam, jeśli nie dodamy ich później.
