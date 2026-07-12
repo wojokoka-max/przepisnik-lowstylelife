@@ -71,6 +71,8 @@ Stan na 2026-07-12.
    - Przygotować odpowiedzi do wniosku o produkcję, jeśli Google ich wymaga.
 
 10. Dopiero po stabilnej wersji zdecydować o monetyzacji.
+    - Status: przygotowane decyzyjnie, bez wdrożenia w kodzie.
+    - Dodano warianty: `MONETIZATION_OPTIONS.md`.
     - Możliwe warianty: limit darmowych generowań AI, pakiet premium, subskrypcja, jednorazowy zakup.
     - Decyzję trzeba połączyć z kosztami OpenAI i polityką Google Play Billing.
 
