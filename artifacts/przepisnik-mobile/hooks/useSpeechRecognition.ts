@@ -60,16 +60,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     return () => {
       shouldKeepListeningRef.current = false;
       activeFieldRef.current = null;
+      onResultRef.current = null;
       try {
         recRef.current?.abort();
       } catch {
         /* ignore */
       }
-      if (Platform.OS !== "web" && audioRecorder.isRecording) {
-        void audioRecorder.stop();
-      }
     };
-  }, [audioRecorder]);
+  }, []);
 
   function appendResult(text: string) {
     const trimmed = text.trim();
