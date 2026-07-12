@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Przepiśnik",
+    "name": "Przepiśnik. Inteligentny organizer kulinarny",
     "slug": "przepisnik-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,19 @@
     "ios": {
       "supportsTablet": false
     },
-    "android": {},
+    "android": {
+      "package": "com.lowstylelife.przepisnik",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_MEDIA_IMAGES"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo-lsl.png",
+        "backgroundColor": "#07111f"
+      }
+    },
     "web": {
       "favicon": "./assets/images/logo-lsl.jpg"
     },
