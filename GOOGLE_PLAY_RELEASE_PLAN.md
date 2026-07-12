@@ -27,6 +27,9 @@ Stan na 2026-07-12.
    - Konto admina przez GitHub zostaje jako tryb administracyjny.
 
 4. Zbudować pierwszą wersję testową Android.
+   - Status: rozpoczęte.
+   - Dodano lokalny skrypt kontroli gotowości: `pnpm --filter @workspace/przepisnik-mobile release:check`.
+   - Dodano instrukcję buildów Android: `artifacts/przepisnik-mobile/ANDROID_BUILD.md`.
    - Najpierw build `preview` jako APK do sprawdzenia poza Expo Go.
    - Potem build `production` jako Android App Bundle `.aab` dla Google Play.
 
