@@ -20,6 +20,8 @@ Stan na 2026-07-12.
    - Klucz OpenAI zostaje po stronie backendu, nigdy w aplikacji mobilnej.
 
 3. Przygotować produkcyjne środowisko logowania.
+   - Status: rozpoczęte.
+   - Dodano checklistę Clerk: `artifacts/przepisnik-mobile/CLERK_PRODUCTION_SETUP.md`.
    - Clerk musi mieć produkcyjną aplikację i poprawne ustawienia Android/deep link.
    - Aplikacja mobilna musi dostać produkcyjny `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`.
    - Konto admina przez GitHub zostaje jako tryb administracyjny.
