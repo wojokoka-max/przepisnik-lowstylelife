@@ -34,6 +34,8 @@ Stan na 2026-07-12.
    - Potem build `production` jako Android App Bundle `.aab` dla Google Play.
 
 5. Założyć lub dokończyć konto Google Play Console.
+   - Status: przygotowane.
+   - Dodano checklistę: `GOOGLE_PLAY_CONSOLE_CHECKLIST.md`.
    - Jeśli to nowe konto osobiste, Google może wymagać zamkniętych testów: minimum 12 testerów przez 14 kolejnych dni.
 
 6. Utworzyć aplikację w Google Play Console.
