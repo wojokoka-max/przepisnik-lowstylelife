@@ -64,6 +64,8 @@ Stan na 2026-07-12.
    - Uwaga: tytuł sklepu Google Play ma własne limity, więc finalny tytuł listingu może wymagać krótszej wersji niż nazwa aplikacji w systemie.
 
 9. Uruchomić test zamknięty lub wewnętrzny.
+   - Status: przygotowane.
+   - Dodano plan testów: `GOOGLE_PLAY_TEST_PLAN.md`.
    - Zebrać feedback.
    - Poprawić błędy z testów.
    - Przygotować odpowiedzi do wniosku o produkcję, jeśli Google ich wymaga.
