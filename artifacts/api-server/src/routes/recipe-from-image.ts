@@ -43,6 +43,16 @@ router.post(
       const imageBuffer = fs.readFileSync(filePath);
       const base64Image = imageBuffer.toString("base64");
       const mimeType    = req.file.mimetype;
+      const target =
+        req.body?.target === "ingredients" || req.body?.target === "preparation"
+          ? req.body.target
+          : undefined;
+      const targetInstruction =
+        target === "ingredients"
+          ? `To zdjęcie ma uzupełnić WYŁĄCZNIE sekcję składników. Odczytaj składniki i wpisz je do "ingredients", każdy składnik jako osobny string. Pole "preparation" zwróć jako pustą listę [].`
+          : target === "preparation"
+            ? `To zdjęcie ma uzupełnić WYŁĄCZNIE sekcję przygotowania. Odczytaj opis wykonania i wpisz go do "preparation", każdy krok jako osobny string. Pole "ingredients" zwróć jako pustą listę [].`
+            : `Odczytaj składniki do "ingredients" i kroki przygotowania do "preparation".`;
 
       const client = getClient();
 
@@ -58,6 +68,7 @@ Starannie odczytaj każde słowo, nawet jeśli pismo jest niewyraźne — zgaduj
 Zwróć WYŁĄCZNIE poprawny JSON bez żadnego formatowania markdown ani dodatkowego tekstu. Żadnych komentarzy przed ani po JSON.
 
 ZASADY (bardzo ważne):
+- ${targetInstruction}
 - "ingredients" zawiera WYŁĄCZNIE składniki (co i ile), każdy jako osobny krótki string, np. "200g mąki", "3 jajka"
 - "preparation" zawiera WYŁĄCZNIE kolejne kroki przygotowania, każdy krok jako osobny string
 - NIE wrzucaj całego tekstu jako jeden element — każda pozycja to JEDNA linijka / JEDEN krok
@@ -78,7 +89,7 @@ Format: {"title":"","ingredients":[],"preparation":[]}`,
               },
               {
                 type: "text",
-                text: "Odczytaj ten przepis i zwróć strukturę JSON zgodnie z instrukcją. Podziel składniki i kroki na osobne elementy listy.",
+                text: `${targetInstruction} Zwróć strukturę JSON zgodnie z instrukcją. Podziel tekst na osobne elementy listy.`,
               },
             ],
           },

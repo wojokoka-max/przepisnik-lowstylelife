@@ -1,5 +1,5 @@
 // Dodawanie przepisu na mobile — port webowego AddRecipeModal.
-// Tryby: ręczny przepis (z dyktowaniem + importem ze zdjęcia AI) oraz "z linku".
+// Tryby: ręczny przepis (z importem ze zdjęcia AI) oraz "z linku".
 // Paleta i typografia spójne z resztą aplikacji.
 
 import {
@@ -7,15 +7,12 @@ import {
   Camera,
   Check,
   Link as LinkIcon,
-  Mic,
-  Radio,
   Sparkles,
   X,
 } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Modal,
@@ -31,7 +28,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { generateSlug, type Recipe } from "../data/recipes";
 import { useAiLimit } from "../hooks/useAiLimit";
-import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { recipeFromImage } from "../lib/api";
 
 const CATEGORIES = [
@@ -79,63 +75,13 @@ const emptyForm: FormState = {
   notes: "",
 };
 
-function MicPill({
-  fieldKey,
-  activeField,
-  lastDoneField,
-  isSupported,
-  onStart,
-  onStop,
-}: {
-  fieldKey: FieldKey;
-  activeField: string | null;
-  lastDoneField: string | null;
-  isSupported: boolean;
-  onStart: (f: FieldKey) => void;
-  onStop: () => void;
-}) {
-  if (!isSupported) return null;
-
-  const state =
-    activeField === fieldKey ? "listening" : lastDoneField === fieldKey ? "done" : "idle";
-
-  return (
-    <Pressable
-      onPress={() => (state === "listening" ? onStop() : onStart(fieldKey))}
-      style={[
-        styles.mic,
-        state === "listening" && styles.micListening,
-        state === "done" && styles.micDone,
-      ]}
-    >
-      {state === "listening" ? (
-        <Radio size={12} color="#fff" strokeWidth={2} />
-      ) : state === "done" ? (
-        <Check size={12} color="#fff" strokeWidth={2} />
-      ) : (
-        <Mic size={12} color="#7a3fc0" strokeWidth={2} />
-      )}
-      <Text
-        style={[
-          styles.micText,
-          state === "idle" ? { color: "#7a3fc0" } : { color: "#fff" },
-        ]}
-      >
-        {state === "listening" ? "Słucham…" : state === "done" ? "Gotowe" : "Dyktuj"}
-      </Text>
-    </Pressable>
-  );
-}
-
 export default function AddRecipeModal({ open, onClose, onSave }: Props) {
   const insets = useSafeAreaInsets();
   const aiLimit = useAiLimit();
-  const { isSupported, activeField, startListening, stopListening } = useSpeechRecognition();
 
   const [linkMode, setLinkMode] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<FieldKey | "category", string>>>({});
-  const [lastDoneField, setLastDoneField] = useState<string | null>(null);
 
   const [photoLoading, setPhotoLoading] = useState(false);
   const [photoStatus, setPhotoStatus] = useState("");
@@ -148,42 +94,17 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
     if (open) {
       setForm(emptyForm);
       setErrors({});
-      setLastDoneField(null);
       setPhotoStatus("");
       setLinkMode(false);
       setLinkUrl("");
       setLinkTitle("");
       setLinkErrors({});
-      void stopListening();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   function set(key: FieldKey, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
     setErrors((e) => ({ ...e, [key]: undefined }));
-  }
-
-  function appendDictated(fieldKey: FieldKey, transcript: string) {
-    setForm((f) => {
-      const current = f[fieldKey];
-      const sep = fieldKey === "title" ? (current.trim() ? " " : "") : current.trim() ? "\n" : "";
-      return { ...f, [fieldKey]: current + sep + transcript };
-    });
-  }
-
-  function handleStart(fieldKey: FieldKey) {
-    setLastDoneField(null);
-    void startListening(fieldKey, (text) => appendDictated(fieldKey, text));
-  }
-
-  async function handleStop() {
-    const field = activeField;
-    await stopListening();
-    if (field) {
-      setLastDoneField(field);
-      setTimeout(() => setLastDoneField((f) => (f === field ? null : f)), 2500);
-    }
   }
 
   async function pickImage(from: "camera" | "library", target: PhotoImportTarget) {
@@ -223,7 +144,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
           : "Odczytuję przygotowanie ze zdjęcia...",
       );
 
-      const data = await recipeFromImage(asset.uri, asset.mimeType);
+      const data = await recipeFromImage(asset.uri, asset.mimeType, target);
 
       // Zużywamy limit dopiero po udanym odczycie — nieudane próby nie palą kredytu.
       await aiLimit.consume();
@@ -284,19 +205,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
     ]);
   }
 
-  function importFromPhoto() {
-    if (photoLoading) return;
-    Alert.alert(
-      "Importuj ze zdjęcia",
-      "Co chcesz uzupełnić tym zdjęciem? Tytuł, kategorię i notatki wpisz ręcznie.",
-      [
-        { text: "Składniki", onPress: () => choosePhotoSource("ingredients") },
-        { text: "Przygotowanie", onPress: () => choosePhotoSource("preparation") },
-        { text: "Anuluj", style: "cancel" },
-      ],
-    );
-  }
-
   function validate() {
     const e: typeof errors = {};
     if (!form.title.trim()) e.title = "Podaj tytuł przepisu";
@@ -309,7 +217,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
   function handleSave() {
     if (!validate()) return;
-    void stopListening();
     const ingredients = form.ingredients
       .split("\n")
       .map((s) => s.trim())
@@ -374,7 +281,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
       transparent
       animationType="slide"
       onRequestClose={() => {
-        void stopListening();
         onClose();
       }}
     >
@@ -382,7 +288,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={() => {
-            void stopListening();
             onClose();
           }}
         />
@@ -397,7 +302,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
               <Text style={styles.headTitle}>{linkMode ? "Dodaj z linku" : "Dodaj przepis"}</Text>
               <Pressable
                 onPress={() => {
-                  void stopListening();
                   onClose();
                 }}
                 hitSlop={8}
@@ -486,25 +390,9 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         : `AI dzisiaj: ${aiLimit.remaining}/${aiLimit.limit}`}
                     </Text>
                   </View>
-                  <Text style={styles.voiceHint}>
-                    Dyktowanie działa przy wybranym polu. Tekst pojawi się po zatrzymaniu nagrania.
+                  <Text style={styles.photoHelp}>
+                    Tytuł i notatki wpisz ręcznie. Zdjęcie dodawaj osobno przy składnikach albo przy przygotowaniu - aplikacja wstawi tekst do właściwego pola.
                   </Text>
-
-                  {/* Photo import */}
-                  <Pressable
-                    onPress={importFromPhoto}
-                    disabled={photoLoading}
-                    style={[styles.photoBtn, photoLoading && { opacity: 0.7 }]}
-                  >
-                    {photoLoading ? (
-                      <ActivityIndicator size="small" color="#8b4fd1" />
-                    ) : (
-                      <Camera size={18} color="#8b4fd1" strokeWidth={2} />
-                    )}
-                    <Text style={styles.photoBtnText}>
-                      {photoLoading ? "Przetwarzam zdjęcie…" : "Importuj przepis ze zdjęcia"}
-                    </Text>
-                  </Pressable>
 
                   {photoStatus ? (
                     <View
@@ -529,23 +417,13 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                   {/* Title */}
                   <View style={styles.field}>
                     <Text style={styles.label}>Tytuł przepisu</Text>
-                    <View style={styles.inputRow}>
-                      <TextInput
-                        value={form.title}
-                        onChangeText={(v) => set("title", v)}
-                        placeholder="Wpisz tytuł przepisu…"
-                        placeholderTextColor="#9a8e78"
-                        style={[styles.input, { flex: 1 }]}
-                      />
-                      <MicPill
-                        fieldKey="title"
-                        activeField={activeField}
-                        lastDoneField={lastDoneField}
-                        isSupported={isSupported}
-                        onStart={handleStart}
-                        onStop={handleStop}
-                      />
-                    </View>
+                    <TextInput
+                      value={form.title}
+                      onChangeText={(v) => set("title", v)}
+                      placeholder="Wpisz tytuł przepisu…"
+                      placeholderTextColor="#9a8e78"
+                      style={styles.input}
+                    />
                     {errors.title ? <Text style={styles.errText}>{errors.title}</Text> : null}
                   </View>
 
@@ -579,16 +457,16 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                   <View style={styles.field}>
                     <View style={styles.labelRow}>
                       <Text style={styles.label}>Składniki</Text>
-                      <MicPill
-                        fieldKey="ingredients"
-                        activeField={activeField}
-                        lastDoneField={lastDoneField}
-                        isSupported={isSupported}
-                        onStart={handleStart}
-                        onStop={handleStop}
-                      />
+                      <Pressable
+                        onPress={() => choosePhotoSource("ingredients")}
+                        disabled={photoLoading}
+                        style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
+                      >
+                        <Camera size={13} color="#7a3fc0" strokeWidth={2} />
+                        <Text style={styles.inlinePhotoText}>Wczytaj składniki ze zdjęcia</Text>
+                      </Pressable>
                     </View>
-                    <Text style={styles.hint}>Każdy składnik w osobnej linii</Text>
+                    <Text style={styles.hint}>AI ułoży składniki jeden pod drugim.</Text>
                     <TextInput
                       value={form.ingredients}
                       onChangeText={(v) => set("ingredients", v)}
@@ -606,16 +484,16 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                   <View style={styles.field}>
                     <View style={styles.labelRow}>
                       <Text style={styles.label}>Przygotowanie</Text>
-                      <MicPill
-                        fieldKey="preparation"
-                        activeField={activeField}
-                        lastDoneField={lastDoneField}
-                        isSupported={isSupported}
-                        onStart={handleStart}
-                        onStop={handleStop}
-                      />
+                      <Pressable
+                        onPress={() => choosePhotoSource("preparation")}
+                        disabled={photoLoading}
+                        style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
+                      >
+                        <Camera size={13} color="#7a3fc0" strokeWidth={2} />
+                        <Text style={styles.inlinePhotoText}>Wczytaj przygotowanie ze zdjęcia</Text>
+                      </Pressable>
                     </View>
-                    <Text style={styles.hint}>Każdy krok w osobnej linii</Text>
+                    <Text style={styles.hint}>AI ułoży kroki przygotowania jeden pod drugim.</Text>
                     <TextInput
                       value={form.preparation}
                       onChangeText={(v) => set("preparation", v)}
@@ -631,17 +509,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
                   {/* Notes */}
                   <View style={styles.field}>
-                    <View style={styles.labelRow}>
-                      <Text style={styles.label}>Notatki (opcjonalnie)</Text>
-                      <MicPill
-                        fieldKey="notes"
-                        activeField={activeField}
-                        lastDoneField={lastDoneField}
-                        isSupported={isSupported}
-                        onStart={handleStart}
-                        onStop={handleStop}
-                      />
-                    </View>
+                    <Text style={styles.label}>Notatki (opcjonalnie)</Text>
                     <TextInput
                       value={form.notes}
                       onChangeText={(v) => set("notes", v)}
@@ -651,13 +519,6 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                       style={[styles.input, styles.textarea]}
                     />
                   </View>
-
-                  {!isSupported ? (
-                    <Text style={styles.noVoice}>
-                      Dyktowanie głosowe nie działa w Expo Go na Androidzie. Ten tryb wymaga później
-                      natywnej wersji aplikacji z modułem rozpoznawania mowy.
-                    </Text>
-                  ) : null}
 
                   <Pressable onPress={handleSave} style={styles.saveBtn}>
                     <Check size={18} color="#fff" strokeWidth={2} />
@@ -813,40 +674,23 @@ const styles = StyleSheet.create({
   },
   catTextActive: { color: "#fff" },
 
-  mic: {
+  inlinePhotoBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    paddingHorizontal: 10,
+    maxWidth: "62%",
+    paddingHorizontal: 9,
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(139,79,209,0.28)",
     backgroundColor: "rgba(139,79,209,0.1)",
   },
-  micListening: { backgroundColor: "#e0506e", borderColor: "#e0506e" },
-  micDone: { backgroundColor: "#15995d", borderColor: "#15995d" },
-  micText: {
+  inlinePhotoText: {
+    color: "#7a3fc0",
     fontFamily: "Inter_600SemiBold",
-    fontSize: 11.5,
-  },
-
-  photoBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-    paddingVertical: 14,
-    borderRadius: 15,
-    borderWidth: 1.5,
-    borderStyle: "dashed",
-    borderColor: "#c4a8e0",
-    backgroundColor: "#faf5ff",
-  },
-  photoBtnText: {
-    color: "#8b4fd1",
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 14.5,
+    fontSize: 11,
+    flexShrink: 1,
   },
   statusBox: {
     paddingHorizontal: 14,
@@ -878,18 +722,11 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
     fontSize: 11.5,
   },
-  voiceHint: {
+  photoHelp: {
     color: "#7a6f58",
     fontFamily: "Inter_400Regular",
     fontSize: 11.5,
     lineHeight: 16,
-  },
-
-  noVoice: {
-    color: "#7a6f58",
-    fontFamily: "Inter_400Regular",
-    fontSize: 11.5,
-    textAlign: "center",
   },
 
   saveBtn: {

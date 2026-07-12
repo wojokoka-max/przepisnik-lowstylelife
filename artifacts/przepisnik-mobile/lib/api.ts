@@ -149,7 +149,11 @@ export type PhotoRecipe = {
 
 // Wysyła zdjęcie do api-server (OCR + AI) i zwraca odczytany przepis.
 // Web: pobiera blob z uri; natywnie: przekazuje obiekt { uri, name, type }.
-export async function recipeFromImage(uri: string, mimeType?: string): Promise<PhotoRecipe> {
+export async function recipeFromImage(
+  uri: string,
+  mimeType?: string,
+  target?: "ingredients" | "preparation",
+): Promise<PhotoRecipe> {
   const base = apiBaseUrl();
   if (!base || base === "/api") {
     throw new Error(
@@ -169,6 +173,7 @@ export async function recipeFromImage(uri: string, mimeType?: string): Promise<P
       type: mimeType ?? "image/jpeg",
     } as unknown as Blob);
   }
+  if (target) formData.append("target", target);
 
   const res = await fetch(apiUrl("/recipe-from-image"), {
     method: "POST",
