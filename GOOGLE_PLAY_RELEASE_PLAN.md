@@ -12,6 +12,9 @@ Stan na 2026-07-12.
    - Dodano konfigurację EAS dla buildów testowych i produkcyjnego pliku `.aab`.
 
 2. Upewnić się, że backend AI działa publicznie, nie tylko lokalnie.
+   - Status: rozpoczęte.
+   - Dodano szablony zmiennych produkcyjnych dla backendu i aplikacji mobilnej.
+   - Dodano instrukcję wdrożenia backendu: `artifacts/api-server/DEPLOYMENT.md`.
    - Generator, import ze zdjęcia i dyktowanie wymagają API.
    - Przed publikacją `EXPO_PUBLIC_API_BASE_URL` musi wskazywać publiczny adres backendu HTTPS.
    - Klucz OpenAI zostaje po stronie backendu, nigdy w aplikacji mobilnej.

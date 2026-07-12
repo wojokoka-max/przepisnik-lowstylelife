@@ -40,6 +40,7 @@ testem.log
 .env.*
 !.env.example
 !**/.env.example
+!**/.env.production.example
 
 # System Files
 .DS_Store
