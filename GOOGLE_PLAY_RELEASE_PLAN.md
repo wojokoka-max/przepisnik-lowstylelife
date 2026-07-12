@@ -77,6 +77,8 @@ Stan na 2026-07-12.
     - Decyzję trzeba połączyć z kosztami OpenAI i polityką Google Play Billing.
 
 11. Wypuścić wersję produkcyjną.
+    - Status: przygotowane jako checklista.
+    - Dodano checklistę produkcji: `PRODUCTION_ROLLOUT_CHECKLIST.md`.
     - Najbezpieczniej etapowo: mały procent użytkowników, obserwacja błędów, potem pełne wdrożenie.
 
 ## Źródła wymagań
