@@ -41,6 +41,110 @@ const CATEGORY_EMOJI: Record<string, string> = {
   Świąteczne: "🎄",
 };
 
+function normalizeForCategory(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function inferCategory(form: FormState) {
+  const text = normalizeForCategory(
+    [form.title, form.ingredients, form.preparation, form.notes].join(" "),
+  );
+
+  const hasAny = (words: string[]) => words.some((word) => text.includes(word));
+
+  if (hasAny(["zupa", "krem z", "barszcz", "rosol", "krupnik", "chlodnik", "zurek"])) {
+    return "Zupy";
+  }
+  if (
+    hasAny([
+      "ciasto",
+      "tort",
+      "sernik",
+      "szarlotka",
+      "deser",
+      "babecz",
+      "muffin",
+      "krem",
+      "lody",
+      "beza",
+      "kisiel",
+      "budyn",
+      "czekolad",
+      "drozdzowka",
+    ])
+  ) {
+    return "Desery";
+  }
+  if (
+    hasAny([
+      "sniadanie",
+      "owsianka",
+      "jajecznica",
+      "omlet",
+      "kanap",
+      "pasta jajeczna",
+      "tost",
+      "granola",
+      "placuszki",
+      "nalesniki",
+    ])
+  ) {
+    return "Śniadania";
+  }
+  if (
+    hasAny([
+      "chleb",
+      "bulka",
+      "bulki",
+      "bagiet",
+      "focaccia",
+      "pizza",
+      "ciasto drozdzowe",
+      "zakwas",
+      "pieczywo",
+    ])
+  ) {
+    return "Pieczywo";
+  }
+  if (
+    hasAny([
+      "dzem",
+      "konfitur",
+      "marmolad",
+      "kiszon",
+      "ogorki",
+      "kompot",
+      "syrop",
+      "nalew",
+      "przetwor",
+      "marynat",
+      "sloik",
+    ])
+  ) {
+    return "Przetwory";
+  }
+  if (
+    hasAny([
+      "wigil",
+      "swiatecz",
+      "boze narodzenie",
+      "wielkanoc",
+      "mazurek",
+      "piernik",
+      "makowiec",
+      "kutia",
+      "karp",
+    ])
+  ) {
+    return "Świąteczne";
+  }
+
+  return DEFAULT_CATEGORY;
+}
+
 type FieldKey = "title" | "ingredients" | "preparation" | "notes";
 type PhotoImportTarget = "ingredients" | "preparation";
 
@@ -208,6 +312,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
 
   function handleSave() {
     if (!validate()) return;
+    const category = inferCategory(form);
     const ingredients = form.ingredients
       .split("\n")
       .map((s) => s.trim())
@@ -222,11 +327,11 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
       slug: `${generateSlug(form.title.trim())}-${ts.toString(36).slice(-5)}`,
       title: form.title.trim(),
       description: "",
-      category: form.category || DEFAULT_CATEGORY,
+      category,
       prepTime: "—",
       servings: 2,
       difficulty: "łatwy",
-      emoji: CATEGORY_EMOJI[form.category || DEFAULT_CATEGORY] ?? "📝",
+      emoji: CATEGORY_EMOJI[category] ?? "📝",
       ingredients,
       steps,
       notes: form.notes.trim() || undefined,
