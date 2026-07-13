@@ -3,7 +3,7 @@
 
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as Print from "expo-print";
-import { ChevronLeft, PencilLine, Printer, Star } from "lucide-react-native";
+import { ChevronLeft, PencilLine, Printer, ShoppingCart, Star } from "lucide-react-native";
 import React from "react";
 import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EditRecipeModal from "../../components/EditRecipeModal";
 import { useRecipes } from "../../context/RecipesContext";
 import type { Recipe } from "../../data/recipes";
+import { addIngredientsToShoppingList } from "../../lib/shoppingList";
 
 function escapeHtml(s: string): string {
   return String(s)
@@ -148,6 +149,23 @@ export default function RecipeDetail() {
     }
   }
 
+  async function handleAddIngredientsToShoppingList() {
+    if (!recipe || !recipe.ingredients.length) {
+      Alert.alert("Lista zakupów", "Ten przepis nie ma jeszcze składników do dodania.");
+      return;
+    }
+
+    try {
+      const count = await addIngredientsToShoppingList(recipe.ingredients);
+      Alert.alert(
+        "Dodano do listy zakupów",
+        `Dodano ${count} składnik${count === 1 ? "" : count < 5 ? "i" : "ów"} z przepisu.`,
+      );
+    } catch {
+      Alert.alert("Lista zakupów", "Nie udało się dodać składników do listy.");
+    }
+  }
+
   return (
     <ScrollView
       style={styles.root}
@@ -216,6 +234,15 @@ export default function RecipeDetail() {
       </View>
 
       <Text style={styles.section}>Składniki</Text>
+      {recipe.ingredients.length ? (
+        <Pressable
+          onPress={handleAddIngredientsToShoppingList}
+          style={({ pressed }) => [styles.shoppingBtn, pressed && { opacity: 0.86 }]}
+        >
+          <ShoppingCart size={17} color="#fff" strokeWidth={2} />
+          <Text style={styles.shoppingBtnText}>Dodaj składniki do listy zakupów</Text>
+        </Pressable>
+      ) : null}
       <View style={styles.list}>
         {recipe.ingredients.map((ing, i) => (
           <Text key={i} style={styles.li}>
@@ -350,6 +377,24 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     fontSize: 13,
     color: "#fff",
+  },
+  shoppingBtn: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderRadius: 14,
+    backgroundColor: "#7a3fc0",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginTop: 8,
+    marginBottom: 10,
+  },
+  shoppingBtnText: {
+    color: "#fff",
+    fontFamily: "Inter_700Bold",
+    fontSize: 13,
   },
   meta: {
     flexDirection: "row",

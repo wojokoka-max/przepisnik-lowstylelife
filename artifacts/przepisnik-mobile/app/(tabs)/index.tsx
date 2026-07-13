@@ -1,10 +1,11 @@
 // Port webowego Home.tsx (Moje przepisy) na React Native.
 
-import { Link as LinkIcon, Search, Sparkles, Star, X } from "lucide-react-native";
+import { Link as LinkIcon, Search, ShoppingCart, Sparkles, Star, X } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,6 +21,7 @@ import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { useRecipes } from "../../context/RecipesContext";
 import type { Recipe } from "../../data/recipes";
 import { CategoryTile } from "../../lib/categoryIcons";
+import { addIngredientsToShoppingList } from "../../lib/shoppingList";
 
 const DIFFICULTY_COLOR: Record<Recipe["difficulty"], string> = {
   łatwy: "#15995d",
@@ -90,6 +92,23 @@ export default function HomeTab() {
   const handleSaveRecipe = (recipe: Recipe) => {
     addRecipe(recipe);
   };
+
+  async function handleAddToShoppingList(recipe: Recipe) {
+    if (!recipe.ingredients.length) {
+      Alert.alert("Lista zakupów", "Ten przepis nie ma jeszcze składników do dodania.");
+      return;
+    }
+
+    try {
+      const count = await addIngredientsToShoppingList(recipe.ingredients);
+      Alert.alert(
+        "Dodano do listy zakupów",
+        `Dodano ${count} składnik${count === 1 ? "" : count < 5 ? "i" : "ów"} z przepisu.`,
+      );
+    } catch {
+      Alert.alert("Lista zakupów", "Nie udało się dodać składników do listy.");
+    }
+  }
 
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom }]}>
@@ -207,6 +226,7 @@ export default function HomeTab() {
               isFav={favorites.has(item.id)}
               onPress={() => router.push(`/przepis/${item.slug ?? item.id}`)}
               onToggleFav={() => toggleFavorite(item.id)}
+              onAddToShoppingList={() => handleAddToShoppingList(item)}
             />
           )
         }
@@ -251,11 +271,13 @@ function RecipeCard({
   isFav,
   onPress,
   onToggleFav,
+  onAddToShoppingList,
 }: {
   recipe: Recipe;
   isFav: boolean;
   onPress: () => void;
   onToggleFav: () => void;
+  onAddToShoppingList: () => void;
 }) {
   return (
     <Pressable
@@ -279,27 +301,41 @@ function RecipeCard({
           ) : null}
         </View>
       </View>
-      <Pressable
-        onPress={(e) => {
-          e.stopPropagation?.();
-          onToggleFav();
-        }}
-        hitSlop={6}
-        style={[
-          styles.starBtn,
-          {
-            backgroundColor: isFav ? "#fef3c7" : "#f4ebfa",
-            borderColor: isFav ? "#fde68a" : "#e6d8f0",
-          },
-        ]}
-      >
-        <Star
-          size={19}
-          color={isFav ? "#f59e0b" : "#8b4fd1"}
-          fill={isFav ? "#f59e0b" : "transparent"}
-          strokeWidth={2}
-        />
-      </Pressable>
+      <View style={styles.cardActions}>
+        {recipe.ingredients.length ? (
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation?.();
+              onAddToShoppingList();
+            }}
+            hitSlop={6}
+            style={styles.cartBtn}
+          >
+            <ShoppingCart size={18} color="#8b4fd1" strokeWidth={2} />
+          </Pressable>
+        ) : null}
+        <Pressable
+          onPress={(e) => {
+            e.stopPropagation?.();
+            onToggleFav();
+          }}
+          hitSlop={6}
+          style={[
+            styles.starBtn,
+            {
+              backgroundColor: isFav ? "#fef3c7" : "#f4ebfa",
+              borderColor: isFav ? "#fde68a" : "#e6d8f0",
+            },
+          ]}
+        >
+          <Star
+            size={19}
+            color={isFav ? "#f59e0b" : "#8b4fd1"}
+            fill={isFav ? "#f59e0b" : "transparent"}
+            strokeWidth={2}
+          />
+        </Pressable>
+      </View>
     </Pressable>
   );
 }
@@ -437,6 +473,21 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   cardMeta: { fontFamily: "Inter_500Medium", fontSize: 11, letterSpacing: 0.2 },
+  cardActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  cartBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e6d8f0",
+    backgroundColor: "#f4ebfa",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   starBtn: {
     width: 36,
     height: 36,
