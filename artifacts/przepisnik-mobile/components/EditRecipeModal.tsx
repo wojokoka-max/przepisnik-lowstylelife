@@ -121,6 +121,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
 
             <ScrollView
               style={styles.body}
+              contentContainerStyle={styles.bodyContent}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
@@ -240,14 +241,15 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(28,24,16,0.28)",
     justifyContent: "flex-end",
   },
-  sheetWrap: { width: "100%" },
+  sheetWrap: { width: "100%", flex: 1, justifyContent: "flex-end" },
   sheet: {
     backgroundColor: "#fdf8ef",
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
     paddingHorizontal: 18,
     paddingTop: 8,
-    maxHeight: "94%",
+    height: "94%",
+    overflow: "hidden",
   },
   grabber: {
     alignSelf: "center",
@@ -277,7 +279,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  body: { flexGrow: 0 },
+  body: { flex: 1 },
+  bodyContent: { paddingBottom: 18 },
   field: { gap: 6 },
   label: {
     color: "#1c1810",
