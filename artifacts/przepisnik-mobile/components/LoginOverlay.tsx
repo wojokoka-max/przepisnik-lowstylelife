@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#7B4AB8",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#003153",
+    shadowColor: "#08243C",
     shadowOpacity: 0.3,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },

@@ -22,7 +22,7 @@ const colors = {
 
     // Secondary - brand/organizer structure
     secondary: "#F6EFE1",
-    secondaryForeground: "#003153",
+    secondaryForeground: "#08243C",
 
     // Muted
     muted: "#F4EEE0",
@@ -30,11 +30,11 @@ const colors = {
 
     // Accent - soft AI/lavender wash
     accent: "#E9DDF4",
-    accentForeground: "#003153",
+    accentForeground: "#08243C",
 
     // Brand highlights
     gold: "#C6A35B",
-    prussian: "#003153",
+    prussian: "#08243C",
     navy: "#07111F",
     herb: "#6E8B74",
 

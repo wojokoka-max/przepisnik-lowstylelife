@@ -1066,7 +1066,7 @@ const styles = StyleSheet.create({
   basketLabel: {
     fontSize: 11,
     letterSpacing: 1.6,
-    color: "#003153",
+    color: "#08243C",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
     marginBottom: 8,
@@ -1181,7 +1181,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 11.5,
     letterSpacing: 1.6,
-    color: "#003153",
+    color: "#08243C",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
     marginBottom: 8,
@@ -1200,7 +1200,7 @@ const styles = StyleSheet.create({
   recentText: { fontSize: 12.5, color: "#1c1810", fontFamily: "Inter_600SemiBold" },
 
   proposalHead: { flexDirection: "row", marginBottom: 10, gap: 10 },
-  proposalKicker: { fontSize: 11, color: "#003153", fontFamily: "Inter_700Bold", textTransform: "uppercase", letterSpacing: 1.2 },
+  proposalKicker: { fontSize: 11, color: "#08243C", fontFamily: "Inter_700Bold", textTransform: "uppercase", letterSpacing: 1.2 },
   proposalCount: { fontSize: 12.5, color: "#6A5D44", fontFamily: "Inter_500Medium", marginTop: 2 },
   closeBtn: {
     borderWidth: 1,
@@ -1255,7 +1255,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   starName: { fontFamily: "Inter_700Bold", fontSize: 16, color: "#1c1810" },
-  starCat: { fontSize: 12, color: "#003153", fontFamily: "Inter_700Bold", marginTop: 2, letterSpacing: 0.4, textTransform: "uppercase" },
+  starCat: { fontSize: 12, color: "#08243C", fontFamily: "Inter_700Bold", marginTop: 2, letterSpacing: 0.4, textTransform: "uppercase" },
 
   createBtn: {
     paddingVertical: 16,
@@ -1263,7 +1263,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#003153",
+    shadowColor: "#08243C",
     shadowOpacity: 0.18,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },

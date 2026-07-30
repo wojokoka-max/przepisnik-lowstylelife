@@ -44,7 +44,7 @@ function buildRecipeHtml(recipe: Recipe): string {
     h1 { text-align: center; font-size: 26px; color: #1C1810; margin: 6px 0 4px; }
     .desc { text-align: center; color: #6A5D44; font-size: 14px; margin: 4px 0 14px; }
     .meta { text-align: center; margin-bottom: 18px; }
-    .pill { display: inline-block; border: 1px solid #E8DDC8; background: #F1E8FA; color: #003153; border-radius: 999px; padding: 4px 12px; font-size: 12px; margin: 3px; }
+    .pill { display: inline-block; border: 1px solid #E8DDC8; background: #F1E8FA; color: #08243C; border-radius: 999px; padding: 4px 12px; font-size: 12px; margin: 3px; }
     h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #C6A35B; border-bottom: 1px solid #E8DDC8; padding-bottom: 6px; margin: 24px 0 10px; }
     ul, ol { padding-left: 22px; margin: 0; }
     li { font-size: 14px; line-height: 1.7; color: #1C1810; margin-bottom: 4px; }
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     borderColor: "#E8DDC8",
     backgroundColor: "#E9DDF4",
   },
-  pillText: { fontFamily: "Inter_500Medium", fontSize: 11, color: "#003153", letterSpacing: 0.5 },
+  pillText: { fontFamily: "Inter_500Medium", fontSize: 11, color: "#08243C", letterSpacing: 0.5 },
   section: {
     fontFamily: "Inter_700Bold",
     fontSize: 11,

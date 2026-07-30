@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#FBF6EC" },
 
   hero: {
-    backgroundColor: "#003153",
+    backgroundColor: "#08243C",
     marginHorizontal: 16,
     marginTop: 14,
     paddingHorizontal: 24,
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     alignItems: "center",
     borderRadius: 26,
-    shadowColor: "#003153",
+    shadowColor: "#08243C",
     shadowOpacity: 0.18,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 12 },
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     textTransform: "uppercase",
   },
-  sectionRight: { fontSize: 12, color: "#003153", fontFamily: "Inter_700Bold", letterSpacing: 0.3 },
+  sectionRight: { fontSize: 12, color: "#08243C", fontFamily: "Inter_700Bold", letterSpacing: 0.3 },
   chipsRow: { gap: 7, paddingBottom: 4, paddingRight: 4 },
 
   kcalChip: {
