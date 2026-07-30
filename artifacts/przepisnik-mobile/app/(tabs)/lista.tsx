@@ -239,7 +239,7 @@ export default function ListaTab() {
             <TextInput
               style={[styles.input, { flex: 1 }]}
               placeholder="Co kupić?"
-              placeholderTextColor="#b9aa8c"
+              placeholderTextColor="#A99A7C"
               value={name}
               onChangeText={setName}
               onSubmitEditing={addItem}
@@ -249,7 +249,7 @@ export default function ListaTab() {
             <TextInput
               style={[styles.input, { width: 72, textAlign: "center" }]}
               placeholder="szt."
-              placeholderTextColor="#b9aa8c"
+              placeholderTextColor="#A99A7C"
               value={qty}
               onChangeText={setQty}
               onSubmitEditing={addItem}
@@ -429,7 +429,7 @@ function Item({
       </View>
 
       <Pressable onPress={onDelete} hitSlop={8} style={styles.delBtn}>
-        <X size={17} color="#cdbf9f" strokeWidth={2} />
+        <X size={17} color="#C6A35B" strokeWidth={2} />
       </Pressable>
     </Animated.View>
   );
@@ -439,34 +439,34 @@ const SERIF = "CormorantGaramond_500Medium";
 const SERIF_ITALIC = "CormorantGaramond_400Regular_Italic";
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#f5f1ea" },
+  root: { flex: 1, backgroundColor: "#F5F1EA" },
 
   header: { alignItems: "center", paddingHorizontal: 16, paddingTop: 2 },
   eyebrow: {
     fontSize: 9.5,
     letterSpacing: 2.4,
-    color: "#9a8e78",
+    color: "#8A7C5F",
     marginBottom: 3,
     fontFamily: "Inter_500Medium",
   },
-  h1: { fontFamily: SERIF, fontSize: 30, lineHeight: 34, color: "#1a1a2e", textAlign: "center" },
-  h1em: { fontFamily: SERIF_ITALIC, color: "#8b4fd1" },
-  dateLine: { marginTop: 3, fontSize: 12.5, color: "#9a8e78", fontFamily: "Inter_400Regular" },
+  h1: { fontFamily: SERIF, fontSize: 30, lineHeight: 34, color: "#1C1810", textAlign: "center" },
+  h1em: { fontFamily: SERIF_ITALIC, color: "#7B4AB8" },
+  dateLine: { marginTop: 3, fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_400Regular" },
 
   stats: { flexDirection: "row", gap: 10, paddingHorizontal: 16, marginTop: 16 },
   statPill: {
     flex: 1,
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderRadius: 16,
     paddingVertical: 11,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ece3d2",
+    borderColor: "#E8DDC8",
   },
-  statNum: { fontFamily: "Inter_700Bold", fontSize: 22, color: "#8b4fd1", lineHeight: 24 },
+  statNum: { fontFamily: "Inter_700Bold", fontSize: 22, color: "#7B4AB8", lineHeight: 24 },
   statLabel: {
     fontSize: 9.5,
-    color: "#9a8e78",
+    color: "#8A7C5F",
     letterSpacing: 1,
     textTransform: "uppercase",
     marginTop: 3,
@@ -474,25 +474,25 @@ const styles = StyleSheet.create({
   },
 
   addForm: {
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderRadius: 18,
     padding: 12,
     marginHorizontal: 16,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: "#ece3d2",
+    borderColor: "#E8DDC8",
     gap: 10,
   },
   addRow: { flexDirection: "row", gap: 8 },
   input: {
-    backgroundColor: "#f5f1ea",
+    backgroundColor: "#F5F1EA",
     borderWidth: 1.5,
-    borderColor: "#e3d9c4",
+    borderColor: "#E8DDC8",
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 15,
-    color: "#1a1a2e",
+    color: "#1C1810",
     fontFamily: "Inter_500Medium",
   },
   catRow: { gap: 8, paddingVertical: 2, paddingRight: 4 },
@@ -503,18 +503,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1.5,
-    borderColor: "#e3d9c4",
-    backgroundColor: "#f5f1ea",
+    borderColor: "#E8DDC8",
+    backgroundColor: "#F5F1EA",
   },
-  catChipActive: { backgroundColor: "#8b4fd1", borderColor: "#8b4fd1" },
-  catChipText: { fontSize: 13, color: "#7a6d8a", fontFamily: "Inter_500Medium" },
+  catChipActive: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
+  catChipText: { fontSize: 13, color: "#6A5D44", fontFamily: "Inter_500Medium" },
   catChipTextActive: { color: "#fff", fontFamily: "Inter_600SemiBold" },
   addBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    backgroundColor: "#8b4fd1",
+    backgroundColor: "#7B4AB8",
     borderRadius: 12,
     paddingVertical: 12,
   },
@@ -522,30 +522,30 @@ const styles = StyleSheet.create({
 
   tabs: { flexDirection: "row", gap: 8, paddingHorizontal: 16, marginTop: 18 },
   tab: {
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderWidth: 1.5,
-    borderColor: "#e3d9c4",
+    borderColor: "#E8DDC8",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
-  tabActive: { backgroundColor: "#8b4fd1", borderColor: "#8b4fd1" },
-  tabText: { fontSize: 12.5, color: "#9a8e78", fontFamily: "Inter_500Medium" },
+  tabActive: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
+  tabText: { fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_500Medium" },
   tabTextActive: { color: "#fff", fontFamily: "Inter_600SemiBold" },
 
   sectionLabel: {
     fontSize: 10,
     letterSpacing: 1.5,
-    color: "#9a8e78",
+    color: "#8A7C5F",
     paddingLeft: 4,
     fontFamily: "Inter_600SemiBold",
     marginTop: 4,
   },
 
   item: {
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderWidth: 1.5,
-    borderColor: "#ece3d2",
+    borderColor: "#E8DDC8",
     borderRadius: 14,
     paddingHorizontal: 13,
     paddingVertical: 10,
@@ -560,35 +560,35 @@ const styles = StyleSheet.create({
     height: 26,
     borderRadius: 13,
     borderWidth: 2,
-    borderColor: "#e0d4ee",
+    borderColor: "#D7C2EA",
     alignItems: "center",
     justifyContent: "center",
   },
-  checkBtnDone: { backgroundColor: "#8b4fd1", borderColor: "#8b4fd1" },
-  itemName: { fontSize: 14.5, color: "#1a1a2e", fontFamily: "Inter_600SemiBold" },
+  checkBtnDone: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
+  itemName: { fontSize: 14.5, color: "#1C1810", fontFamily: "Inter_600SemiBold" },
   itemNameDone: { color: "#a89b85", textDecorationLine: "line-through" },
-  itemQty: { fontSize: 12.5, color: "#9a8e78", marginTop: 2, fontFamily: "Inter_400Regular" },
+  itemQty: { fontSize: 12.5, color: "#8A7C5F", marginTop: 2, fontFamily: "Inter_400Regular" },
   delBtn: { padding: 4 },
 
   empty: { alignItems: "center", paddingVertical: 44, paddingHorizontal: 16 },
-  emptyTitle: { fontFamily: SERIF_ITALIC, fontSize: 20, color: "#1a1a2e", marginBottom: 6 },
-  emptySub: { fontSize: 13, color: "#9a8e78", fontFamily: "Inter_400Regular", textAlign: "center" },
+  emptyTitle: { fontFamily: SERIF_ITALIC, fontSize: 20, color: "#1C1810", marginBottom: 6 },
+  emptySub: { fontSize: 13, color: "#8A7C5F", fontFamily: "Inter_400Regular", textAlign: "center" },
 
   clearBtn: {
     borderWidth: 1.5,
-    borderColor: "#e3d9c4",
+    borderColor: "#E8DDC8",
     borderRadius: 999,
     paddingHorizontal: 18,
     paddingVertical: 9,
   },
-  clearBtnText: { fontSize: 12.5, color: "#9a8e78", fontFamily: "Inter_500Medium" },
+  clearBtnText: { fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_500Medium" },
 
   deco: {
     textAlign: "center",
     fontSize: 18,
     letterSpacing: 6,
     opacity: 0.3,
-    color: "#8b4fd1",
+    color: "#7B4AB8",
     marginTop: 24,
   },
 });

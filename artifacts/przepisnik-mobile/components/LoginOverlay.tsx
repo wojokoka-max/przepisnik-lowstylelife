@@ -187,7 +187,7 @@ export default function LoginOverlay() {
 
   return (
     <LinearGradient
-      colors={["#fdf8ef", "#fbf6ec", "#f7efe0"]}
+      colors={["#FDF8EF", "#FBF6EC", "#F7EFE0"]}
       locations={[0, 0.5, 1]}
       style={styles.root}
     >
@@ -198,7 +198,7 @@ export default function LoginOverlay() {
             "rgba(253,248,239,0)",
             "rgba(253,248,239,0.05)",
             "rgba(253,248,239,0.7)",
-            "#fdf8ef",
+            "#FDF8EF",
           ]}
           locations={[0, 0.5, 0.85, 1]}
           style={StyleSheet.absoluteFill}
@@ -243,7 +243,7 @@ export default function LoginOverlay() {
                   onChangeText={setCode}
                   keyboardType="number-pad"
                   placeholder="np. 123456"
-                  placeholderTextColor="#b9aa8c"
+                  placeholderTextColor="#A99A7C"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="go"
@@ -252,7 +252,7 @@ export default function LoginOverlay() {
 
                 {error ? (
                   <View style={styles.errorBox}>
-                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <CircleAlert size={16} color="#B94A48" strokeWidth={2} />
                     <Text style={styles.errorText}>{error}</Text>
                   </View>
                 ) : null}
@@ -288,7 +288,7 @@ export default function LoginOverlay() {
                   autoCorrect={false}
                   keyboardType="email-address"
                   placeholder="twoj@email.com"
-                  placeholderTextColor="#b9aa8c"
+                  placeholderTextColor="#A99A7C"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="next"
@@ -300,7 +300,7 @@ export default function LoginOverlay() {
                   onChangeText={setPassword}
                   secureTextEntry
                   placeholder={mode === "signup" ? "min. 8 znaków" : "twoje hasło"}
-                  placeholderTextColor="#b9aa8c"
+                  placeholderTextColor="#A99A7C"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="go"
@@ -312,14 +312,14 @@ export default function LoginOverlay() {
 
                 {error ? (
                   <View style={styles.errorBox}>
-                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <CircleAlert size={16} color="#B94A48" strokeWidth={2} />
                     <Text style={styles.errorText}>{error}</Text>
                   </View>
                 ) : null}
 
                 {githubAccessDenied ? (
                   <View style={styles.errorBox}>
-                    <CircleAlert size={16} color="#c0566f" strokeWidth={2} />
+                    <CircleAlert size={16} color="#B94A48" strokeWidth={2} />
                     <Text style={styles.errorText}>
                       To konto GitHub nie ma dostępu. Logowanie przez GitHub jest tylko dla administratora.
                     </Text>
@@ -402,21 +402,21 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(168,128,31,0.5)",
-    backgroundColor: "rgba(216,177,92,0.14)",
+    borderColor: "rgba(198,163,91,0.5)",
+    backgroundColor: "rgba(198,163,91,0.14)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
   },
   markText: {
-    color: "#a8801f",
+    color: "#A8873F",
     fontFamily: "CormorantGaramond_600SemiBold",
     fontSize: 24,
     lineHeight: 26,
     marginTop: 1,
   },
   title: {
-    color: "#1a1a2e",
+    color: "#1C1810",
     fontFamily: "CormorantGaramond_500Medium",
     fontSize: 27,
     lineHeight: 31,
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   },
   kicker: {
     marginTop: 7,
-    color: "#8b4fd1",
+    color: "#7B4AB8",
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 3,
@@ -432,12 +432,12 @@ const styles = StyleSheet.create({
   divider: {
     width: 32,
     height: 1,
-    backgroundColor: "rgba(168,128,31,0.45)",
+    backgroundColor: "rgba(198,163,91,0.45)",
     marginTop: 12,
     marginBottom: 10,
   },
   tagline: {
-    color: "#5a4f3a",
+    color: "#6A5D44",
     fontFamily: "CormorantGaramond_400Regular_Italic",
     fontSize: 14,
     lineHeight: 19,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
 
   form: { width: "100%", maxWidth: 380 },
   label: {
-    color: "#8a6a1f",
+    color: "#A8873F",
     fontFamily: "Inter_700Bold",
     fontSize: 11,
     letterSpacing: 2,
@@ -459,9 +459,9 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: "rgba(168,128,31,0.35)",
-    backgroundColor: "#fffdf8",
-    color: "#1a1a2e",
+    borderColor: "rgba(198,163,91,0.35)",
+    backgroundColor: "#FFFDF8",
+    color: "#1C1810",
     paddingHorizontal: 16,
     fontFamily: "Inter_500Medium",
     fontSize: 15.5,
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: "#a8324c",
+    color: "#B94A48",
     fontFamily: "Inter_600SemiBold",
     fontSize: 13,
     lineHeight: 18,
@@ -489,10 +489,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
     height: 48,
     borderRadius: 999,
-    backgroundColor: "#7a3fc0",
+    backgroundColor: "#7B4AB8",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#5a2a8e",
+    shadowColor: "#003153",
     shadowOpacity: 0.3,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
@@ -507,12 +507,12 @@ const styles = StyleSheet.create({
   switchBtn: { marginTop: 14, alignItems: "center" },
 
   switchText: {
-    color: "#5a4f3a",
+    color: "#6A5D44",
     fontFamily: "Inter_500Medium",
     fontSize: 13,
   },
   switchTextEm: {
-    color: "#7a3fc0",
+    color: "#7B4AB8",
     fontFamily: "Inter_700Bold",
   },
 
@@ -539,11 +539,11 @@ const styles = StyleSheet.create({
     maxWidth: 380,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "rgba(168,128,31,0.25)",
+    borderTopColor: "rgba(198,163,91,0.25)",
     alignItems: "center",
   },
   footTitle: {
-    color: "#8a6a1f",
+    color: "#A8873F",
     fontFamily: "Inter_700Bold",
     fontSize: 10,
     letterSpacing: 3,

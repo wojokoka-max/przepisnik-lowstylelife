@@ -1,52 +1,54 @@
 /**
- * Przepiśnik LowStyleLife — semantic design tokens.
- * Synced with the web artifact's LIGHT MODE (Soft lavender & cream palette).
+ * Przepisnik LowStyleLife - semantic design tokens.
  *
- * The dark welcome screen uses its own gradient and is not driven by these tokens.
- * Everything inside the app (kitchen, creator, recipe list) is cream + lavender.
+ * Direction: warm culinary cream, refined lavender actions, old-gold brand
+ * details, and a controlled Prussian-blue thread shared with Next Door Studio.
  */
 
 const colors = {
   light: {
     // Base
-    background: "#fdf8ef",     // hsl(42 60% 97%) — warm cream
-    foreground: "#34284b",     // deep purple-grey
+    background: "#FDF8EF",
+    foreground: "#1C1810",
 
-    // Cards (slightly cooler/lavender tint)
-    card: "#fffdfb",
-    cardForeground: "#34284b",
-    cardBorder: "#ebe3ef",
+    // Cards
+    card: "#FFFDF8",
+    cardForeground: "#1C1810",
+    cardBorder: "#E8DDC8",
 
-    // Primary — lavender
-    primary: "#8b4fd1",
-    primaryForeground: "#ffffff",
+    // Primary - main app action
+    primary: "#7B4AB8",
+    primaryForeground: "#FFFFFF",
 
-    // Secondary — soft cream
-    secondary: "#f6efe1",
-    secondaryForeground: "#4b3a66",
+    // Secondary - brand/organizer structure
+    secondary: "#F6EFE1",
+    secondaryForeground: "#003153",
 
     // Muted
-    muted: "#f4eee0",
-    mutedForeground: "#8b8198",
+    muted: "#F4EEE0",
+    mutedForeground: "#8A7C5F",
 
-    // Accent — soft lavender wash
-    accent: "#ebdcf5",
-    accentForeground: "#4b3a66",
+    // Accent - soft AI/lavender wash
+    accent: "#E9DDF4",
+    accentForeground: "#003153",
 
-    // Highlight — gold (tytuł, podświetlenia kategorii)
-    gold: "#b88a2c",
+    // Brand highlights
+    gold: "#C6A35B",
+    prussian: "#003153",
+    navy: "#07111F",
+    herb: "#6E8B74",
 
     // States
-    destructive: "#dc2626",
-    destructiveForeground: "#ffffff",
+    destructive: "#B94A48",
+    destructiveForeground: "#FFFFFF",
 
-    border: "#ebe3ef",
-    input: "#e6d8f0",
+    border: "#E8DDC8",
+    input: "#E8DDC8",
 
     // Text helpers
-    text: "#34284b",
-    tint: "#8b4fd1",
-    subtle: "#a387bf",
+    text: "#1C1810",
+    tint: "#7B4AB8",
+    subtle: "#8A7C5F",
   },
 
   radius: 16,

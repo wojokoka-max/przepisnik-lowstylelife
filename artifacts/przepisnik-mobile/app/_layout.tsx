@@ -46,7 +46,7 @@ function RootLayoutNav() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#fdf8ef" },
+        contentStyle: { backgroundColor: "#FDF8EF" },
       }}
     />
   );
@@ -118,7 +118,7 @@ export default function RootLayout() {
             <QueryClientProvider client={queryClient}>
               <AuthProvider>
                 <RecipesProvider>
-                  <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#fdf8ef" }}>
+                  <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#FDF8EF" }}>
                     <KeyboardProvider>
                       <Gate>
                         <RootLayoutNav />
@@ -141,10 +141,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 28,
-    backgroundColor: "#fdf8ef",
+    backgroundColor: "#FDF8EF",
   },
   configTitle: {
-    color: "#1a1a2e",
+    color: "#1C1810",
     fontFamily: "CormorantGaramond_600SemiBold",
     fontSize: 26,
     lineHeight: 31,

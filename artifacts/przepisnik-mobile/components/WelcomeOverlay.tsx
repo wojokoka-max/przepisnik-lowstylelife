@@ -16,7 +16,7 @@ export default function WelcomeOverlay({ onEnter }: { onEnter: () => void }) {
 
   return (
     <LinearGradient
-      colors={["#07111f", "#12081f", "#1a0d24", "#241119"]}
+      colors={["#07111f", "#07111F", "#10141B", "#10141B"]}
       locations={[0, 0.28, 0.62, 1]}
       style={[
         styles.root,
@@ -57,7 +57,7 @@ export default function WelcomeOverlay({ onEnter }: { onEnter: () => void }) {
               paddingLeft: 56,
               paddingRight: 56,
               borderRadius: 999,
-              border: "1px solid rgba(216,177,92,0.55)",
+              border: "1px solid rgba(198,163,91,0.55)",
               background: "transparent",
               textDecoration: "none",
               cursor: "pointer",
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   logo: { width: 96, height: 96 },
   titleWrap: { alignItems: "center", paddingHorizontal: 16, maxWidth: 380, width: "100%" },
   title: {
-    color: "#d8b15c",
+    color: "#C6A35B",
     fontFamily: "CormorantGaramond_500Medium",
     fontSize: 60,
     lineHeight: 64,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   brand: {
     marginTop: 14,
-    color: "#d8b15c",
+    color: "#C6A35B",
     fontFamily: "Inter_400Regular",
     fontSize: 14,
     letterSpacing: 5,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   divider: {
     width: 40,
     height: 1,
-    backgroundColor: "rgba(216,177,92,0.4)",
+    backgroundColor: "rgba(198,163,91,0.4)",
     marginTop: 26,
     marginBottom: 22,
   },
@@ -140,17 +140,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 56,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(216,177,92,0.55)",
+    borderColor: "rgba(198,163,91,0.55)",
     backgroundColor: "transparent",
   },
   ctaText: {
-    color: "#d8b15c",
+    color: "#C6A35B",
     fontFamily: "Inter_500Medium",
     fontSize: 15,
     letterSpacing: 5,
   },
   link: {
-    color: "rgba(216,177,92,0.55)",
+    color: "rgba(198,163,91,0.55)",
     fontFamily: "Inter_400Regular",
     fontSize: 11,
     letterSpacing: 3,

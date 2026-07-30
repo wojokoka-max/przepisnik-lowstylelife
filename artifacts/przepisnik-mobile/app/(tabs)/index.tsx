@@ -26,7 +26,7 @@ import { addIngredientsToShoppingList } from "../../lib/shoppingList";
 const DIFFICULTY_COLOR: Record<Recipe["difficulty"], string> = {
   łatwy: "#15995d",
   średni: "#b45309",
-  trudny: "#dc2626",
+  trudny: "#B94A48",
 };
 
 const CATEGORIES = [
@@ -143,19 +143,19 @@ export default function HomeTab() {
 
             {/* Search */}
             <View style={styles.searchWrap}>
-              <Search size={16} color="#8b4fd1" strokeWidth={2} style={styles.searchIcon} />
+              <Search size={16} color="#7B4AB8" strokeWidth={2} style={styles.searchIcon} />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholder="Szukaj przepisu..."
-                placeholderTextColor="#a387bf"
+                placeholderTextColor="#8A7C5F"
                 style={styles.search}
                 autoCorrect={false}
                 returnKeyType="search"
               />
               {searchQuery ? (
                 <Pressable onPress={() => setSearchQuery("")} style={styles.searchClear} hitSlop={8}>
-                  <X size={16} color="#8b8198" strokeWidth={2} />
+                  <X size={16} color="#8A7C5F" strokeWidth={2} />
                 </Pressable>
               ) : null}
             </View>
@@ -198,7 +198,7 @@ export default function HomeTab() {
                     {isKreatorChip ? (
                       <Sparkles
                         size={11}
-                        color={active ? "#fff" : "#8b4fd1"}
+                        color={active ? "#fff" : "#7B4AB8"}
                         strokeWidth={2}
                         style={{ marginRight: 4 }}
                       />
@@ -297,7 +297,7 @@ function RecipeCard({
             </Text>
           ) : null}
           {recipe.servings ? (
-            <Text style={[styles.cardMeta, { color: "#8b8198" }]}>{recipe.servings} porcji</Text>
+            <Text style={[styles.cardMeta, { color: "#8A7C5F" }]}>{recipe.servings} porcji</Text>
           ) : null}
         </View>
       </View>
@@ -311,7 +311,7 @@ function RecipeCard({
             hitSlop={6}
             style={styles.cartBtn}
           >
-            <ShoppingCart size={18} color="#8b4fd1" strokeWidth={2} />
+            <ShoppingCart size={18} color="#7B4AB8" strokeWidth={2} />
           </Pressable>
         ) : null}
         <Pressable
@@ -324,14 +324,14 @@ function RecipeCard({
             styles.starBtn,
             {
               backgroundColor: isFav ? "#fef3c7" : "#f4ebfa",
-              borderColor: isFav ? "#fde68a" : "#e6d8f0",
+              borderColor: isFav ? "#fde68a" : "#E8DDC8",
             },
           ]}
         >
           <Star
             size={19}
-            color={isFav ? "#f59e0b" : "#8b4fd1"}
-            fill={isFav ? "#f59e0b" : "transparent"}
+            color={isFav ? "#C6A35B" : "#7B4AB8"}
+            fill={isFav ? "#C6A35B" : "transparent"}
             strokeWidth={2}
           />
         </Pressable>
@@ -343,7 +343,7 @@ function RecipeCard({
 function PobraneRow({ recipe, onPress }: { recipe: Recipe; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={styles.pobraneRow}>
-      <LinkIcon size={12} color="#8b4fd1" strokeWidth={2} style={{ marginRight: 10 }} />
+      <LinkIcon size={12} color="#7B4AB8" strokeWidth={2} style={{ marginRight: 10 }} />
       <View style={{ flex: 1 }}>
         <Text style={styles.pobraneTitle} numberOfLines={1}>
           {recipe.title}
@@ -365,14 +365,14 @@ function PobraneRow({ recipe, onPress }: { recipe: Recipe; onPress: () => void }
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#fbf6ec" },
+  root: { flex: 1, backgroundColor: "#FBF6EC" },
 
   intro: { paddingTop: 12, paddingBottom: 12 },
   introKicker: {
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 2,
-    color: "#8a6a1f",
+    color: "#A8873F",
     marginBottom: 7,
   },
   introTitle: {
@@ -384,14 +384,14 @@ const styles = StyleSheet.create({
   },
   introTitleEm: {
     fontFamily: "CormorantGaramond_400Regular_Italic",
-    color: "#8b4fd1",
+    color: "#7B4AB8",
   },
   introSub: {
     marginTop: 6,
     fontFamily: "Inter_500Medium",
     fontSize: 12.5,
     lineHeight: 18,
-    color: "#3d3526",
+    color: "#6A5D44",
     maxWidth: 320,
   },
 
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(28,24,16,0.08)",
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     paddingLeft: 42,
     paddingRight: 42,
     fontFamily: "Inter_400Regular",
@@ -425,10 +425,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(28,24,16,0.08)",
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
   },
-  chipActive: { backgroundColor: "#8b4fd1", borderColor: "#8b4fd1" },
-  chipActiveGold: { backgroundColor: "#b8923a", borderColor: "#b8923a" },
+  chipActive: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
+  chipActiveGold: { backgroundColor: "#C6A35B", borderColor: "#C6A35B" },
   chipText: { fontFamily: "Inter_600SemiBold", fontSize: 12, color: "#2a2010", letterSpacing: 0.2 },
   chipTextActive: { color: "#fff", fontFamily: "Inter_600SemiBold" },
   chipBadge: {
@@ -436,17 +436,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 999,
-    backgroundColor: "rgba(139,79,209,0.12)",
+    backgroundColor: "rgba(123,74,184,0.12)",
   },
   chipBadgeActive: { backgroundColor: "rgba(255,255,255,0.22)" },
-  chipBadgeText: { fontFamily: "Inter_700Bold", fontSize: 10, color: "#8b4fd1" },
+  chipBadgeText: { fontFamily: "Inter_700Bold", fontSize: 10, color: "#7B4AB8" },
   chipBadgeTextActive: { color: "#fff" },
 
   card: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderColor: "rgba(28,24,16,0.06)",
     borderWidth: 1,
     borderRadius: 18,
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     fontSize: 9,
     letterSpacing: 1.8,
-    color: "#8a6a1f",
+    color: "#A8873F",
     textTransform: "uppercase",
     marginBottom: 3,
   },
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e6d8f0",
+    borderColor: "#E8DDC8",
     backgroundColor: "#f4ebfa",
     alignItems: "center",
     justifyContent: "center",
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   pobraneRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderColor: "rgba(28,24,16,0.06)",
     borderWidth: 1,
     borderRadius: 18,
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     fontFamily: "CormorantGaramond_400Regular_Italic",
     fontSize: 16,
     lineHeight: 22,
-    color: "#7a6e58",
+    color: "#6A5D44",
     textAlign: "center",
   },
 });

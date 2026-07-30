@@ -5,7 +5,7 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const ACTIVE = "#7a3fc0";
+const ACTIVE = "#7B4AB8";
 const INACTIVE = "#6a5d44";
 
 function TabBarBackground() {
@@ -19,7 +19,7 @@ function TabBarBackground() {
     );
   }
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#fdf8ef" }]} />
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: "#FDF8EF" }]} />
   );
 }
 

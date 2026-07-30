@@ -98,7 +98,7 @@ export default function SiteHeader({ showAdd, onAdd }: Props) {
             </Text>
             {isAdmin ? (
               <View style={styles.adminBadge}>
-                <Sparkles size={11} color="#b8923a" strokeWidth={2} />
+                <Sparkles size={11} color="#C6A35B" strokeWidth={2} />
                 <Text style={styles.adminBadgeText}>Admin · pełny dostęp AI</Text>
               </View>
             ) : (
@@ -143,13 +143,13 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(216,177,92,0.45)",
-    backgroundColor: "rgba(216,177,92,0.08)",
+    borderColor: "rgba(198,163,91,0.45)",
+    backgroundColor: "rgba(198,163,91,0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
   markText: {
-    color: "#b8923a",
+    color: "#C6A35B",
     fontFamily: "CormorantGaramond_600SemiBold",
     fontSize: 18,
     lineHeight: 20,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   kicker: {
     marginTop: 1,
-    color: "#5a4f3a",
+    color: "#6A5D44",
     fontFamily: "Inter_700Bold",
     fontSize: 7.5,
     letterSpacing: 2,
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#6a2fb8",
-    shadowColor: "#5a2a8e",
+    backgroundColor: "#7B4AB8",
+    shadowColor: "#003153",
     shadowOpacity: 0.25,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
@@ -196,9 +196,9 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#d8b15c",
+    backgroundColor: "#C6A35B",
     borderWidth: 1.5,
-    borderColor: "#fdf8ef",
+    borderColor: "#FDF8EF",
   },
   hairline: {
     position: "absolute",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   menu: {
     width: 260,
-    backgroundColor: "#fffdf8",
+    backgroundColor: "#FFFDF8",
     borderRadius: 18,
     padding: 18,
     shadowColor: "#1c1810",
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(28,24,16,0.06)",
   },
   menuKicker: {
-    color: "#8a6a1f",
+    color: "#A8873F",
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 3,
@@ -250,18 +250,18 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(216,177,92,0.45)",
-    backgroundColor: "rgba(216,177,92,0.1)",
+    borderColor: "rgba(198,163,91,0.45)",
+    backgroundColor: "rgba(198,163,91,0.1)",
     marginBottom: 14,
   },
   adminBadgeText: {
-    color: "#8a6a1f",
+    color: "#A8873F",
     fontFamily: "Inter_700Bold",
     fontSize: 11,
     letterSpacing: 0.4,
   },
   menuNote: {
-    color: "#4a4030",
+    color: "#6A5D44",
     fontFamily: "Inter_500Medium",
     fontSize: 12.5,
     lineHeight: 17,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#6a2fb8",
+    backgroundColor: "#7B4AB8",
     borderRadius: 12,
     paddingVertical: 12,
   },
