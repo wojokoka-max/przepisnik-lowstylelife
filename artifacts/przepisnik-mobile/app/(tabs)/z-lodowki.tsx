@@ -719,7 +719,7 @@ export default function ZLodowkiTab() {
                   style={styles.proposalCard}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                    <Text style={[styles.tag, { color: "#6EC6FF", backgroundColor: "rgba(110,198,255,0.12)" }]}>
+                    <Text style={[styles.tag, { color: "#9B8AC8", backgroundColor: "rgba(155,138,200,0.12)" }]}>
                       Planer
                     </Text>
                     <Text style={styles.tagMeta}>
@@ -794,11 +794,11 @@ export default function ZLodowkiTab() {
                       key={i}
                       style={[
                         styles.ingRow,
-                        ing.isStar && { backgroundColor: "rgba(110,198,255,0.1)", borderColor: "#6EC6FF" },
+                        ing.isStar && { backgroundColor: "rgba(155,138,200,0.1)", borderColor: "#9B8AC8" },
                       ]}
                     >
                       <Text style={{ fontSize: 16 }}>{CAT_ICONS[ing.product.cat] || "•"}</Text>
-                      <Text style={[styles.ingName, ing.isStar && { color: "#6EC6FF" }]}>
+                      <Text style={[styles.ingName, ing.isStar && { color: "#9B8AC8" }]}>
                         {ing.product.name}
                         {ing.isStar ? " ★" : ""}
                       </Text>
@@ -849,7 +849,7 @@ export default function ZLodowkiTab() {
           {planerDish ? (
             <View style={styles.resultCard}>
               <View style={[styles.resultHead, { backgroundColor: "#ede7d9" }]}>
-                <Text style={[styles.resultType, { color: "#6EC6FF" }]}>Z Planera · {planerDish.opis}</Text>
+                <Text style={[styles.resultType, { color: "#9B8AC8" }]}>Z Planera · {planerDish.opis}</Text>
                 <Text style={styles.resultTitle}>{planerDish.nazwa}</Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
                   <Text style={styles.resultMeta}>⏱ {planerDish.czas} min</Text>
@@ -1241,7 +1241,7 @@ const styles = StyleSheet.create({
   },
   tagMeta: { fontSize: 11.5, color: "#5F6B7A", fontFamily: "Inter_500Medium" },
   proposalTitle: { fontSize: 15, color: "#1c1810", fontFamily: "CormorantGaramond_600SemiBold", marginTop: 4, lineHeight: 18 },
-  proposalType: { fontSize: 11.5, color: "#6EC6FF", marginTop: 2, fontFamily: "Inter_500Medium" },
+  proposalType: { fontSize: 11.5, color: "#9B8AC8", marginTop: 2, fontFamily: "Inter_500Medium" },
 
   starCard: {
     flexDirection: "row",
@@ -1290,7 +1290,7 @@ const styles = StyleSheet.create({
   resultType: {
     fontSize: 10,
     letterSpacing: 1.6,
-    color: "#6EC6FF",
+    color: "#9B8AC8",
     fontFamily: "Inter_700Bold",
     textTransform: "uppercase",
     marginBottom: 6,
@@ -1319,13 +1319,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   ingName: { fontSize: 13, color: "#1c1810", fontFamily: "Inter_600SemiBold", flex: 1 },
-  ingG: { fontSize: 11, color: "#6EC6FF", fontFamily: "Inter_500Medium" },
+  ingG: { fontSize: 11, color: "#9B8AC8", fontFamily: "Inter_500Medium" },
   stepRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
   stepNum: {
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: "#6EC6FF",
+    backgroundColor: "#9B8AC8",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -1334,8 +1334,8 @@ const styles = StyleSheet.create({
   stepText: { flex: 1, fontSize: 14, color: "#1c1810", lineHeight: 22, fontFamily: "Inter_400Regular" },
 
   tipBox: {
-    backgroundColor: "rgba(110,198,255,0.1)",
-    borderColor: "rgba(110,198,255,0.3)",
+    backgroundColor: "rgba(155,138,200,0.1)",
+    borderColor: "rgba(155,138,200,0.3)",
     borderWidth: 1,
     borderRadius: 10,
     padding: 12,
@@ -1344,7 +1344,7 @@ const styles = StyleSheet.create({
   tipLabel: {
     fontSize: 11,
     letterSpacing: 0.6,
-    color: "#6EC6FF",
+    color: "#9B8AC8",
     fontFamily: "Inter_700Bold",
     textTransform: "uppercase",
     marginBottom: 4,
@@ -1377,18 +1377,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#6EC6FF",
-    backgroundColor: "rgba(110,198,255,0.1)",
+    borderColor: "#9B8AC8",
+    backgroundColor: "rgba(155,138,200,0.1)",
     alignItems: "center",
   },
-  saveBtnText: { fontSize: 13, color: "#6EC6FF", fontFamily: "Inter_600SemiBold" },
+  saveBtnText: { fontSize: 13, color: "#9B8AC8", fontFamily: "Inter_600SemiBold" },
   savedBtn: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#6EC6FF",
-    backgroundColor: "#6EC6FF",
+    borderColor: "#9B8AC8",
+    backgroundColor: "#9B8AC8",
     alignItems: "center",
   },
   savedBtnText: { fontSize: 13, color: "#fff", fontFamily: "Inter_600SemiBold" },

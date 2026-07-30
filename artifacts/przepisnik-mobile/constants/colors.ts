@@ -2,7 +2,7 @@
  * Przepisnik LowStyleLife - semantic design tokens.
  *
  * Direction: a lighter Przepisnik surface built from the Next Door Studio
- * palette: paper, navy/ink structure, old-gold actions, and cool blue accents.
+ * palette: paper, navy/ink structure, old-gold actions, and lavender accents.
  */
 
 const colors = {
@@ -28,8 +28,8 @@ const colors = {
     muted: "#F6F7F8",
     mutedForeground: "#5F6B7A",
 
-    // Accent - cool blue from Next Door Studio
-    accent: "#6EC6FF",
+    // Accent - lavender from the Przepisnik login screen
+    accent: "#9B8AC8",
     accentForeground: "#07111F",
 
     // Brand highlights
@@ -38,7 +38,7 @@ const colors = {
     prussianDark: "#08243C",
     navy: "#07111F",
     ink: "#10141B",
-    blue: "#6EC6FF",
+    lavender: "#9B8AC8",
 
     // States
     destructive: "#B94A48",

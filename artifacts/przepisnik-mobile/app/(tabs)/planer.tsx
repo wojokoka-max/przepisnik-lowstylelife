@@ -464,7 +464,7 @@ function MealCard({
           {[
             { l: "Białko", v: dish.B, u: "g", c: "#C6A35B" },
             { l: "Tłuszcz", v: dish.T, u: "g", c: "#5F6B7A" },
-            { l: "Węgle.", v: dish.W, u: "g", c: "#6EC6FF" },
+            { l: "Węgle.", v: dish.W, u: "g", c: "#9B8AC8" },
           ].map((m) => (
             <View key={m.l} style={styles.macroBox}>
               <Text style={[styles.macroBoxVal, { color: m.c }]}>

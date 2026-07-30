@@ -492,7 +492,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         style={[
                           styles.statusText,
                           photoStatus.startsWith("OK:")
-                            ? { color: "#6EC6FF" }
+                            ? { color: "#9B8AC8" }
                             : { color: "#92400e" },
                         ]}
                       >
