@@ -422,7 +422,7 @@ export default function ZLodowkiTab() {
         >
           {/* AI USAGE */}
           <View style={styles.aiBadge}>
-            <Sparkles size={11} color="#7B4AB8" strokeWidth={2} />
+            <Sparkles size={11} color="#C6A35B" strokeWidth={2} />
             <Text style={styles.aiBadgeText}>
               {aiLimit.unlimited
                 ? "AI: nielimitowane (admin)"
@@ -451,7 +451,7 @@ export default function ZLodowkiTab() {
             >
               <Carrot
                 size={14}
-                color={mode === "ingredient" ? "#fff" : "#7B4AB8"}
+                color={mode === "ingredient" ? "#fff" : "#C6A35B"}
                 strokeWidth={2}
               />
               <Text
@@ -466,7 +466,7 @@ export default function ZLodowkiTab() {
             >
               <Utensils
                 size={14}
-                color={mode === "name" ? "#fff" : "#7B4AB8"}
+                color={mode === "name" ? "#fff" : "#C6A35B"}
                 strokeWidth={2}
               />
               <Text style={[styles.segmentText, mode === "name" && styles.segmentTextActive]}>
@@ -482,14 +482,14 @@ export default function ZLodowkiTab() {
             <Text style={styles.heroSub}>Dodaj składniki, które masz — ułożymy z nich przepis</Text>
 
             <View style={{ position: "relative" }}>
-              <Search size={16} color="#8A7C5F" strokeWidth={2} style={styles.searchIcon} />
+              <Search size={16} color="#5F6B7A" strokeWidth={2} style={styles.searchIcon} />
               <TextInput
                 value={query}
                 onChangeText={onSearchChange}
                 onSubmitEditing={() => addIngredient(query)}
                 returnKeyType="done"
                 placeholder="np. jajka, musztarda, natka pietruszki…"
-                placeholderTextColor="#8A7C5F"
+                placeholderTextColor="#5F6B7A"
                 style={styles.searchInput}
                 autoCorrect={false}
               />
@@ -503,7 +503,7 @@ export default function ZLodowkiTab() {
                     onPress={() => addIngredient(p.name)}
                     style={[
                       styles.ddItem,
-                      i < dropdownItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: "#E8DDC8" },
+                      i < dropdownItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: "#D8DEE8" },
                     ]}
                   >
                     <Text style={{ fontSize: 16 }}>{CAT_ICONS[p.cat]}</Text>
@@ -546,11 +546,11 @@ export default function ZLodowkiTab() {
                   disabled={fridgeLoading}
                   style={[
                     styles.aiBtn,
-                    { marginTop: 12, backgroundColor: fridgeLoading ? "rgba(123,74,184,0.12)" : "#7B4AB8" },
+                    { marginTop: 12, backgroundColor: fridgeLoading ? "rgba(198,163,91,0.12)" : "#C6A35B" },
                   ]}
                 >
                   {fridgeLoading ? <ActivityIndicator size="small" color="#fff" /> : null}
-                  <Text style={[styles.aiBtnText, { color: fridgeLoading ? "#7B4AB8" : "#fff" }]}>
+                  <Text style={[styles.aiBtnText, { color: fridgeLoading ? "#C6A35B" : "#fff" }]}>
                     {fridgeLoading
                       ? "✨ Układam przepis…"
                       : `✨ Stwórz przepis z ${fridgeItems.length} składnik${fridgeItems.length === 1 ? "a" : "ów"}`}
@@ -622,7 +622,7 @@ export default function ZLodowkiTab() {
                 if (dishError) setDishError("");
               }}
               placeholder="np. Krewetki w sosie kokosowo-limonkowym"
-              placeholderTextColor="#8A7C5F"
+              placeholderTextColor="#5F6B7A"
               editable={!dishLoading}
               style={[styles.searchInput, { paddingLeft: 18, marginBottom: 10 }]}
               onSubmitEditing={generateFromName}
@@ -635,7 +635,7 @@ export default function ZLodowkiTab() {
               style={[
                 styles.aiBtn,
                 {
-                  backgroundColor: dishLoading || !dishName.trim() ? "rgba(123,74,184,0.12)" : "#7B4AB8",
+                  backgroundColor: dishLoading || !dishName.trim() ? "rgba(198,163,91,0.12)" : "#C6A35B",
                 },
               ]}
             >
@@ -643,7 +643,7 @@ export default function ZLodowkiTab() {
               <Text
                 style={[
                   styles.aiBtnText,
-                  { color: dishLoading || !dishName.trim() ? "#7B4AB8" : "#fff" },
+                  { color: dishLoading || !dishName.trim() ? "#C6A35B" : "#fff" },
                 ]}
               >
                 {dishLoading ? "✨ Generuję przepis…" : "✨ Stwórz przepis"}
@@ -702,7 +702,7 @@ export default function ZLodowkiTab() {
                   style={styles.proposalCard}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                    <Text style={[styles.tag, { color: "#7B4AB8", backgroundColor: "rgba(123,74,184,0.1)" }]}>
+                    <Text style={[styles.tag, { color: "#C6A35B", backgroundColor: "rgba(198,163,91,0.1)" }]}>
                       Kreator
                     </Text>
                     <Text style={styles.tagMeta}>⏱ {prop.recipe.time} min</Text>
@@ -719,7 +719,7 @@ export default function ZLodowkiTab() {
                   style={styles.proposalCard}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                    <Text style={[styles.tag, { color: "#5F7F66", backgroundColor: "rgba(110,139,116,0.12)" }]}>
+                    <Text style={[styles.tag, { color: "#6EC6FF", backgroundColor: "rgba(110,198,255,0.12)" }]}>
                       Planer
                     </Text>
                     <Text style={styles.tagMeta}>
@@ -742,7 +742,7 @@ export default function ZLodowkiTab() {
                 <Text style={styles.starCat}>{CAT_LABELS[starProduct.cat]}</Text>
               </View>
               <Pressable onPress={clearSelected} hitSlop={8}>
-                <Text style={{ color: "#8A7C5F", fontSize: 18 }}>✕</Text>
+                <Text style={{ color: "#5F6B7A", fontSize: 18 }}>✕</Text>
               </Pressable>
             </View>
           ) : null}
@@ -755,14 +755,14 @@ export default function ZLodowkiTab() {
               style={[
                 styles.createBtn,
                 {
-                  backgroundColor: !starProduct || loading ? "#d9d0bc" : "#7B4AB8",
+                  backgroundColor: !starProduct || loading ? "#d9d0bc" : "#C6A35B",
                 },
               ]}
             >
               <Text
                 style={[
                   styles.createBtnText,
-                  { color: !starProduct || loading ? "#6A5D44" : "#fff" },
+                  { color: !starProduct || loading ? "#5F6B7A" : "#fff" },
                 ]}
               >
                 {meal ? "Stwórz inny posiłek →" : "Stwórz posiłek →"}
@@ -773,8 +773,8 @@ export default function ZLodowkiTab() {
           {/* LOADING */}
           {loading ? (
             <View style={{ alignItems: "center", paddingVertical: 32 }}>
-              <ActivityIndicator size="small" color="#7B4AB8" />
-              <Text style={{ marginTop: 10, color: "#6A5D44", fontSize: 14, fontFamily: "Inter_500Medium" }}>Komponuję posiłek…</Text>
+              <ActivityIndicator size="small" color="#C6A35B" />
+              <Text style={{ marginTop: 10, color: "#5F6B7A", fontSize: 14, fontFamily: "Inter_500Medium" }}>Komponuję posiłek…</Text>
             </View>
           ) : null}
 
@@ -794,11 +794,11 @@ export default function ZLodowkiTab() {
                       key={i}
                       style={[
                         styles.ingRow,
-                        ing.isStar && { backgroundColor: "rgba(110,139,116,0.1)", borderColor: "#6E8B74" },
+                        ing.isStar && { backgroundColor: "rgba(110,198,255,0.1)", borderColor: "#6EC6FF" },
                       ]}
                     >
                       <Text style={{ fontSize: 16 }}>{CAT_ICONS[ing.product.cat] || "•"}</Text>
-                      <Text style={[styles.ingName, ing.isStar && { color: "#5F7F66" }]}>
+                      <Text style={[styles.ingName, ing.isStar && { color: "#6EC6FF" }]}>
                         {ing.product.name}
                         {ing.isStar ? " ★" : ""}
                       </Text>
@@ -849,7 +849,7 @@ export default function ZLodowkiTab() {
           {planerDish ? (
             <View style={styles.resultCard}>
               <View style={[styles.resultHead, { backgroundColor: "#ede7d9" }]}>
-                <Text style={[styles.resultType, { color: "#5F7F66" }]}>Z Planera · {planerDish.opis}</Text>
+                <Text style={[styles.resultType, { color: "#6EC6FF" }]}>Z Planera · {planerDish.opis}</Text>
                 <Text style={styles.resultTitle}>{planerDish.nazwa}</Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
                   <Text style={styles.resultMeta}>⏱ {planerDish.czas} min</Text>
@@ -954,22 +954,22 @@ export default function ZLodowkiTab() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#F5F1EA" },
+  root: { flex: 1, backgroundColor: "#F6F7F8" },
 
   aiBadge: {
     flexDirection: "row",
     alignSelf: "center",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(123,74,184,0.08)",
-    borderColor: "rgba(123,74,184,0.18)",
+    backgroundColor: "rgba(198,163,91,0.08)",
+    borderColor: "rgba(198,163,91,0.18)",
     borderWidth: 1,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
     marginBottom: 12,
   },
-  aiBadgeText: { fontSize: 11, color: "#7B4AB8", fontFamily: "Inter_600SemiBold", letterSpacing: 0.4 },
+  aiBadgeText: { fontSize: 11, color: "#C6A35B", fontFamily: "Inter_600SemiBold", letterSpacing: 0.4 },
 
   header: { marginBottom: 22, paddingBottom: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "rgba(28,24,16,0.12)" },
   headerKicker: {
@@ -980,14 +980,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   headerTitle: { fontFamily: "CormorantGaramond_500Medium", fontSize: 28, lineHeight: 32, color: "#1c1810", letterSpacing: 0.2 },
-  headerTitleEm: { fontFamily: "CormorantGaramond_400Regular_Italic", color: "#7B4AB8" },
-  headerSub: { fontSize: 12.5, lineHeight: 18, color: "#6A5D44", marginTop: 6, fontFamily: "Inter_400Regular", maxWidth: 320 },
+  headerTitleEm: { fontFamily: "CormorantGaramond_400Regular_Italic", color: "#C6A35B" },
+  headerSub: { fontSize: 12.5, lineHeight: 18, color: "#5F6B7A", marginTop: 6, fontFamily: "Inter_400Regular", maxWidth: 320 },
 
   segmented: {
     flexDirection: "row",
-    backgroundColor: "rgba(123,74,184,0.08)",
+    backgroundColor: "rgba(198,163,91,0.08)",
     borderWidth: 1,
-    borderColor: "rgba(123,74,184,0.2)",
+    borderColor: "rgba(198,163,91,0.2)",
     borderRadius: 12,
     padding: 4,
     marginBottom: 14,
@@ -1004,31 +1004,31 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   segmentActive: {
-    backgroundColor: "#7B4AB8",
-    shadowColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
+    shadowColor: "#C6A35B",
     shadowOpacity: 0.25,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  segmentText: { fontSize: 12, color: "#7B4AB8", fontFamily: "Inter_600SemiBold" },
+  segmentText: { fontSize: 12, color: "#C6A35B", fontFamily: "Inter_600SemiBold" },
   segmentTextActive: { color: "#fff", fontFamily: "Inter_700Bold" },
 
   heroCard: {
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderRadius: 14,
     padding: 18,
   },
   heroTitle: { fontFamily: "Inter_700Bold", fontSize: 17, color: "#1c1810" },
-  heroSub: { fontSize: 12, color: "#8A7C5F", marginTop: 2, marginBottom: 12, fontFamily: "Inter_400Regular" },
+  heroSub: { fontSize: 12, color: "#5F6B7A", marginTop: 2, marginBottom: 12, fontFamily: "Inter_400Regular" },
 
   searchIcon: { position: "absolute", left: 14, top: 14, zIndex: 1 },
   searchInput: {
     backgroundColor: "#f5f0e6",
     borderWidth: 2,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 50,
     paddingVertical: 12,
     paddingLeft: 38,
@@ -1040,16 +1040,16 @@ const styles = StyleSheet.create({
 
   dropdown: {
     marginTop: 6,
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderRadius: 12,
     overflow: "hidden",
   },
   ddItem: { flexDirection: "row", alignItems: "center", gap: 10, padding: 11 },
   ddName: { fontSize: 13, color: "#1c1810", fontFamily: "Inter_500Medium" },
-  ddCat: { fontSize: 11, color: "#8A7C5F", fontFamily: "Inter_400Regular" },
-  ddAdd: { fontSize: 11.5, color: "#7B4AB8", fontFamily: "Inter_700Bold" },
+  ddCat: { fontSize: 11, color: "#5F6B7A", fontFamily: "Inter_400Regular" },
+  ddAdd: { fontSize: 11.5, color: "#C6A35B", fontFamily: "Inter_700Bold" },
 
   addQueryBtn: {
     marginTop: 8,
@@ -1058,15 +1058,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1.5,
-    borderColor: "#7B4AB8",
-    backgroundColor: "rgba(123,74,184,0.08)",
+    borderColor: "#C6A35B",
+    backgroundColor: "rgba(198,163,91,0.08)",
   },
-  addQueryText: { fontSize: 12.5, color: "#7B4AB8", fontFamily: "Inter_700Bold" },
+  addQueryText: { fontSize: 12.5, color: "#C6A35B", fontFamily: "Inter_700Bold" },
 
   basketLabel: {
     fontSize: 11,
     letterSpacing: 1.6,
-    color: "#08243C",
+    color: "#07111F",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
     marginBottom: 8,
@@ -1080,7 +1080,7 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
   },
   basketChipText: { fontSize: 12.5, color: "#fff", fontFamily: "Inter_600SemiBold" },
   basketChipX: { fontSize: 12, color: "rgba(255,255,255,0.75)", fontFamily: "Inter_700Bold" },
@@ -1092,14 +1092,14 @@ const styles = StyleSheet.create({
     marginTop: 14,
     paddingTop: 14,
     borderTopWidth: 1,
-    borderTopColor: "#E8DDC8",
+    borderTopColor: "#D8DEE8",
   },
   quickCatBtn: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     backgroundColor: "#f5f0e6",
     minWidth: "47%",
     alignItems: "center",
@@ -1112,7 +1112,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 2,
-    color: "#A8873F",
+    color: "#C6A35B",
     textTransform: "uppercase",
   },
   cuisineRow: { gap: 8, paddingBottom: 4, paddingRight: 4 },
@@ -1122,7 +1122,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: "#f7f2ea",
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
   },
   cuisineChipActive: {
     backgroundColor: "#07111F",
@@ -1134,24 +1134,24 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
   },
   cuisineChipTextActive: {
-    color: "#FBF6EC",
+    color: "#F6F7F8",
   },
 
 
   aiCard: {
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderRadius: 14,
     padding: 18,
     marginTop: 12,
   },
   aiDivider: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 },
-  aiDividerLine: { flex: 1, height: 1, backgroundColor: "rgba(123,74,184,0.25)" },
+  aiDividerLine: { flex: 1, height: 1, backgroundColor: "rgba(198,163,91,0.25)" },
   aiDividerText: {
     fontSize: 10,
     letterSpacing: 1.6,
-    color: "#7B4AB8",
+    color: "#C6A35B",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
   },
@@ -1161,7 +1161,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#7B4AB8",
+    borderColor: "#C6A35B",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(106,47,184,0.06)",
@@ -1181,7 +1181,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 11.5,
     letterSpacing: 1.6,
-    color: "#08243C",
+    color: "#07111F",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
     marginBottom: 8,
@@ -1194,18 +1194,18 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E8DDC8",
-    backgroundColor: "#FFFDF8",
+    borderColor: "#D8DEE8",
+    backgroundColor: "#F4F7FB",
   },
   recentText: { fontSize: 12.5, color: "#1c1810", fontFamily: "Inter_600SemiBold" },
 
   proposalHead: { flexDirection: "row", marginBottom: 10, gap: 10 },
-  proposalKicker: { fontSize: 11, color: "#08243C", fontFamily: "Inter_700Bold", textTransform: "uppercase", letterSpacing: 1.2 },
-  proposalCount: { fontSize: 12.5, color: "#6A5D44", fontFamily: "Inter_500Medium", marginTop: 2 },
+  proposalKicker: { fontSize: 11, color: "#07111F", fontFamily: "Inter_700Bold", textTransform: "uppercase", letterSpacing: 1.2 },
+  proposalCount: { fontSize: 12.5, color: "#5F6B7A", fontFamily: "Inter_500Medium", marginTop: 2 },
   closeBtn: {
     borderWidth: 1,
-    borderColor: "#E8DDC8",
-    backgroundColor: "#FFFDF8",
+    borderColor: "#D8DEE8",
+    backgroundColor: "#F4F7FB",
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 5,
@@ -1213,18 +1213,18 @@ const styles = StyleSheet.create({
   },
   closeBtnText: { fontSize: 12.5, color: "#1c1810", fontFamily: "Inter_700Bold" },
   empty: {
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderStyle: "dashed",
     borderRadius: 12,
     padding: 18,
     alignItems: "center",
   },
-  emptyText: { color: "#6A5D44", fontSize: 13.5, fontFamily: "Inter_500Medium" },
+  emptyText: { color: "#5F6B7A", fontSize: 13.5, fontFamily: "Inter_500Medium" },
   proposalCard: {
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderRadius: 12,
     padding: 12,
@@ -1239,23 +1239,23 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 10,
   },
-  tagMeta: { fontSize: 11.5, color: "#6A5D44", fontFamily: "Inter_500Medium" },
+  tagMeta: { fontSize: 11.5, color: "#5F6B7A", fontFamily: "Inter_500Medium" },
   proposalTitle: { fontSize: 15, color: "#1c1810", fontFamily: "CormorantGaramond_600SemiBold", marginTop: 4, lineHeight: 18 },
-  proposalType: { fontSize: 11.5, color: "#5F7F66", marginTop: 2, fontFamily: "Inter_500Medium" },
+  proposalType: { fontSize: 11.5, color: "#6EC6FF", marginTop: 2, fontFamily: "Inter_500Medium" },
 
   starCard: {
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderWidth: 1.5,
-    borderColor: "#7B4AB8",
+    borderColor: "#C6A35B",
     borderRadius: 14,
     padding: 14,
     marginTop: 12,
   },
   starName: { fontFamily: "Inter_700Bold", fontSize: 16, color: "#1c1810" },
-  starCat: { fontSize: 12, color: "#08243C", fontFamily: "Inter_700Bold", marginTop: 2, letterSpacing: 0.4, textTransform: "uppercase" },
+  starCat: { fontSize: 12, color: "#07111F", fontFamily: "Inter_700Bold", marginTop: 2, letterSpacing: 0.4, textTransform: "uppercase" },
 
   createBtn: {
     paddingVertical: 16,
@@ -1263,7 +1263,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#08243C",
+    shadowColor: "#07111F",
     shadowOpacity: 0.18,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -1272,8 +1272,8 @@ const styles = StyleSheet.create({
   createBtnText: { fontSize: 15.5, fontFamily: "Inter_700Bold", letterSpacing: 0.4 },
 
   resultCard: {
-    backgroundColor: "#FFFDF8",
-    borderColor: "#E8DDC8",
+    backgroundColor: "#F4F7FB",
+    borderColor: "#D8DEE8",
     borderWidth: 1.5,
     borderRadius: 14,
     overflow: "hidden",
@@ -1285,12 +1285,12 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#E8DDC8",
+    borderBottomColor: "#D8DEE8",
   },
   resultType: {
     fontSize: 10,
     letterSpacing: 1.6,
-    color: "#6E8B74",
+    color: "#6EC6FF",
     fontFamily: "Inter_700Bold",
     textTransform: "uppercase",
     marginBottom: 6,
@@ -1301,7 +1301,7 @@ const styles = StyleSheet.create({
   section: {
     fontSize: 11,
     letterSpacing: 1.6,
-    color: "#7B4AB8",
+    color: "#C6A35B",
     textTransform: "uppercase",
     fontFamily: "Inter_700Bold",
     marginBottom: 8,
@@ -1312,20 +1312,20 @@ const styles = StyleSheet.create({
     gap: 9,
     backgroundColor: "#f5f0e6",
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginBottom: 6,
   },
   ingName: { fontSize: 13, color: "#1c1810", fontFamily: "Inter_600SemiBold", flex: 1 },
-  ingG: { fontSize: 11, color: "#6E8B74", fontFamily: "Inter_500Medium" },
+  ingG: { fontSize: 11, color: "#6EC6FF", fontFamily: "Inter_500Medium" },
   stepRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
   stepNum: {
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: "#6E8B74",
+    backgroundColor: "#6EC6FF",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -1334,8 +1334,8 @@ const styles = StyleSheet.create({
   stepText: { flex: 1, fontSize: 14, color: "#1c1810", lineHeight: 22, fontFamily: "Inter_400Regular" },
 
   tipBox: {
-    backgroundColor: "rgba(110,139,116,0.1)",
-    borderColor: "rgba(110,139,116,0.3)",
+    backgroundColor: "rgba(110,198,255,0.1)",
+    borderColor: "rgba(110,198,255,0.3)",
     borderWidth: 1,
     borderRadius: 10,
     padding: 12,
@@ -1344,20 +1344,20 @@ const styles = StyleSheet.create({
   tipLabel: {
     fontSize: 11,
     letterSpacing: 0.6,
-    color: "#5F7F66",
+    color: "#6EC6FF",
     fontFamily: "Inter_700Bold",
     textTransform: "uppercase",
     marginBottom: 4,
   },
   tipText: { fontSize: 13, color: "#5a5040", lineHeight: 19, fontFamily: "Inter_400Regular" },
 
-  resultActions: { gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: "#E8DDC8" },
+  resultActions: { gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: "#D8DEE8" },
   outlineBtn: {
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     backgroundColor: "#f5f0e6",
     alignItems: "center",
   },
@@ -1367,28 +1367,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#7B4AB8",
-    backgroundColor: "rgba(123,74,184,0.08)",
+    borderColor: "#C6A35B",
+    backgroundColor: "rgba(198,163,91,0.08)",
     alignItems: "center",
   },
-  outlinePurpleText: { fontSize: 13, color: "#7B4AB8", fontFamily: "Inter_600SemiBold" },
+  outlinePurpleText: { fontSize: 13, color: "#C6A35B", fontFamily: "Inter_600SemiBold" },
   saveBtn: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#6E8B74",
-    backgroundColor: "rgba(110,139,116,0.1)",
+    borderColor: "#6EC6FF",
+    backgroundColor: "rgba(110,198,255,0.1)",
     alignItems: "center",
   },
-  saveBtnText: { fontSize: 13, color: "#5F7F66", fontFamily: "Inter_600SemiBold" },
+  saveBtnText: { fontSize: 13, color: "#6EC6FF", fontFamily: "Inter_600SemiBold" },
   savedBtn: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: "#6E8B74",
-    backgroundColor: "#6E8B74",
+    borderColor: "#6EC6FF",
+    backgroundColor: "#6EC6FF",
     alignItems: "center",
   },
   savedBtnText: { fontSize: 13, color: "#fff", fontFamily: "Inter_600SemiBold" },

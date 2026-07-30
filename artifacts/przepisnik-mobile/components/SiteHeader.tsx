@@ -65,7 +65,7 @@ export default function SiteHeader({ showAdd, onAdd }: Props) {
               hitSlop={6}
               style={({ pressed }) => [styles.addBtn, { opacity: pressed ? 0.85 : 1 }]}
             >
-              <Plus size={22} color="#fff" strokeWidth={2} />
+              <Plus size={22} color="#111827" strokeWidth={2} />
             </Pressable>
           ) : null}
 
@@ -110,7 +110,7 @@ export default function SiteHeader({ showAdd, onAdd }: Props) {
               onPress={handleLogout}
               style={({ pressed }) => [styles.logoutBtn, { opacity: pressed ? 0.85 : 1 }]}
             >
-              <LogOut size={16} color="#fff" strokeWidth={2} />
+              <LogOut size={16} color="#111827" strokeWidth={2} />
               <Text style={styles.logoutText}>Wyloguj</Text>
             </Pressable>
           </Pressable>
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   kicker: {
     marginTop: 1,
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_700Bold",
     fontSize: 7.5,
     letterSpacing: 2,
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#7B4AB8",
-    shadowColor: "#08243C",
+    backgroundColor: "#C6A35B",
+    shadowColor: "#07111F",
     shadowOpacity: 0.25,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "#C6A35B",
     borderWidth: 1.5,
-    borderColor: "#FDF8EF",
+    borderColor: "#F6F7F8",
   },
   hairline: {
     position: "absolute",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   menu: {
     width: 260,
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderRadius: 18,
     padding: 18,
     shadowColor: "#1c1810",
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(28,24,16,0.06)",
   },
   menuKicker: {
-    color: "#A8873F",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 3,
@@ -255,13 +255,13 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   adminBadgeText: {
-    color: "#A8873F",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
     fontSize: 11,
     letterSpacing: 0.4,
   },
   menuNote: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_500Medium",
     fontSize: 12.5,
     lineHeight: 17,
@@ -272,12 +272,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     borderRadius: 12,
     paddingVertical: 12,
   },
   logoutText: {
-    color: "#fff",
+    color: "#111827",
     fontFamily: "Inter_700Bold",
     fontSize: 13,
     letterSpacing: 0.4,

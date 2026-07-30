@@ -38,18 +38,18 @@ function buildRecipeHtml(recipe: Recipe): string {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; color: #1C1810; padding: 32px 28px; max-width: 720px; margin: 0 auto; }
+    body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; color: #111827; padding: 32px 28px; max-width: 720px; margin: 0 auto; }
     .emoji { font-size: 44px; text-align: center; margin: 0 0 4px; }
-    .cat { text-align: center; letter-spacing: 2px; text-transform: uppercase; font-size: 11px; color: #8A7C5F; font-weight: 700; }
-    h1 { text-align: center; font-size: 26px; color: #1C1810; margin: 6px 0 4px; }
-    .desc { text-align: center; color: #6A5D44; font-size: 14px; margin: 4px 0 14px; }
+    .cat { text-align: center; letter-spacing: 2px; text-transform: uppercase; font-size: 11px; color: #5F6B7A; font-weight: 700; }
+    h1 { text-align: center; font-size: 26px; color: #111827; margin: 6px 0 4px; }
+    .desc { text-align: center; color: #5F6B7A; font-size: 14px; margin: 4px 0 14px; }
     .meta { text-align: center; margin-bottom: 18px; }
-    .pill { display: inline-block; border: 1px solid #E8DDC8; background: #F1E8FA; color: #08243C; border-radius: 999px; padding: 4px 12px; font-size: 12px; margin: 3px; }
-    h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #C6A35B; border-bottom: 1px solid #E8DDC8; padding-bottom: 6px; margin: 24px 0 10px; }
+    .pill { display: inline-block; border: 1px solid #D8DEE8; background: #F4F7FB; color: #07111F; border-radius: 999px; padding: 4px 12px; font-size: 12px; margin: 3px; }
+    h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #C6A35B; border-bottom: 1px solid #D8DEE8; padding-bottom: 6px; margin: 24px 0 10px; }
     ul, ol { padding-left: 22px; margin: 0; }
-    li { font-size: 14px; line-height: 1.7; color: #1C1810; margin-bottom: 4px; }
+    li { font-size: 14px; line-height: 1.7; color: #111827; margin-bottom: 4px; }
     ol li { margin-bottom: 8px; }
-    .notes { font-style: italic; color: #6A5D44; font-size: 14px; line-height: 1.6; }
+    .notes { font-style: italic; color: #5F6B7A; font-size: 14px; line-height: 1.6; }
     .footer { margin-top: 36px; text-align: center; font-size: 11px; color: #b0a7bd; }
   </style></head><body>
     <div class="emoji">${escapeHtml(recipe.emoji || "🍽️")}</div>
@@ -106,7 +106,7 @@ export default function RecipeDetail() {
       <View style={[styles.root, { paddingTop: insets.top + 16 }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8}>
-          <ChevronLeft size={20} color="#7B4AB8" strokeWidth={2} />
+          <ChevronLeft size={20} color="#C6A35B" strokeWidth={2} />
           <Text style={styles.backText}>Wstecz</Text>
         </Pressable>
         <Text style={styles.empty}>Nie znaleziono przepisu.</Text>
@@ -186,20 +186,20 @@ export default function RecipeDetail() {
 
       <View style={styles.headerRow}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8}>
-          <ChevronLeft size={20} color="#7B4AB8" strokeWidth={2} />
+          <ChevronLeft size={20} color="#C6A35B" strokeWidth={2} />
           <Text style={styles.backText}>Wstecz</Text>
         </Pressable>
         <View style={styles.headerActions}>
           <Pressable onPress={() => setEditOpen(true)} hitSlop={8}>
-            <PencilLine size={22} color="#7B4AB8" strokeWidth={2} />
+            <PencilLine size={22} color="#C6A35B" strokeWidth={2} />
           </Pressable>
           <Pressable onPress={handlePrint} hitSlop={8} disabled={printing} style={printing && styles.actionDisabled}>
-            <Printer size={22} color="#7B4AB8" strokeWidth={2} />
+            <Printer size={22} color="#C6A35B" strokeWidth={2} />
           </Pressable>
           <Pressable onPress={() => toggleFavorite(recipe.id)} hitSlop={8}>
             <Star
               size={22}
-              color={isFav ? "#C6A35B" : "#7B4AB8"}
+              color={isFav ? "#C6A35B" : "#C6A35B"}
               fill={isFav ? "#C6A35B" : "transparent"}
               strokeWidth={2}
             />
@@ -301,7 +301,7 @@ function Pill({ text }: { text: string }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#F5F1EA" },
+  root: { flex: 1, backgroundColor: "#F6F7F8" },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -311,20 +311,20 @@ const styles = StyleSheet.create({
   headerActions: { flexDirection: "row", alignItems: "center", gap: 18 },
   actionDisabled: { opacity: 0.4 },
   back: { flexDirection: "row", alignItems: "center", gap: 4 },
-  backText: { fontFamily: "Inter_500Medium", fontSize: 15, color: "#7B4AB8" },
+  backText: { fontFamily: "Inter_500Medium", fontSize: 15, color: "#C6A35B" },
   emoji: { fontSize: 56, textAlign: "center", marginTop: 8, marginBottom: 6 },
   cat: {
     fontFamily: "Inter_700Bold",
     fontSize: 11,
     letterSpacing: 1.6,
     textTransform: "uppercase",
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     textAlign: "center",
   },
   title: {
     fontFamily: "Inter_700Bold",
     fontSize: 24,
-    color: "#1C1810",
+    color: "#111827",
     textAlign: "center",
     lineHeight: 30,
     marginTop: 4,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   desc: {
     fontFamily: "Inter_400Regular",
     fontSize: 14,
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     lineHeight: 20,
     textAlign: "center",
     marginTop: 6,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   sourceCard: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     backgroundColor: "#fffdfb",
     padding: 16,
     marginTop: 18,
@@ -356,19 +356,19 @@ const styles = StyleSheet.create({
   sourceTitle: {
     fontFamily: "Inter_700Bold",
     fontSize: 16,
-    color: "#1C1810",
+    color: "#111827",
     lineHeight: 21,
   },
   sourceText: {
     fontFamily: "Inter_400Regular",
     fontSize: 13,
-    color: "#6A5D44",
+    color: "#5F6B7A",
     lineHeight: 19,
   },
   sourceButton: {
     alignSelf: "flex-start",
     borderRadius: 999,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     paddingHorizontal: 16,
     paddingVertical: 9,
     marginTop: 4,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     borderRadius: 14,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     paddingVertical: 12,
     paddingHorizontal: 14,
     marginTop: 8,
@@ -409,10 +409,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#E8DDC8",
-    backgroundColor: "#E9DDF4",
+    borderColor: "#D8DEE8",
+    backgroundColor: "#D8DEE8",
   },
-  pillText: { fontFamily: "Inter_500Medium", fontSize: 11, color: "#08243C", letterSpacing: 0.5 },
+  pillText: { fontFamily: "Inter_500Medium", fontSize: 11, color: "#07111F", letterSpacing: 0.5 },
   section: {
     fontFamily: "Inter_700Bold",
     fontSize: 11,
@@ -425,16 +425,16 @@ const styles = StyleSheet.create({
   list: {
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     backgroundColor: "#fffdfb",
     padding: 14,
     gap: 4,
   },
   handNoteBox: {
     borderStyle: "dashed",
-    backgroundColor: "#FFF9EC",
+    backgroundColor: "#F4F7FB",
   },
-  li: { fontFamily: "Inter_400Regular", fontSize: 14, lineHeight: 22, color: "#1C1810" },
+  li: { fontFamily: "Inter_400Regular", fontSize: 14, lineHeight: 22, color: "#111827" },
   handNoteText: {
     fontFamily: "CormorantGaramond_400Regular_Italic",
     fontSize: 17,
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   stepNum: {
     fontFamily: "Inter_700Bold",
     fontSize: 14,
-    color: "#7B4AB8",
+    color: "#C6A35B",
     width: 24,
     lineHeight: 20,
   },
@@ -452,13 +452,13 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     fontSize: 14,
     lineHeight: 20,
-    color: "#1C1810",
+    color: "#111827",
     flex: 1,
   },
   empty: {
     fontFamily: "Inter_400Regular",
     fontSize: 14,
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     textAlign: "center",
     marginTop: 32,
   },

@@ -239,7 +239,7 @@ export default function ListaTab() {
             <TextInput
               style={[styles.input, { flex: 1 }]}
               placeholder="Co kupić?"
-              placeholderTextColor="#A99A7C"
+              placeholderTextColor="#9AA7B8"
               value={name}
               onChangeText={setName}
               onSubmitEditing={addItem}
@@ -249,7 +249,7 @@ export default function ListaTab() {
             <TextInput
               style={[styles.input, { width: 72, textAlign: "center" }]}
               placeholder="szt."
-              placeholderTextColor="#A99A7C"
+              placeholderTextColor="#9AA7B8"
               value={qty}
               onChangeText={setQty}
               onSubmitEditing={addItem}
@@ -285,7 +285,7 @@ export default function ListaTab() {
             style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.85 }]}
             onPress={addItem}
           >
-            <Plus size={18} color="#fff" strokeWidth={2} />
+            <Plus size={18} color="#111827" strokeWidth={2} />
             <Text style={styles.addBtnText}>Dodaj</Text>
           </Pressable>
         </View>
@@ -413,7 +413,7 @@ function Item({
         hitSlop={6}
         style={[styles.checkBtn, item.done && styles.checkBtnDone]}
       >
-        {item.done ? <Check size={15} color="#fff" strokeWidth={2.5} /> : null}
+        {item.done ? <Check size={15} color="#111827" strokeWidth={2.5} /> : null}
       </Pressable>
 
       <Text style={{ fontSize: 19 }}>{cat.emoji}</Text>
@@ -439,34 +439,34 @@ const SERIF = "CormorantGaramond_500Medium";
 const SERIF_ITALIC = "CormorantGaramond_400Regular_Italic";
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#F5F1EA" },
+  root: { flex: 1, backgroundColor: "#F6F7F8" },
 
   header: { alignItems: "center", paddingHorizontal: 16, paddingTop: 2 },
   eyebrow: {
     fontSize: 9.5,
     letterSpacing: 2.4,
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     marginBottom: 3,
     fontFamily: "Inter_500Medium",
   },
-  h1: { fontFamily: SERIF, fontSize: 30, lineHeight: 34, color: "#1C1810", textAlign: "center" },
-  h1em: { fontFamily: SERIF_ITALIC, color: "#7B4AB8" },
-  dateLine: { marginTop: 3, fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_400Regular" },
+  h1: { fontFamily: SERIF, fontSize: 30, lineHeight: 34, color: "#111827", textAlign: "center" },
+  h1em: { fontFamily: SERIF_ITALIC, color: "#C6A35B" },
+  dateLine: { marginTop: 3, fontSize: 12.5, color: "#5F6B7A", fontFamily: "Inter_400Regular" },
 
   stats: { flexDirection: "row", gap: 10, paddingHorizontal: 16, marginTop: 16 },
   statPill: {
     flex: 1,
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderRadius: 16,
     paddingVertical: 11,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
   },
-  statNum: { fontFamily: "Inter_700Bold", fontSize: 22, color: "#7B4AB8", lineHeight: 24 },
+  statNum: { fontFamily: "Inter_700Bold", fontSize: 22, color: "#C6A35B", lineHeight: 24 },
   statLabel: {
     fontSize: 9.5,
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     letterSpacing: 1,
     textTransform: "uppercase",
     marginTop: 3,
@@ -474,25 +474,25 @@ const styles = StyleSheet.create({
   },
 
   addForm: {
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderRadius: 18,
     padding: 12,
     marginHorizontal: 16,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     gap: 10,
   },
   addRow: { flexDirection: "row", gap: 8 },
   input: {
-    backgroundColor: "#F5F1EA",
+    backgroundColor: "#F6F7F8",
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 15,
-    color: "#1C1810",
+    color: "#111827",
     fontFamily: "Inter_500Medium",
   },
   catRow: { gap: 8, paddingVertical: 2, paddingRight: 4 },
@@ -503,49 +503,49 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
-    backgroundColor: "#F5F1EA",
+    borderColor: "#D8DEE8",
+    backgroundColor: "#F6F7F8",
   },
-  catChipActive: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
-  catChipText: { fontSize: 13, color: "#6A5D44", fontFamily: "Inter_500Medium" },
-  catChipTextActive: { color: "#fff", fontFamily: "Inter_600SemiBold" },
+  catChipActive: { backgroundColor: "#C6A35B", borderColor: "#C6A35B" },
+  catChipText: { fontSize: 13, color: "#5F6B7A", fontFamily: "Inter_500Medium" },
+  catChipTextActive: { color: "#111827", fontFamily: "Inter_600SemiBold" },
   addBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     borderRadius: 12,
     paddingVertical: 12,
   },
-  addBtnText: { color: "#fff", fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  addBtnText: { color: "#111827", fontSize: 15, fontFamily: "Inter_600SemiBold" },
 
   tabs: { flexDirection: "row", gap: 8, paddingHorizontal: 16, marginTop: 18 },
   tab: {
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
-  tabActive: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
-  tabText: { fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_500Medium" },
-  tabTextActive: { color: "#fff", fontFamily: "Inter_600SemiBold" },
+  tabActive: { backgroundColor: "#C6A35B", borderColor: "#C6A35B" },
+  tabText: { fontSize: 12.5, color: "#5F6B7A", fontFamily: "Inter_500Medium" },
+  tabTextActive: { color: "#111827", fontFamily: "Inter_600SemiBold" },
 
   sectionLabel: {
     fontSize: 10,
     letterSpacing: 1.5,
-    color: "#8A7C5F",
+    color: "#5F6B7A",
     paddingLeft: 4,
     fontFamily: "Inter_600SemiBold",
     marginTop: 4,
   },
 
   item: {
-    backgroundColor: "#FFFDF8",
+    backgroundColor: "#F4F7FB",
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 14,
     paddingHorizontal: 13,
     paddingVertical: 10,
@@ -560,35 +560,35 @@ const styles = StyleSheet.create({
     height: 26,
     borderRadius: 13,
     borderWidth: 2,
-    borderColor: "#D7C2EA",
+    borderColor: "#D8DEE8",
     alignItems: "center",
     justifyContent: "center",
   },
-  checkBtnDone: { backgroundColor: "#7B4AB8", borderColor: "#7B4AB8" },
-  itemName: { fontSize: 14.5, color: "#1C1810", fontFamily: "Inter_600SemiBold" },
+  checkBtnDone: { backgroundColor: "#C6A35B", borderColor: "#C6A35B" },
+  itemName: { fontSize: 14.5, color: "#111827", fontFamily: "Inter_600SemiBold" },
   itemNameDone: { color: "#a89b85", textDecorationLine: "line-through" },
-  itemQty: { fontSize: 12.5, color: "#8A7C5F", marginTop: 2, fontFamily: "Inter_400Regular" },
+  itemQty: { fontSize: 12.5, color: "#5F6B7A", marginTop: 2, fontFamily: "Inter_400Regular" },
   delBtn: { padding: 4 },
 
   empty: { alignItems: "center", paddingVertical: 44, paddingHorizontal: 16 },
-  emptyTitle: { fontFamily: SERIF_ITALIC, fontSize: 20, color: "#1C1810", marginBottom: 6 },
-  emptySub: { fontSize: 13, color: "#8A7C5F", fontFamily: "Inter_400Regular", textAlign: "center" },
+  emptyTitle: { fontFamily: SERIF_ITALIC, fontSize: 20, color: "#111827", marginBottom: 6 },
+  emptySub: { fontSize: 13, color: "#5F6B7A", fontFamily: "Inter_400Regular", textAlign: "center" },
 
   clearBtn: {
     borderWidth: 1.5,
-    borderColor: "#E8DDC8",
+    borderColor: "#D8DEE8",
     borderRadius: 999,
     paddingHorizontal: 18,
     paddingVertical: 9,
   },
-  clearBtnText: { fontSize: 12.5, color: "#8A7C5F", fontFamily: "Inter_500Medium" },
+  clearBtnText: { fontSize: 12.5, color: "#5F6B7A", fontFamily: "Inter_500Medium" },
 
   deco: {
     textAlign: "center",
     fontSize: 18,
     letterSpacing: 6,
     opacity: 0.3,
-    color: "#7B4AB8",
+    color: "#C6A35B",
     marginTop: 24,
   },
 });

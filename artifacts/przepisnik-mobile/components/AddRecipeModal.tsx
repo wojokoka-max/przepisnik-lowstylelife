@@ -403,7 +403,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                 hitSlop={8}
                 style={styles.closeBtn}
               >
-                <X size={18} color="#6A5D44" strokeWidth={2} />
+                <X size={18} color="#5F6B7A" strokeWidth={2} />
               </Pressable>
             </View>
 
@@ -413,7 +413,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                 onPress={() => setLinkMode(false)}
                 style={[styles.segment, !linkMode && styles.segmentActive]}
               >
-                <BookOpen size={14} color={!linkMode ? "#fff" : "#7B4AB8"} strokeWidth={2} />
+                <BookOpen size={14} color={!linkMode ? "#111827" : "#C6A35B"} strokeWidth={2} />
                 <Text style={[styles.segmentText, !linkMode && styles.segmentTextActive]}>
                   Przepis
                 </Text>
@@ -422,7 +422,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                 onPress={() => setLinkMode(true)}
                 style={[styles.segment, linkMode && styles.segmentActive]}
               >
-                <LinkIcon size={14} color={linkMode ? "#fff" : "#7B4AB8"} strokeWidth={2} />
+                <LinkIcon size={14} color={linkMode ? "#111827" : "#C6A35B"} strokeWidth={2} />
                 <Text style={[styles.segmentText, linkMode && styles.segmentTextActive]}>
                   Z linku
                 </Text>
@@ -445,7 +445,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         setLinkErrors((v) => ({ ...v, url: undefined }));
                       }}
                       placeholder="https://strona.pl/przepis…"
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       autoCapitalize="none"
                       keyboardType="url"
                       style={styles.input}
@@ -462,7 +462,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         setLinkErrors((v) => ({ ...v, title: undefined }));
                       }}
                       placeholder="np. Ciasto czekoladowe babci"
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       style={styles.input}
                     />
                     {linkErrors.title ? (
@@ -471,7 +471,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                   </View>
 
                   <Pressable onPress={handleSaveLink} style={styles.saveBtn}>
-                    <LinkIcon size={16} color="#fff" strokeWidth={2} />
+                    <LinkIcon size={16} color="#111827" strokeWidth={2} />
                     <Text style={styles.saveBtnText}>Dodaj z linku</Text>
                   </Pressable>
                 </View>
@@ -492,7 +492,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         style={[
                           styles.statusText,
                           photoStatus.startsWith("OK:")
-                            ? { color: "#2F6F57" }
+                            ? { color: "#6EC6FF" }
                             : { color: "#92400e" },
                         ]}
                       >
@@ -508,7 +508,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                       value={form.title}
                       onChangeText={(v) => set("title", v)}
                       placeholder="Wpisz tytuł przepisu…"
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       style={styles.input}
                     />
                     {errors.title ? <Text style={styles.errText}>{errors.title}</Text> : null}
@@ -523,7 +523,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         disabled={photoLoading}
                         style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
                       >
-                        <Camera size={13} color="#7B4AB8" strokeWidth={2} />
+                        <Camera size={13} color="#C6A35B" strokeWidth={2} />
                         <Text style={styles.inlinePhotoText}>Zdjęcie składników</Text>
                       </Pressable>
                     </View>
@@ -532,7 +532,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                       value={form.ingredients}
                       onChangeText={(v) => set("ingredients", v)}
                       placeholder={"200 g mąki\n3 jajka\nszczypta soli"}
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       multiline
                       style={[styles.input, styles.textarea]}
                     />
@@ -550,7 +550,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                         disabled={photoLoading}
                         style={[styles.inlinePhotoBtn, photoLoading && { opacity: 0.65 }]}
                       >
-                        <Camera size={13} color="#7B4AB8" strokeWidth={2} />
+                        <Camera size={13} color="#C6A35B" strokeWidth={2} />
                         <Text style={styles.inlinePhotoText}>Zdjęcie kroków</Text>
                       </Pressable>
                     </View>
@@ -559,7 +559,7 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                       value={form.preparation}
                       onChangeText={(v) => set("preparation", v)}
                       placeholder={"Rozgrzej piekarnik do 180°C\nWymieszaj składniki\n…"}
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       multiline
                       style={[styles.input, styles.textarea]}
                     />
@@ -575,14 +575,14 @@ export default function AddRecipeModal({ open, onClose, onSave }: Props) {
                       value={form.notes}
                       onChangeText={(v) => set("notes", v)}
                       placeholder="Wskazówki, warianty, podanie…"
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       multiline
                       style={[styles.input, styles.textarea]}
                     />
                   </View>
 
                   <Pressable onPress={handleSave} style={styles.saveBtn}>
-                    <Check size={18} color="#fff" strokeWidth={2} />
+                    <Check size={18} color="#111827" strokeWidth={2} />
                     <Text style={styles.saveBtnText}>Zapisz przepis</Text>
                   </Pressable>
                 </View>
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
   },
   sheetWrap: { width: "100%" },
   sheet: {
-    backgroundColor: "#FDF8EF",
+    backgroundColor: "#F6F7F8",
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
     paddingHorizontal: 18,
@@ -656,14 +656,14 @@ const styles = StyleSheet.create({
     borderRadius: 11,
   },
   segmentActive: {
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
   },
   segmentText: {
-    color: "#7B4AB8",
+    color: "#C6A35B",
     fontFamily: "Inter_600SemiBold",
     fontSize: 13,
   },
-  segmentTextActive: { color: "#fff" },
+  segmentTextActive: { color: "#111827" },
 
   body: { flexGrow: 0 },
 
@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
   },
   hint: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_400Regular",
     fontSize: 11.5,
     marginTop: -2,
@@ -687,12 +687,12 @@ const styles = StyleSheet.create({
   inputRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   input: {
     borderWidth: 1.5,
-    borderColor: "rgba(198,163,91,0.32)",
-    backgroundColor: "#FFFDF8",
+    borderColor: "rgba(216, 222, 232, 0.85)",
+    backgroundColor: "#F4F7FB",
     borderRadius: 13,
     paddingHorizontal: 14,
     paddingVertical: 11,
-    color: "#1C1810",
+    color: "#111827",
     fontFamily: "Inter_400Regular",
     fontSize: 14.5,
   },
@@ -716,11 +716,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(123,74,184,0.28)",
-    backgroundColor: "rgba(123,74,184,0.1)",
+    borderColor: "rgba(198,163,91,0.28)",
+    backgroundColor: "rgba(198,163,91,0.1)",
   },
   inlinePhotoText: {
-    color: "#7B4AB8",
+    color: "#C6A35B",
     fontFamily: "Inter_600SemiBold",
     fontSize: 11,
     flexShrink: 1,
@@ -739,7 +739,7 @@ const styles = StyleSheet.create({
   },
 
   photoHelp: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_400Regular",
     fontSize: 11.5,
     lineHeight: 16,
@@ -750,18 +750,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     borderRadius: 999,
     paddingVertical: 15,
     marginTop: 4,
-    shadowColor: "#08243C",
+    shadowColor: "#07111F",
     shadowOpacity: 0.25,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
   saveBtnText: {
-    color: "#fff",
+    color: "#111827",
     fontFamily: "Inter_700Bold",
     fontSize: 14.5,
     letterSpacing: 0.3,

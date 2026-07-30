@@ -66,10 +66,10 @@ export function CategoryTile({
           width: size,
           height: size,
           borderRadius: Math.round(size * 0.34),
-          backgroundColor: isCream ? "#f5efe0" : "#08243C",
+          backgroundColor: isCream ? "#f5efe0" : "#07111F",
           borderColor: isCream
             ? "rgba(198,163,91,0.28)"
-            : "rgba(198,163,91,0.32)",
+            : "rgba(216, 222, 232, 0.85)",
         },
       ]}
     >

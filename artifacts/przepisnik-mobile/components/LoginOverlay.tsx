@@ -187,7 +187,7 @@ export default function LoginOverlay() {
 
   return (
     <LinearGradient
-      colors={["#FDF8EF", "#FBF6EC", "#F7EFE0"]}
+      colors={["#F6F7F8", "#F6F7F8", "#F6F7F8"]}
       locations={[0, 0.5, 1]}
       style={styles.root}
     >
@@ -198,7 +198,7 @@ export default function LoginOverlay() {
             "rgba(253,248,239,0)",
             "rgba(253,248,239,0.05)",
             "rgba(253,248,239,0.7)",
-            "#FDF8EF",
+            "#F6F7F8",
           ]}
           locations={[0, 0.5, 0.85, 1]}
           style={StyleSheet.absoluteFill}
@@ -243,7 +243,7 @@ export default function LoginOverlay() {
                   onChangeText={setCode}
                   keyboardType="number-pad"
                   placeholder="np. 123456"
-                  placeholderTextColor="#A99A7C"
+                  placeholderTextColor="#9AA7B8"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="go"
@@ -266,7 +266,7 @@ export default function LoginOverlay() {
                   ]}
                 >
                   {busy ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color="#111827" />
                   ) : (
                     <Text style={styles.ctaText}>P O T W I E R D Ź</Text>
                   )}
@@ -288,7 +288,7 @@ export default function LoginOverlay() {
                   autoCorrect={false}
                   keyboardType="email-address"
                   placeholder="twoj@email.com"
-                  placeholderTextColor="#A99A7C"
+                  placeholderTextColor="#9AA7B8"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="next"
@@ -300,7 +300,7 @@ export default function LoginOverlay() {
                   onChangeText={setPassword}
                   secureTextEntry
                   placeholder={mode === "signup" ? "min. 8 znaków" : "twoje hasło"}
-                  placeholderTextColor="#A99A7C"
+                  placeholderTextColor="#9AA7B8"
                   style={styles.input}
                   editable={!busy}
                   returnKeyType="go"
@@ -335,7 +335,7 @@ export default function LoginOverlay() {
                   ]}
                 >
                   {busy ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color="#111827" />
                   ) : (
                     <Text style={styles.ctaText}>
                       {mode === "signin" ? "Z A L O G U J   S I Ę" : "Z A Ł Ó Ż   K O N T O"}
@@ -409,14 +409,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   markText: {
-    color: "#A8873F",
+    color: "#C6A35B",
     fontFamily: "CormorantGaramond_600SemiBold",
     fontSize: 24,
     lineHeight: 26,
     marginTop: 1,
   },
   title: {
-    color: "#1C1810",
+    color: "#111827",
     fontFamily: "CormorantGaramond_500Medium",
     fontSize: 27,
     lineHeight: 31,
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   },
   kicker: {
     marginTop: 7,
-    color: "#7B4AB8",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
     fontSize: 9.5,
     letterSpacing: 3,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tagline: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "CormorantGaramond_400Regular_Italic",
     fontSize: 14,
     lineHeight: 19,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
 
   form: { width: "100%", maxWidth: 380 },
   label: {
-    color: "#A8873F",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
     fontSize: 11,
     letterSpacing: 2,
@@ -460,8 +460,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1.5,
     borderColor: "rgba(198,163,91,0.35)",
-    backgroundColor: "#FFFDF8",
-    color: "#1C1810",
+    backgroundColor: "#F4F7FB",
+    color: "#111827",
     paddingHorizontal: 16,
     fontFamily: "Inter_500Medium",
     fontSize: 15.5,
@@ -489,17 +489,17 @@ const styles = StyleSheet.create({
     marginTop: 16,
     height: 48,
     borderRadius: 999,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#08243C",
+    shadowColor: "#07111F",
     shadowOpacity: 0.3,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
     elevation: 4,
   },
   ctaText: {
-    color: "#fff",
+    color: "#111827",
     fontFamily: "Inter_700Bold",
     fontSize: 13,
     letterSpacing: 2.4,
@@ -507,12 +507,12 @@ const styles = StyleSheet.create({
   switchBtn: { marginTop: 14, alignItems: "center" },
 
   switchText: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_500Medium",
     fontSize: 13,
   },
   switchTextEm: {
-    color: "#7B4AB8",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
   },
 
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footTitle: {
-    color: "#A8873F",
+    color: "#C6A35B",
     fontFamily: "Inter_700Bold",
     fontSize: 10,
     letterSpacing: 3,

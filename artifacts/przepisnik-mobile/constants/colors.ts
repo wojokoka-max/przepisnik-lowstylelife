@@ -1,54 +1,56 @@
 /**
  * Przepisnik LowStyleLife - semantic design tokens.
  *
- * Direction: warm culinary cream, refined lavender actions, old-gold brand
- * details, and a controlled Prussian-blue thread shared with Next Door Studio.
+ * Direction: a lighter Przepisnik surface built from the Next Door Studio
+ * palette: paper, navy/ink structure, old-gold actions, and cool blue accents.
  */
 
 const colors = {
   light: {
     // Base
-    background: "#FDF8EF",
-    foreground: "#1C1810",
+    background: "#F6F7F8",
+    foreground: "#111827",
 
     // Cards
-    card: "#FFFDF8",
-    cardForeground: "#1C1810",
-    cardBorder: "#E8DDC8",
+    card: "#F4F7FB",
+    cardForeground: "#111827",
+    cardBorder: "#D8DEE8",
 
-    // Primary - main app action
-    primary: "#7B4AB8",
-    primaryForeground: "#FFFFFF",
+    // Primary - main app action / old gold
+    primary: "#C6A35B",
+    primaryForeground: "#111827",
 
     // Secondary - brand/organizer structure
-    secondary: "#F6EFE1",
-    secondaryForeground: "#08243C",
+    secondary: "#F6F7F8",
+    secondaryForeground: "#07111F",
 
     // Muted
-    muted: "#F4EEE0",
-    mutedForeground: "#8A7C5F",
+    muted: "#F6F7F8",
+    mutedForeground: "#5F6B7A",
 
-    // Accent - soft AI/lavender wash
-    accent: "#E9DDF4",
-    accentForeground: "#08243C",
+    // Accent - cool blue from Next Door Studio
+    accent: "#6EC6FF",
+    accentForeground: "#07111F",
 
     // Brand highlights
     gold: "#C6A35B",
-    prussian: "#08243C",
+    prussian: "#003153",
+    prussianDark: "#08243C",
     navy: "#07111F",
-    herb: "#6E8B74",
+    ink: "#10141B",
+    blue: "#6EC6FF",
 
     // States
     destructive: "#B94A48",
     destructiveForeground: "#FFFFFF",
 
-    border: "#E8DDC8",
-    input: "#E8DDC8",
+    border: "#D8DEE8",
+    input: "#D8DEE8",
 
     // Text helpers
-    text: "#1C1810",
-    tint: "#7B4AB8",
-    subtle: "#8A7C5F",
+    text: "#111827",
+    tint: "#C6A35B",
+    subtle: "#5F6B7A",
   },
 
   radius: 16,

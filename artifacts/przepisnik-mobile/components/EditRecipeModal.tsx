@@ -115,7 +115,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
             <View style={styles.headRow}>
               <Text style={styles.headTitle}>Edytuj przepis</Text>
               <Pressable onPress={onClose} hitSlop={8} style={styles.closeBtn}>
-                <X size={18} color="#6A5D44" strokeWidth={2} />
+                <X size={18} color="#5F6B7A" strokeWidth={2} />
               </Pressable>
             </View>
 
@@ -132,7 +132,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                     value={form.title}
                     onChangeText={(value) => set("title", value)}
                     placeholder="Nazwa przepisu"
-                    placeholderTextColor="#8A7C5F"
+                    placeholderTextColor="#5F6B7A"
                     style={styles.input}
                   />
                 </View>
@@ -162,7 +162,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                       value={form.sourceUrl}
                       onChangeText={(value) => set("sourceUrl", value)}
                       placeholder="https://..."
-                      placeholderTextColor="#8A7C5F"
+                      placeholderTextColor="#5F6B7A"
                       autoCapitalize="none"
                       keyboardType="url"
                       style={styles.input}
@@ -177,7 +177,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                     value={form.ingredients}
                     onChangeText={(value) => set("ingredients", value)}
                     placeholder="Składniki"
-                    placeholderTextColor="#8A7C5F"
+                    placeholderTextColor="#5F6B7A"
                     multiline
                     style={[styles.input, styles.textarea]}
                   />
@@ -190,7 +190,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                     value={form.preparation}
                     onChangeText={(value) => set("preparation", value)}
                     placeholder="Przygotowanie"
-                    placeholderTextColor="#8A7C5F"
+                    placeholderTextColor="#5F6B7A"
                     multiline
                     style={[styles.input, styles.textarea]}
                   />
@@ -202,7 +202,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                     value={form.notes}
                     onChangeText={(value) => set("notes", value)}
                     placeholder="Krótka wskazówka"
-                    placeholderTextColor="#8A7C5F"
+                    placeholderTextColor="#5F6B7A"
                     multiline
                     style={[styles.input, styles.textareaSmall]}
                   />
@@ -214,7 +214,7 @@ export default function EditRecipeModal({ open, recipe, onClose, onSave }: Props
                     value={form.handwrittenNote}
                     onChangeText={(value) => set("handwrittenNote", value)}
                     placeholder="Twoja własna notatka do tego przepisu"
-                    placeholderTextColor="#8A7C5F"
+                    placeholderTextColor="#5F6B7A"
                     multiline
                     style={[styles.input, styles.textareaSmall, styles.handNote]}
                   />
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   sheetWrap: { width: "100%", flex: 1, justifyContent: "flex-end" },
   sheet: {
-    backgroundColor: "#FDF8EF",
+    backgroundColor: "#F6F7F8",
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
     paddingHorizontal: 18,
@@ -288,19 +288,19 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
   },
   hint: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_400Regular",
     fontSize: 11.5,
     marginTop: -2,
   },
   input: {
     borderWidth: 1.5,
-    borderColor: "rgba(198,163,91,0.32)",
-    backgroundColor: "#FFFDF8",
+    borderColor: "rgba(216, 222, 232, 0.85)",
+    backgroundColor: "#F4F7FB",
     borderRadius: 13,
     paddingHorizontal: 14,
     paddingVertical: 11,
-    color: "#1C1810",
+    color: "#111827",
     fontFamily: "Inter_400Regular",
     fontSize: 14.5,
   },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   handNote: {
     borderStyle: "dashed",
-    backgroundColor: "#FFF9EC",
+    backgroundColor: "#F4F7FB",
   },
   catGrid: {
     flexDirection: "row",
@@ -328,15 +328,15 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(198,163,91,0.3)",
-    backgroundColor: "#FFFDF8",
+    borderColor: "rgba(216, 222, 232, 0.85)",
+    backgroundColor: "#F4F7FB",
   },
   catChipActive: {
-    backgroundColor: "#7B4AB8",
-    borderColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
+    borderColor: "#C6A35B",
   },
   catText: {
-    color: "#6A5D44",
+    color: "#5F6B7A",
     fontFamily: "Inter_500Medium",
     fontSize: 12.5,
   },
@@ -351,11 +351,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#7B4AB8",
+    backgroundColor: "#C6A35B",
     borderRadius: 999,
     paddingVertical: 15,
     marginTop: 4,
-    shadowColor: "#08243C",
+    shadowColor: "#07111F",
     shadowOpacity: 0.25,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },

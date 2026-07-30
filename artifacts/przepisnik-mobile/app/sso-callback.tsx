@@ -15,7 +15,7 @@ export default function SsoCallbackScreen() {
 
   return (
     <View style={styles.root}>
-      <ActivityIndicator color="#7B4AB8" />
+      <ActivityIndicator color="#C6A35B" />
       <Text style={styles.text}>Kończę logowanie...</Text>
     </View>
   );
@@ -27,10 +27,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
-    backgroundColor: "#FDF8EF",
+    backgroundColor: "#F6F7F8",
   },
   text: {
-    color: "#1C1810",
+    color: "#111827",
     fontFamily: "Inter_600SemiBold",
     fontSize: 14,
   },
